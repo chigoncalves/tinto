@@ -1,0 +1,7 @@
+#ifndef TINTO_INCLUDE_CONF
+#define TINTO_INCLUDE_CONF
+
+#cmakedefine DEBUG 1
+#cmakedefine TINTO_DEVEL_MODE 1
+
+#endif // TINTO_INCLUDE_CONF
