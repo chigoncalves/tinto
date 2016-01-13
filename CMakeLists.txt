@@ -1,30 +1,55 @@
-project( tint2 )
-cmake_minimum_required( VERSION 2.6 )
+if (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+  message (FATAL_ERROR "In source build are not allowed!")
+endif ()
+
+project (tinto C)
+cmake_minimum_required (VERSION 2.8.11)
+
+include (CMakePrintHelpers)
+
+list (APPEND CMAKE_MODULE_PATH ";${CMAKE_SOURCE_DIR}/cmake")
+include_directories ("${CMAKE_BINARY_DIR}/include" "${CMAKE_SOURCE_DIR}/include")
+include (Utils)
 
 option( ENABLE_BATTERY "Enable battery status plugin" ON )
-option( ENABLE_TINT2CONF "Enable tint2conf build, a GTK+2 theme configurator for tint2" ON )
+option (ENABLE_TINT2CONF "Enable tint2conf build, a GTK+2 theme configurator for tint2" OFF)
 option( ENABLE_EXAMPLES "Install additional tin2rc examples" OFF )
 option( ENABLE_RSVG "Rsvg support (launcher only)" ON )
 option( ENABLE_SN "Startup notification support" ON )
-option( ENABLE_ASAN "Build tint2 with AddressSanitizer" OFF )
+
+if (TINTO_DEVEL_MODE)
+  option (ENABLE_SAN "Build with for Googles: AddressSanitizec AddressSanitizer, LeakSanitizer, \
+ThreadSanitizer or MemorySanitizer, use this options with theses values: asan, msan, tsan or lsan." on)
+endif ()
+
+find_package (X11)
+if (NOT X11_Xdamage_FOUND OR NOT X11_Xrandr_FOUND OR NOT X11_Xrender_FOUND OR NOT X11_Xinerama_FOUND OR NOT X11_Xcomposite_FOUND)
+  message (FATAL_ERROR "Could not find all X11 libraries!")
+endif ()
+
+include_directories (
+  ${X11_Xrender_INCLUDE_PATH}
+  ${X11_Xrandr_INCLUDE_PATH}
+  ${X11_Xinerama_INCLUDE_PATH}
+  ${X11_Xdamage_INCLUDE_PATH}
+  ${X11_Xcomposite_INCLUDE_PATH}
+  ${X11_X11_INCLUDE_PATH}
+)
+
+find_package (GTK2 2.8 REQUIRED COMPONENTS gtk)
+if (GTK2_FOUND)
+  include_directories (${GTK2_INCLUDE_DIRS})
+else ()
+  message (FATAL_ERROR "Gtk2 is required to build tinto.")
+endif ()
 
 include( FindPkgConfig )
 include( CheckLibraryExists )
-pkg_check_modules( X11 REQUIRED x11 xcomposite xdamage xinerama xrender xrandr>=1.3 )
-pkg_check_modules( PANGOCAIRO REQUIRED pangocairo )
-pkg_check_modules( PANGO REQUIRED pango )
-pkg_check_modules( CAIRO REQUIRED cairo )
-pkg_check_modules( GLIB2 REQUIRED glib-2.0 )
-pkg_check_modules( GOBJECT2 REQUIRED gobject-2.0 )
 pkg_check_modules( IMLIB2 REQUIRED imlib2>=1.4.2 )
 pkg_check_modules( RSVG librsvg-2.0>=2.14.0 )
 pkg_check_modules( SN libstartup-notification-1.0>=0.12 )
 
 find_library( RT_LIBRARY rt )
-
-if( NOT X11_FOUND OR NOT PANGOCAIRO_FOUND OR NOT PANGO_FOUND OR NOT CAIRO_FOUND OR NOT GLIB2_FOUND OR NOT GOBJECT2_FOUND OR NOT IMLIB2_FOUND )
-  message( FATAL_ERROR "Not all dependencies fulfilled. See https://code.google.com/p/tint2/wiki/Install" )
-endif( NOT X11_FOUND OR NOT PANGOCAIRO_FOUND OR NOT PANGO_FOUND OR NOT CAIRO_FOUND OR NOT GLIB2_FOUND OR NOT GOBJECT2_FOUND OR NOT IMLIB2_FOUND )
 
 string( REPLACE ";" " " FLAGS_REPLACED "${IMLIB2_LDFLAGS}" )
 set( CMAKE_REQUIRED_FLAGS "${FLAGS_REPLACED}" )
@@ -42,12 +67,6 @@ include_directories( ${PROJECT_BINARY_DIR}
                      src/launcher
                      src/tooltip
                      src/util
-                     ${X11_INCLUDE_DIRS}
-                     ${PANGOCAIRO_INCLUDE_DIRS}
-                     ${PANGO_INCLUDE_DIRS}
-                     ${CAIRO_INCLUDE_DIRS}
-                     ${GLIB2_INCLUDE_DIRS}
-                     ${GOBJECT2_INCLUDE_DIRS}
                      ${IMLIB2_INCLUDE_DIRS}
                      ${RSVG_INCLUDE_DIRS}
                      ${SN_INCLUDE_DIRS} )
@@ -115,41 +134,54 @@ set( DOCDIR share/doc/tint2 CACHE PATH "Directory for documentation files" )
 
 add_custom_target( version ALL "${PROJECT_SOURCE_DIR}/get_svnrev.sh" "\"${PROJECT_SOURCE_DIR}\"" )
 
-link_directories( ${X11_LIBRARY_DIRS}
-                  ${PANGOCAIRO_LIBRARY_DIRS}
-                  ${PANGO_LIBRARY_DIRS}
-                  ${CAIRO_LIBRARY_DIRS}
-                  ${GLIB2_LIBRARY_DIRS}
-                  ${GOBJECT2_LIBRARY_DIRS}
-                  ${IMLIB2_LIBRARY_DIRS}
-                  ${RSVG_LIBRARY_DIRS}
-                  ${SN_LIBRARY_DIRS} )
-add_executable(tint2 ${SOURCES})
-target_link_libraries( tint2 ${X11_LIBRARIES}
-                             ${PANGOCAIRO_LIBRARIES}
-                             ${PANGO_LIBRARIES}
-                             ${CAIRO_LIBRARIES}
-                             ${GLIB2_LIBRARIES}
-                             ${GOBJECT2_LIBRARIES}
-                             ${IMLIB2_LIBRARIES}
-                             ${RSVG_LIBRARIES}
-                             ${SN_LIBRARIES} )
+link_directories(
+  ${IMLIB2_LIBRARY_DIRS}
+  ${RSVG_LIBRARY_DIRS}
+  ${SN_LIBRARY_DIRS}
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_link_libraries (${PROJECT_NAME}
+  ${X11_X11_LIB}
+  ${X11_Xcomposite_LIB}
+  ${X11_Xdamage_LIB}
+  ${X11_Xinerama_LIB}
+  ${X11_Xrandr_LIB}
+  ${X11_Xrender_LIB}
+  ${GTK2_LIBRARIES}
+  ${IMLIB2_LIBRARIES}
+  ${RSVG_LIBRARIES}
+  ${SN_LIBRARIES}
+)
+
 if( RT_LIBRARY )
-  target_link_libraries( tint2 ${RT_LIBRARY} )
+  target_link_libraries( ${PROJECT_NAME} ${RT_LIBRARY} )
 endif( RT_LIBRARY )
 
-target_link_libraries( tint2 m )
 
-add_dependencies( tint2 version )
-set_target_properties( tint2 PROPERTIES COMPILE_FLAGS "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}" )
-set_target_properties( tint2 PROPERTIES LINK_FLAGS "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}" )
+configure_file ("${CMAKE_SOURCE_DIR}/include/conf.h.in" "${CMAKE_BINARY_DIR}/include/conf.h")
+target_link_libraries( ${PROJECT_NAME} m )
 
-install( TARGETS tint2 DESTINATION bin )
-install( FILES sample/tint2rc DESTINATION ${SYSCONFDIR}/xdg/tint2 )
-install( FILES default_icon.png DESTINATION ${DATADIR}/tint2 )
+add_dependencies( ${PROJECT_NAME} version )
+set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}" )
+set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}" )
+
+install( TARGETS ${PROJECT_NAME} DESTINATION bin )
+install( FILES sample/tint2rc DESTINATION ${SYSCONFDIR}/xdg/${PROJECT_NAME} )
+install( FILES default_icon.png DESTINATION ${DATADIR}/${PROJECT_NAME} )
 install( FILES AUTHORS ChangeLog README DESTINATION ${DOCDIR} )
 install( FILES doc/tint2.1 DESTINATION ${MANDIR}/man1 )
+
 if( ENABLE_EXAMPLES )
   file( GLOB SAMPLEFILES sample/*.tint2rc )
   install( FILES ${SAMPLEFILES} DESTINATION ${DOCDIR}/examples )
 endif( ENABLE_EXAMPLES )
+
+
+set (CPACK_GENERATOR "TXZ")
+set (CPACK_STRIP_FILES 1)
+set (CPACK_PACKAGE_CONTACT "crowseye <eatg75@gmail.com")
+set (CPACK_PACKAGE_DESCRIPTION "A clone of tint2 panel")
+set (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/readme.rst")
+include (CPack)
