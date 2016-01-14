@@ -5,17 +5,15 @@ endif ()
 cmake_minimum_required (VERSION 3.0)
 project (tinto VERSION 0.0.1.3 LANGUAGES C )
 
-include (CMakePrintHelpers)
-
 list (APPEND CMAKE_MODULE_PATH ";${CMAKE_SOURCE_DIR}/cmake")
 include_directories ("${CMAKE_BINARY_DIR}/include" "${CMAKE_SOURCE_DIR}/include")
 include (Utils)
 
-option( ENABLE_BATTERY "Enable battery status plugin" ON )
-option (ENABLE_TINT2CONF "Enable tint2conf build, a GTK+2 theme configurator for tint2" OFF)
+option (ENABLE_BATTERY "Enable battery status plugin." ON)
+option (ENABLE_TINT2CONF "Enable tint2conf build, a Gtk+2 theme configurator for `tinto`." OFF)
 option( ENABLE_EXAMPLES "Install additional tin2rc examples" OFF )
-option( ENABLE_RSVG "Rsvg support (launcher only)" ON )
-option( ENABLE_SN "Startup notification support" ON )
+option (ENABLE_RSVG "Enable `rsvg` support for launcher icons." ON )
+option( ENABLE_SN "Enable `startup notification` support." ON )
 
 if (TINTO_DEVEL_MODE)
   option (ENABLE_SAN "Build with for Googles: AddressSanitizec AddressSanitizer, LeakSanitizer, \
@@ -38,7 +36,7 @@ include_directories (
 
 find_package (GTK2 2.8 REQUIRED COMPONENTS gtk)
 if (NOT GTK2_FOUND)
-  message (FATAL_ERROR "Gtk2 is required to build tinto.")
+  message (FATAL_ERROR "Gtk+2 is required to build tinto.")
 endif ()
 
 include_directories (${GTK2_INCLUDE_DIRS})
@@ -56,18 +54,19 @@ if( NOT IMLIB_BUILD_WITH_X )
   message( FATAL_ERROR "Imlib is not built with X support" )
 endif( NOT IMLIB_BUILD_WITH_X )
 
-include_directories( ${PROJECT_BINARY_DIR}
-                     src
-                     src/battery
-                     src/clock
-                     src/systray
-                     src/taskbar
-                     src/launcher
-                     src/tooltip
-                     src/util
-                     ${IMLIB2_INCLUDE_DIRS}
-                     ${RSVG_INCLUDE_DIRS}
-                     ${SN_INCLUDE_DIRS} )
+include_directories (
+  src
+  src/battery
+  src/clock
+  src/systray
+  src/taskbar
+  src/launcher
+  src/tooltip
+  src/util
+  ${IMLIB2_INCLUDE_DIRS}
+  ${RSVG_INCLUDE_DIRS}
+  ${SN_INCLUDE_DIRS}
+)
 
 set( SOURCES src/config.c
              src/panel.c
@@ -113,7 +112,6 @@ endif ()
 
 if (ENABLE_TINT2CONF)
   add_subdirectory (src/tint2conf)
-  # add_dependencies (tint2conf version)
 endif ()
 
 if( ENABLE_ASAN )
@@ -128,8 +126,6 @@ set( MANDIR share/man CACHE PATH "Directory for man pages" )
 set( DATADIR share CACHE PATH "Directory for shared data" )
 set( SYSCONFDIR /etc CACHE PATH "Directory for configuration files" )
 set( DOCDIR share/doc/tint2 CACHE PATH "Directory for documentation files" )
-
-# add_custom_target( version ALL "${PROJECT_SOURCE_DIR}/get_svnrev.sh" "\"${PROJECT_SOURCE_DIR}\"" )
 
 link_directories(
   ${IMLIB2_LIBRARY_DIRS}
@@ -155,7 +151,6 @@ target_link_libraries (${PROJECT_NAME}
 configure_file ("${CMAKE_SOURCE_DIR}/include/conf.h.in" "${CMAKE_BINARY_DIR}/include/conf.h")
 target_link_libraries( ${PROJECT_NAME} m )
 
-# add_dependencies( ${PROJECT_NAME} version )
 set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}" )
 set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}" )
 
