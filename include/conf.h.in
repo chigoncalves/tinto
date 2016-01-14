@@ -17,4 +17,8 @@
 #cmakedefine SN_API_NOT_YET_FROZEN 1
 #cmakedefine HAS_SN 1
 
+#if !defined _POSIX_C_SOURCE || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE < 200809L)
+#define _POSIX_C_SOURCE 200809L
+#endif // _POSIX_C_SOURCE
+
 #endif // TINTO_INCLUDE_CONF

@@ -24,7 +24,7 @@
 #include <X11/Xatom.h>
 #include <X11/extensions/Xrender.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdlib.h> // For `free`
 #include <string.h>
 #include <stddef.h> // For `size_t`.
 #include <math.h>
@@ -40,7 +40,7 @@ void copy_file(const char *pathSrc, const char *pathDest)
 {
 	FILE *fileSrc = NULL, *fileDest = NULL;
 	char buffer[BUFFER_SZ];
-	size_t rbytes = 0;
+	size_t bytes = 0;
 
 	fileSrc = fopen(pathSrc, "rb");
 	if (!fileSrc) return;
@@ -52,7 +52,7 @@ void copy_file(const char *pathSrc, const char *pathDest)
 	}
 
 	while (feof (fileSrc) == 0) {
-	 rbytes = fread (buffer, 1U, BUFFER_SZ, fileSrc);
+	 bytes = fread (buffer, 1U, BUFFER_SZ, fileSrc);
 
 	 if (bytes != fwrite (buffer, 1, bytes, fileDest)) {
 #ifdef TINTO_DEVEL_MODE
@@ -66,26 +66,25 @@ void copy_file(const char *pathSrc, const char *pathDest)
 }
 
 
-int parse_line (const char *line, char **key, char **value)
-{
-	char *a, *b;
+int parse_line (const char *line, char **key, char **value) {
+  char *first = NULL;
 
-	/* Skip useless lines */
-	if ((line[0] == '#') || (line[0] == '\n')) return 0;
-	if (!(a = strchr (line, '='))) return 0;
+	// Skip comments or blank lines.
+	if (*line == '#' || *line == '\n') return 0;
+
+	first = strchr (line, '=');
+	if (!first) return 0;
 
 	/* overwrite '=' with '\0' */
-	a[0] = '\0';
-	*key = strdup (line);
-	a++;
+	*first++ = '\0';
+	*key = strdup (g_strstrip (line));
 
 	/* overwrite '\n' with '\0' if '\n' present */
-	if ((b = strchr (a, '\n'))) b[0] = '\0';
+	char* ptr = strchr (first, '\n');
+	if (ptr) *ptr = '\0';
 
-	*value = strdup (a);
+	*value = strdup (g_strstrip (first));
 
-	g_strstrip(*key);
-	g_strstrip(*value);
 	return 1;
 }
 
