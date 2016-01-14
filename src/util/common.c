@@ -17,6 +17,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
+#include "conf.h" // For system checks.
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -25,30 +26,39 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stddef.h> // For `size_t`.
 #include <math.h>
 #include <unistd.h>
 #include <glib.h>
 #include "common.h"
 #include "../server.h"
 
+#define BUFFER_SZ 100U
 
 
 void copy_file(const char *pathSrc, const char *pathDest)
 {
-	FILE *fileSrc, *fileDest;
-	char buffer[100];
-	int  nb;
+	FILE *fileSrc = NULL, *fileDest = NULL;
+	char buffer[BUFFER_SZ];
+	size_t rbytes = 0;
 
 	fileSrc = fopen(pathSrc, "rb");
-	if (fileSrc == NULL) return;
+	if (!fileSrc) return;
 
 	fileDest = fopen(pathDest, "wb");
-	if (fileDest == NULL) return;
+	if (!fileDest) {
+	  fclose (fileSrc);
+	  return;
+	}
 
-	while ((nb = fread(buffer, 1, sizeof(buffer), fileSrc)) > 0) {
-		if ( nb != fwrite(buffer, 1, nb, fileDest)) {
-			printf("Error while copying file %s to %s\n", pathSrc, pathDest);
-		}
+	while (feof (fileSrc) == 0) {
+	 rbytes = fread (buffer, 1U, BUFFER_SZ, fileSrc);
+
+	 if (bytes != fwrite (buffer, 1, bytes, fileDest)) {
+#ifdef TINTO_DEVEL_MODE
+	   printf("Error while copying file %s to %s\n", pathSrc, pathDest);
+#endif // TINTO_DEVEL_MODE
+	 }
 	}
 
 	fclose (fileDest);
