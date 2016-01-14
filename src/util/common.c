@@ -23,6 +23,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/Xrender.h>
+#include <ctype.h> // For `tolower`.
 #include <stdio.h>
 #include <stdlib.h> // For `free`
 #include <string.h>
@@ -143,14 +144,13 @@ char *contract_tilde(char *s)
 	}
 }
 
-int hex_char_to_int (char c)
+int hex_char_to_int (char chr)
 {
-	int r;
+	int r = 0;
+	chr = tolower (chr);
 
-	if (c >= '0' && c <= '9')  r = c - '0';
-	else if (c >= 'a' && c <= 'f')  r = c - 'a' + 10;
-	else if (c >= 'A' && c <= 'F')  r = c - 'A' + 10;
-	else  r = 0;
+	if (chr >= '0' && chr <= '9')  r = chr - '0';
+	else if (chr >= 'a' && chr <= 'f')  r = chr - 'a' + 10;
 
 	return r;
 }
