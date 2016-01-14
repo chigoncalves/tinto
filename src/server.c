@@ -22,7 +22,7 @@
 #include <X11/extensions/Xrandr.h>
 
 
-#include <stdio.h>
+#include <stdio.h> // For `fprintf` and `stderr`.
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -273,7 +273,7 @@ int compareMonitorIncluded(const void *monitor1, const void *monitor2)
 }
 
 
-void get_monitors()
+void get_monitors (void)
 {
 	int i, j, nbmonitor;
 	if (XineramaIsActive(server.dsp)) {
@@ -343,7 +343,15 @@ next:
 			if (server.monitor[j].names)
 				g_strfreev(server.monitor[j].names);
 		server.nb_monitor = i;
-		server.monitor = realloc(server.monitor, server.nb_monitor * sizeof(Monitor));
+		Monitor* aux = realloc (server.monitor, server.nb_monitor * sizeof(Monitor));
+		if (!aux) {
+		  fprintf (stderr, "Failed to `realloc`!");
+		  return;
+		}
+
+		server.monitor = aux;
+		aux = NULL;
+
 		qsort(server.monitor, server.nb_monitor, sizeof(Monitor), compareMonitorPos);
 
 		if (res)
