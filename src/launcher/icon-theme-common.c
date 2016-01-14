@@ -505,9 +505,9 @@ char *get_icon_path_helper(GSList *themes, const char *icon_name, int size)
 	GSList *extensions = NULL;
 	extensions = g_slist_append(extensions, ".png");
 	extensions = g_slist_append(extensions, ".xpm");
-#ifdef HAVE_RSVG
+#ifdef HAS_RSVG
 	extensions = g_slist_append(extensions, ".svg");
-#endif
+#endif // HAS_RSVG
 	// if the icon name already contains one of the extensions (e.g. vlc.png instead of vlc) add a special entry
 	GSList *ext;
 	for (ext = extensions; ext; ext = g_slist_next(ext)) {

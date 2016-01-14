@@ -18,6 +18,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
+#include "conf.h" // For system checks.
 
 #include <string.h>
 #include <stdio.h>
@@ -32,10 +33,10 @@
 #include <glib/gstdio.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#ifdef HAVE_RSVG
+#ifdef HAS_RSVG
 #include <librsvg/rsvg.h>
 #include <librsvg/rsvg-cairo.h>
-#endif
+#endif // HAS_RSVG
 
 #include "window.h"
 #include "server.h"
@@ -212,7 +213,7 @@ int resize_launcher(void *obj)
 				free_icon(launcherIcon->icon_scaled);
 				launcherIcon->icon_original = launcherIcon->icon_scaled = NULL;
 				// Load the new file and scale
-#ifdef HAVE_RSVG
+#ifdef HAS_RSVG
 				if (g_str_has_suffix(new_icon_path, ".svg")) {
 					GError* err = NULL;
 					RsvgHandle* svg = rsvg_handle_new_from_file(new_icon_path, &err);
@@ -234,7 +235,7 @@ int resize_launcher(void *obj)
 						g_object_unref(G_OBJECT(svg));
 					}
 				} else
-#endif
+#endif // HAS_RSVG
 				{
 					launcherIcon->icon_original = imlib_load_image_immediately(new_icon_path);
 				}
@@ -259,7 +260,7 @@ int resize_launcher(void *obj)
 			}
 		}
 	}
-	
+
 	count = g_slist_length(launcher->list_icons);
 
 	if (panel_horizontal) {
@@ -305,7 +306,7 @@ int resize_launcher(void *obj)
 
 	for (i=1, l = launcher->list_icons; l ; i++, l = l->next) {
 		LauncherIcon *launcherIcon = (LauncherIcon*)l->data;
-		
+
 		launcherIcon->y = posy;
 		launcherIcon->x = posx;
 		launcherIcon->area.posy = ((Area*)launcherIcon->area.parent)->posy + launcherIcon->y;
@@ -393,7 +394,7 @@ void launcher_action(LauncherIcon *icon, XEvent* evt)
 {
 	char *cmd = calloc(strlen(icon->cmd) + 10, 1);
 	sprintf(cmd, "(%s&)", icon->cmd);
-#if HAVE_SN
+#if HAS_SN
 	SnLauncherContext* ctx;
 	Time time;
 	if (startup_notifications) {
@@ -411,36 +412,36 @@ void launcher_action(LauncherIcon *icon, XEvent* evt)
 		}
 		sn_launcher_context_initiate(ctx, "tint2", icon->cmd, time);
 	}
-#endif /* HAVE_SN */
+#endif // HAS_SN
 	pid_t pid;
 	pid = fork();
 	if (pid < 0) {
 		fprintf(stderr, "Could not fork\n");
 	} else if (pid == 0) {
 		// Child process
-#if HAVE_SN
+#if HAS_SN
 		if (startup_notifications) {
 			sn_launcher_context_setup_child_process(ctx);
 		}
-#endif // HAVE_SN
+#endif // HAS_SN
 		// Allow children to exist after parent destruction
 		setsid();
 		// Run the command
 		execl("/bin/sh", "/bin/sh", "-c", icon->cmd, NULL);
 		fprintf(stderr, "Failed to execlp %s\n", icon->cmd);
-#if HAVE_SN
+#if HAS_SN
 		if (startup_notifications) {
 			sn_launcher_context_unref(ctx);
 		}
-#endif // HAVE_SN
+#endif // HAS_SN
 		exit(1);
 	} else {
 		// Parent process
-#if HAVE_SN
+#if HAS_SN
 		if (startup_notifications) {
 			g_tree_insert(server.pids, GINT_TO_POINTER (pid), ctx);
 		}
-#endif // HAVE_SN
+#endif // HAS_SN
 	}
 	free(cmd);
 }

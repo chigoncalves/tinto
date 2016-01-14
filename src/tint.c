@@ -17,6 +17,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
+#include "conf.h" // For system checks.
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -31,12 +32,11 @@
 #include <Imlib2.h>
 #include <signal.h>
 
-#ifdef HAVE_SN
+#ifdef HAS_SN
 #include <libsn/sn.h>
 #include <sys/wait.h>
-#endif
+#endif // HAS_SN
 
-#include <version.h>
 #include "server.h"
 #include "window.h"
 #include "config.h"
@@ -90,7 +90,7 @@ void init (int argc, char *argv[])
 			exit(0);
 		}
 		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version"))	{
-			printf("tint2 version %s\n", VERSION_STRING);
+			printf("tint2 version %s\n", PROJECT_VERSION);
 			exit(0);
 		}
 		if (!strcmp(argv[i], "-c")) {
@@ -128,7 +128,7 @@ void init (int argc, char *argv[])
 static int sn_pipe_valid = 0;
 static int sn_pipe[2];
 
-#ifdef HAVE_SN
+#ifdef HAS_SN
 static int error_trap_depth = 0;
 
 static void error_trap_push(SnDisplay *display, Display *xdisplay)
@@ -185,7 +185,7 @@ static gint cmp_ptr(gconstpointer a, gconstpointer b) {
 }
 #else
 static void sigchld_handler_async() {}
-#endif // HAVE_SN
+#endif // HAS_SN
 
 void init_X11_pre_config()
 {
@@ -215,7 +215,7 @@ void init_X11_post_config()
 	server_init_visual();
 	XSetErrorHandler ((XErrorHandler) server_catch_error);
 
-#ifdef HAVE_SN
+#ifdef HAS_SN
 	// Initialize startup-notification
 	if (startup_notifications) {
 		server.sn_dsp = sn_display_new (server.dsp, error_trap_push, error_trap_pop);
@@ -233,7 +233,7 @@ void init_X11_post_config()
 			}
 		}
 	}
-#endif // HAVE_SN
+#endif // HAS_SN
 
 	imlib_context_set_display (server.dsp);
 	imlib_context_set_visual (server.visual);
@@ -241,7 +241,7 @@ void init_X11_post_config()
 
 	/* Catch events */
 	XSelectInput (server.dsp, server.root_win, PropertyChangeMask|StructureNotifyMask);
-	
+
 	// load default icon
 	gchar *path;
 	const gchar * const *data_dirs;
@@ -281,7 +281,7 @@ void cleanup()
 		XCloseDisplay(server.dsp);
 	server.dsp = NULL;
 
-#ifdef HAVE_SN
+#ifdef HAS_SN
 	if (startup_notifications) {
 		if (sn_pipe_valid) {
 			sn_pipe_valid = 0;
@@ -289,7 +289,7 @@ void cleanup()
 			close(sn_pipe[0]);
 		}
 	}
-#endif
+#endif // HAS_SN
 }
 
 
@@ -1184,10 +1184,10 @@ start:
 			if (FD_ISSET(x11_fd, &fdset)) {
 				while (XPending (server.dsp)) {
 					XNextEvent(server.dsp, &e);
-#if HAVE_SN
+#if HAS_SN
 					if (startup_notifications)
 						sn_display_process_event(server.sn_dsp, &e);
-#endif // HAVE_SN
+#endif // HAS_SN
 
 					panel = get_panel(e.xany.window);
 					if (panel && panel_autohide) {
@@ -1440,5 +1440,3 @@ start:
 		}
 	}
 }
-
-

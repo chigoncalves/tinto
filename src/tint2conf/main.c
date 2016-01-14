@@ -17,10 +17,9 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h"
+
 #include <time.h>
-#ifdef HAVE_VERSION_H
-#include "version.h"
-#endif
 
 #include "main.h"
 #include "common.h"
@@ -133,7 +132,7 @@ int main(int argc, char **argv)
 
 	g_set_application_name(_("tint2conf"));
 	gtk_window_set_default_icon_name("taskbar");
-	
+
 	// config file use '.' as decimal separator
 	setlocale(LC_NUMERIC, "POSIX");
 
@@ -188,7 +187,7 @@ static void menuAbout()
 
 	gtk_show_about_dialog(GTK_WINDOW(g_window), "name", g_get_application_name( ),
 								"comments", _("Theming tool for tint2 panel"),
-								"version", VERSION_STRING,
+								"version", PROJECT_VERSION,
 								"copyright", _("Copyright 2009 tint2 team\nTint2 License GNU GPL version 2\nTintwizard License GNU GPL version 3"),
 								"logo-icon-name", "taskbar", "authors", authors,
 								/* Translators: translate "translator-credits" as

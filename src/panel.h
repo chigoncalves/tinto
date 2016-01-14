@@ -11,6 +11,8 @@
 #ifndef PANEL_H
 #define PANEL_H
 
+#include "conf.h" // For system checks.
+
 #include <pango/pangocairo.h>
 #include <sys/time.h>
 

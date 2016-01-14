@@ -2,8 +2,8 @@ if (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
   message (FATAL_ERROR "In source build are not allowed!")
 endif ()
 
-project (tinto C)
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required (VERSION 3.0)
+project (tinto VERSION 0.0.1.3 LANGUAGES C )
 
 include (CMakePrintHelpers)
 
@@ -37,19 +37,17 @@ include_directories (
 )
 
 find_package (GTK2 2.8 REQUIRED COMPONENTS gtk)
-if (GTK2_FOUND)
-  include_directories (${GTK2_INCLUDE_DIRS})
-else ()
+if (NOT GTK2_FOUND)
   message (FATAL_ERROR "Gtk2 is required to build tinto.")
 endif ()
+
+include_directories (${GTK2_INCLUDE_DIRS})
 
 include( FindPkgConfig )
 include( CheckLibraryExists )
 pkg_check_modules( IMLIB2 REQUIRED imlib2>=1.4.2 )
 pkg_check_modules( RSVG librsvg-2.0>=2.14.0 )
 pkg_check_modules( SN libstartup-notification-1.0>=0.12 )
-
-find_library( RT_LIBRARY rt )
 
 string( REPLACE ";" " " FLAGS_REPLACED "${IMLIB2_LDFLAGS}" )
 set( CMAKE_REQUIRED_FLAGS "${FLAGS_REPLACED}" )
@@ -92,32 +90,31 @@ set( SOURCES src/config.c
              src/util/timer.c
              src/util/window.c )
 
-if( ENABLE_BATTERY )
-  set( SOURCES ${SOURCES} src/battery/battery.c )
-  add_definitions( -DENABLE_BATTERY )
-endif( ENABLE_BATTERY )
+if (ENABLE_BATTERY)
+  list (APPEND SOURCES src/battery/battery.c)
+endif ()
 
-if( ENABLE_RSVG )
-  if( RSVG_FOUND )
-	add_definitions( -DHAVE_RSVG )
+if (ENABLE_RSVG)
+  if (RSVG_FOUND)
+    set (HAS_RSVG 1)
+  else ()
+    message (FATAL_ERROR "SVG support enabled yet dependency not fulfilled: librsvg-2.0" )
+  endif ()
+endif ()
+
+if (ENABLE_SN)
+  if (SN_FOUND)
+    set (HAS_SN 1)
+    set (SN_API_NOT_YET_FROZEN 1)
   else()
-    message( FATAL_ERROR "SVG support enabled yet dependency not fulfilled: librsvg-2.0" )
-  endif( RSVG_FOUND )
-endif( ENABLE_RSVG )
+    message (FATAL_ERROR "Startup notification support enabled yet dependency not fulfilled: libstartup-notification-1.0")
+  endif ()
+endif ()
 
-if( ENABLE_SN )
-  if( SN_FOUND )
-    add_definitions( -DHAVE_SN -DSN_API_NOT_YET_FROZEN )
-  else()
-    message( FATAL_ERROR "Startup notification support enabled yet dependency not fulfilled: libstartup-notification-1.0" )
-  endif( SN_FOUND )
-endif( ENABLE_SN)
-
-if( ENABLE_TINT2CONF )
-  add_definitions( -DHAVE_VERSION_H )
-  add_subdirectory( src/tint2conf )
-  add_dependencies( tint2conf version )
-endif( ENABLE_TINT2CONF )
+if (ENABLE_TINT2CONF)
+  add_subdirectory (src/tint2conf)
+  # add_dependencies (tint2conf version)
+endif ()
 
 if( ENABLE_ASAN )
   SET(ASAN_C_FLAGS " -O0 -g3 -gdwarf-2 -fsanitize=address -fno-common -fno-omit-frame-pointer -rdynamic ")
@@ -132,7 +129,7 @@ set( DATADIR share CACHE PATH "Directory for shared data" )
 set( SYSCONFDIR /etc CACHE PATH "Directory for configuration files" )
 set( DOCDIR share/doc/tint2 CACHE PATH "Directory for documentation files" )
 
-add_custom_target( version ALL "${PROJECT_SOURCE_DIR}/get_svnrev.sh" "\"${PROJECT_SOURCE_DIR}\"" )
+# add_custom_target( version ALL "${PROJECT_SOURCE_DIR}/get_svnrev.sh" "\"${PROJECT_SOURCE_DIR}\"" )
 
 link_directories(
   ${IMLIB2_LIBRARY_DIRS}
@@ -155,15 +152,10 @@ target_link_libraries (${PROJECT_NAME}
   ${SN_LIBRARIES}
 )
 
-if( RT_LIBRARY )
-  target_link_libraries( ${PROJECT_NAME} ${RT_LIBRARY} )
-endif( RT_LIBRARY )
-
-
 configure_file ("${CMAKE_SOURCE_DIR}/include/conf.h.in" "${CMAKE_BINARY_DIR}/include/conf.h")
 target_link_libraries( ${PROJECT_NAME} m )
 
-add_dependencies( ${PROJECT_NAME} version )
+# add_dependencies( ${PROJECT_NAME} version )
 set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}" )
 set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}" )
 
@@ -177,7 +169,6 @@ if( ENABLE_EXAMPLES )
   file( GLOB SAMPLEFILES sample/*.tint2rc )
   install( FILES ${SAMPLEFILES} DESTINATION ${DOCDIR}/examples )
 endif( ENABLE_EXAMPLES )
-
 
 set (CPACK_GENERATOR "TXZ")
 set (CPACK_STRIP_FILES 1)

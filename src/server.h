@@ -9,14 +9,16 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "conf.h" // For system checks.
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/Xinerama.h>
 
-#ifdef HAVE_SN
+#ifdef HAS_SN
 #include <libsn/sn.h>
 #include <glib.h>
-#endif
+#endif // HAS_SN
 
 
 typedef struct Global_atom
@@ -125,10 +127,10 @@ typedef struct
 	Colormap colormap;
 	Colormap colormap32;
 	Global_atom atom;
-#ifdef HAVE_SN
+#ifdef HAS_SN
 	SnDisplay *sn_dsp;
 	GTree *pids;
-#endif // HAVE_SN
+#endif // HAS_SN
 } Server_global;
 
 
