@@ -39,7 +39,7 @@ enum { NONE=0, CLOSE, TOGGLE, ICONIFY, SHADE, TOGGLE_ICONIFY, MAXIMIZE_RESTORE, 
 void copy_file(const char *pathSrc, const char *pathDest);
 
 // extract key = value
-int parse_line (const char *line, char **key, char **value);
+int parse_line (char *line, char **key, char **value);
 
 // execute a command by calling fork
 void tint_exec(const char* command);
@@ -69,4 +69,3 @@ void render_image(Drawable d, int x, int y, int w, int h);
 void draw_text(PangoLayout *layout, cairo_t *c, int posx, int posy, Color *color, int font_shadow);
 
 #endif
-

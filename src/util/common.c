@@ -18,6 +18,7 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 #include "conf.h" // For system checks.
+#include "string-addins.h" // For `strtrim'.
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -67,7 +68,7 @@ void copy_file(const char *pathSrc, const char *pathDest)
 }
 
 
-int parse_line (const char *line, char **key, char **value) {
+int parse_line (char *line, char **key, char **value) {
   char *first = NULL;
 
 	// Skip comments or blank lines.
@@ -78,7 +79,7 @@ int parse_line (const char *line, char **key, char **value) {
 
 	/* overwrite '=' with '\0' */
 	*first++ = '\0';
-	*key = strdup (g_strstrip (line));
+	*key = strdup (strtrim (line));
 
 	/* overwrite '\n' with '\0' if '\n' present */
 	char* ptr = strchr (first, '\n');
@@ -237,16 +238,14 @@ void extract_values (const char *value, char **value1, char **value2, char **val
 
 void adjust_asb(DATA32 *data, int w, int h, int alpha, float satur, float bright)
 {
-	unsigned int x, y;
-	unsigned int a, r, g, b, argb;
-	unsigned long id;
-	int cmax, cmin;
+	unsigned long a, r, g, b, argb;
+	unsigned int cmax, cmin;
 	float h2, f, p, q, t;
 	float hue, saturation, brightness;
 	float redc, greenc, bluec;
 
-	for(y = 0; y < h; y++) {
-		for(id = y * w, x = 0; x < w; x++, id++) {
+	for (unsigned long y = 0, _h = h; y < _h; ++y) {
+	  for (unsigned id = y * w, x = 0, _w = w; x < _w; ++x, ++id) {
 			argb = data[id];
 			a = (argb >> 24) & 0xff;
 			// transparent => nothing to do.
