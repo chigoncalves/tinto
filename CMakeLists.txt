@@ -18,6 +18,24 @@ option( ENABLE_SN "Enable `startup notification` support." ON )
 if (TINTO_DEVEL_MODE)
   option (ENABLE_SAN "Build with for Googles: AddressSanitizec AddressSanitizer, LeakSanitizer, \
 ThreadSanitizer or MemorySanitizer, use this options with theses values: asan, msan, tsan or lsan." on)
+
+
+  add_executable (
+    test-string-addins
+    src/util/string-addins.c
+    src/util/t/test-string-addins.c
+  )
+
+  target_link_libraries (
+    test-string-addins
+    cunit
+  )
+
+  add_custom_target (
+    tests
+    COMMAND ${CMAKE_BINARY_DIR}/test-string-addins
+    DEPENDS test-string-addins
+  )
 endif ()
 
 find_package (X11)
