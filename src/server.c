@@ -18,6 +18,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h" // For `UNUSED'.
+
 #include <X11/extensions/Xrender.h>
 #include <X11/extensions/Xrandr.h>
 
@@ -25,6 +27,7 @@
 #include <stdio.h> // For `fprintf` and `stderr`.
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdint.h>
 
 #include "server.h"
 #include "config.h"
@@ -32,7 +35,10 @@
 
 Server_global server;
 
-void server_catch_error (Display *d, XErrorEvent *ev){}
+void server_catch_error (Display *d, XErrorEvent *ev) {
+  UNUSED (d);
+  UNUSED (ev);
+}
 
 void server_init_atoms ()
 {
@@ -227,7 +233,7 @@ void get_root_pixmap()
 		gcv.ts_x_origin = 0;
 		gcv.ts_y_origin = 0;
 		gcv.fill_style = FillTiled;
-		uint mask = GCTileStipXOrigin | GCTileStipYOrigin | GCFillStyle | GCTile;
+		int mask = GCTileStipXOrigin | GCTileStipYOrigin | GCFillStyle | GCTile;
 
 		gcv.tile = server.root_pmap;
 		XChangeGC(server.dsp, server.gc, mask, &gcv);
