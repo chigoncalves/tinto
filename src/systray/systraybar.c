@@ -17,6 +17,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h"
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -113,14 +115,15 @@ void init_systray_panel(void *p)
 	}
 	if (count == 0)
 		hide(&systray.area);
-	else 
+	else
 		show(&systray.area);
 	refresh_systray = 0;
 }
 
 
-void draw_systray(void *obj, cairo_t *c)
-{
+void draw_systray(void *obj, cairo_t *c) {
+  UNUSED (obj);
+  UNUSED (c);
 	if (FORCE_COMPOSITED_RENDERING || server.real_transparency || systray.alpha != 100 || systray.brightness != 0 || systray.saturation != 0) {
 		if (render_background) XFreePixmap(server.dsp, render_background);
 		render_background = XCreatePixmap(server.dsp, server.root_win, systray.area.width, systray.area.height, server.depth);
@@ -321,9 +324,8 @@ void stop_net()
 
 
 gboolean error;
-int window_error_handler(Display *d, XErrorEvent *e)
-{
-	d=d;e=e;
+int window_error_handler(Display *d, XErrorEvent *e) {
+  UNUSED (d);
 	error = TRUE;
 	if (e->error_code != BadWindow) {
 		printf("error_handler %d\n", e->error_code);
@@ -508,7 +510,7 @@ void remove_icon(TrayWindow *traywin)
 	}
 	if (count == 0)
 		hide(&systray.area);
-		
+
 	// changed in systray
 	systray.area.resize = 1;
 	panel_refresh = 1;
