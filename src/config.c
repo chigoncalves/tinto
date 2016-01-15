@@ -29,7 +29,8 @@
 #include <X11/Xatom.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> // For `strlen'.
+#include <stddef.h> // For `size_t'.
 #include <ctype.h>
 #include <glib/gstdio.h>
 #include <pango/pangocairo.h>
@@ -232,25 +233,25 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "panel_items") == 0) {
 		new_config_file = 1;
 		panel_items_order = strdup(value);
-		int j;
-		for (j=0 ; j < strlen(panel_items_order) ; j++) {
+		/* int j; */
+		for (size_t j = 0, len = strlen (panel_items_order); j < len; ++j) {
 			if (panel_items_order[j] == 'L')
 				launcher_enabled = 1;
-			if (panel_items_order[j] == 'T')
+			else if (panel_items_order[j] == 'T')
 				taskbar_enabled = 1;
-			if (panel_items_order[j] == 'B') {
+			else if (panel_items_order[j] == 'B') {
 #ifdef ENABLE_BATTERY
 				battery_enabled = 1;
 #else
 				fprintf(stderr, "tint2 is build without battery support\n");
 #endif
 			}
-			if (panel_items_order[j] == 'S') {
+			else if (panel_items_order[j] == 'S') {
 				// systray disabled in snapshot mode
 				if (snapshot_path == 0)
 					systray_enabled = 1;
 			}
-			if (panel_items_order[j] == 'C')
+			else if (panel_items_order[j] == 'C')
 				clock_enabled = 1;
 		}
 	}
