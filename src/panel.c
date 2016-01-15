@@ -482,31 +482,32 @@ void update_strut(Panel* p)
 
 void set_panel_items_order(Panel *p)
 {
-	int k, j;
+	int j;
 
 	if (p->area.list) {
 		g_slist_free(p->area.list);
 		p->area.list = 0;
 	}
 
-	for (k=0 ; k < strlen(panel_items_order) ; k++) {
+	for (uint32_t k = 0, len = strlen (panel_items_order); k < len; ++k) {
 		if (panel_items_order[k] == 'L') {
 			p->area.list = g_slist_append(p->area.list, &p->launcher);
 			p->launcher.area.resize = 1;
 		}
-		if (panel_items_order[k] == 'T') {
+		else if (panel_items_order[k] == 'T') {
 			for (j=0 ; j < p->nb_desktop ; j++)
 				p->area.list = g_slist_append(p->area.list, &p->taskbar[j]);
 		}
 #ifdef ENABLE_BATTERY
-		if (panel_items_order[k] == 'B')
+		else if (panel_items_order[k] == 'B')
 			p->area.list = g_slist_append(p->area.list, &p->battery);
 #endif
-		int i = p - panel1;
-		if (panel_items_order[k] == 'S' && systray_on_monitor(i, nb_panel)) {
-			p->area.list = g_slist_append(p->area.list, &systray);
+	        else if (panel_items_order[k] == 'S') {
+		  int i = p - panel1;
+		  if (systray_on_monitor(i, nb_panel))
+		    p->area.list = g_slist_append(p->area.list, &systray);
 		}
-		if (panel_items_order[k] == 'C')
+		else if (panel_items_order[k] == 'C')
 			p->area.list = g_slist_append(p->area.list, &p->clock);
 	}
 	init_rendering(&p->area, 0);
