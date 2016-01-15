@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <string.h> // For `strlen'.
 #include <stddef.h> // For `size_t'.
+#include <stdint.h> // For `uint32_t'.
 #include <ctype.h>
 #include <glib/gstdio.h>
 #include <pango/pangocairo.h>
@@ -38,6 +39,7 @@
 #include <Imlib2.h>
 
 #include "config.h"
+#include "debug.h"
 
 #ifndef TINT2CONF
 
@@ -233,7 +235,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "panel_items") == 0) {
 		new_config_file = 1;
 		panel_items_order = strdup(value);
-		/* int j; */
+
 		for (size_t j = 0, len = strlen (panel_items_order); j < len; ++j) {
 			if (panel_items_order[j] == 'L')
 				launcher_enabled = 1;
@@ -243,7 +245,7 @@ void add_entry (char *key, char *value)
 #ifdef ENABLE_BATTERY
 				battery_enabled = 1;
 #else
-				fprintf(stderr, "tint2 is build without battery support\n");
+				MSG ("tinto was build without battery support.");
 #endif
 			}
 			else if (panel_items_order[j] == 'S') {
@@ -291,8 +293,8 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "font_shadow") == 0)
 		panel_config.font_shadow = atoi (value);
 	else if (strcmp (key, "panel_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t) atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.area.bg = &g_array_index(backgrounds, Background, id);
 	}
 	else if (strcmp (key, "wm_menu") == 0)
@@ -361,8 +363,8 @@ void add_entry (char *key, char *value)
 	}
 	else if (strcmp (key, "battery_background_id") == 0) {
 #ifdef ENABLE_BATTERY
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.battery.area.bg = &g_array_index(backgrounds, Background, id);
 #endif
 	}
@@ -423,8 +425,8 @@ void add_entry (char *key, char *value)
 		if (value3) panel_config.clock.area.paddingx = atoi (value3);
 	}
 	else if (strcmp (key, "clock_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.clock.area.bg = &g_array_index(backgrounds, Background, id);
 	}
 	else if (strcmp(key, "clock_tooltip") == 0) {
@@ -459,15 +461,15 @@ void add_entry (char *key, char *value)
 		if (value3) panel_config.g_taskbar.area.paddingx = atoi (value3);
 	}
 	else if (strcmp (key, "taskbar_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.g_taskbar.background[TASKBAR_NORMAL] = &g_array_index(backgrounds, Background, id);
 		if (panel_config.g_taskbar.background[TASKBAR_ACTIVE] == 0)
 			panel_config.g_taskbar.background[TASKBAR_ACTIVE] = panel_config.g_taskbar.background[TASKBAR_NORMAL];
 	}
 	else if (strcmp (key, "taskbar_active_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.g_taskbar.background[TASKBAR_ACTIVE] = &g_array_index(backgrounds, Background, id);
 	}
 	else if (strcmp (key, "taskbar_name") == 0) {
@@ -478,15 +480,15 @@ void add_entry (char *key, char *value)
 		panel_config.g_taskbar.area_name.paddingxlr = panel_config.g_taskbar.area_name.paddingx = atoi (value1);
 	}
 	else if (strcmp (key, "taskbar_name_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.g_taskbar.background_name[TASKBAR_NORMAL] = &g_array_index(backgrounds, Background, id);
 		if (panel_config.g_taskbar.background_name[TASKBAR_ACTIVE] == 0)
 			panel_config.g_taskbar.background_name[TASKBAR_ACTIVE] = panel_config.g_taskbar.background_name[TASKBAR_NORMAL];
 	}
 	else if (strcmp (key, "taskbar_name_active_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.g_taskbar.background_name[TASKBAR_ACTIVE] = &g_array_index(backgrounds, Background, id);
 	}
 	else if (strcmp (key, "taskbar_name_font") == 0) {
@@ -573,8 +575,8 @@ void add_entry (char *key, char *value)
 		gchar** split = g_regex_split_simple("_", key, 0, 0);
 		int status = get_task_status(split[1]);
 		g_strfreev(split);
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.g_task.background[status] = &g_array_index(backgrounds, Background, id);
 		panel_config.g_task.config_background_mask |= (1<<status);
 		if (status == TASK_NORMAL) panel_config.g_task.area.bg = panel_config.g_task.background[TASK_NORMAL];
@@ -602,8 +604,8 @@ void add_entry (char *key, char *value)
 		if (value3) systray.area.paddingx = atoi (value3);
 	}
 	else if (strcmp (key, "systray_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		systray.area.bg = &g_array_index(backgrounds, Background, id);
 	}
 	else if (strcmp(key, "systray_sort") == 0) {
@@ -637,8 +639,8 @@ void add_entry (char *key, char *value)
 		if (value3) panel_config.launcher.area.paddingx = atoi (value3);
 	}
 	else if (strcmp (key, "launcher_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		panel_config.launcher.area.bg = &g_array_index(backgrounds, Background, id);
 	}
 	else if (strcmp(key, "launcher_icon_size") == 0) {
@@ -687,8 +689,8 @@ void add_entry (char *key, char *value)
 		if (value2) g_tooltip.paddingy = atoi(value2);
 	}
 	else if (strcmp (key, "tooltip_background_id") == 0) {
-		int id = atoi (value);
-		id = (id < backgrounds->len && id >= 0) ? id : 0;
+	  uint32_t id = (uint32_t)atoi (value);
+	  id = id < backgrounds->len ? id : 0;
 		g_tooltip.bg = &g_array_index(backgrounds, Background, id);
 	}
 	else if (strcmp (key, "tooltip_font_color") == 0) {
