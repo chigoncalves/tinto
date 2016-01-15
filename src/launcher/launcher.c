@@ -18,7 +18,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
-#include "conf.h" // For system checks.
+#include "conf.h" // For system checks and `UNUSED'.
 
 #include <string.h>
 #include <stdio.h>
@@ -35,7 +35,7 @@
 
 #ifdef HAS_RSVG
 #include <librsvg/rsvg.h>
-#include <librsvg/rsvg-cairo.h>
+
 #endif // HAS_RSVG
 
 #include "window.h"
@@ -350,8 +350,8 @@ const char* launcher_icon_get_tooltip_text(void *obj)
 	return launcherIcon->icon_tooltip;
 }
 
-void draw_launcher_icon(void *obj, cairo_t *c)
-{
+void draw_launcher_icon(void *obj, cairo_t *c) {
+  UNUSED (c);
 	LauncherIcon *launcherIcon = (LauncherIcon*)obj;
 
 	Imlib_Image icon_scaled = launcherIcon->icon_scaled;

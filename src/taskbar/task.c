@@ -81,8 +81,8 @@ Task *add_task (Window win)
 	GPtrArray* task_group = g_ptr_array_new();
 	Taskbar *tskbar;
 	Task *new_tsk2=0;
-	int j;
-	for (j=0 ; j < panel1[monitor].nb_desktop ; j++) {
+
+	for (uint32_t j=0, desktop_count = panel1[monitor].nb_desktop; j < desktop_count ; j++) {
 		if (new_tsk.desktop != ALLDESKTOP && new_tsk.desktop != j) continue;
 
 		tskbar = &panel1[monitor].taskbar[j];
@@ -96,7 +96,7 @@ Task *add_task (Window win)
 		new_tsk2->win_w = new_tsk.win_w;
 		new_tsk2->win_h = new_tsk.win_h;
 		new_tsk2->current_state = -1;  // to update the current state later in set_task_state...
-		if (new_tsk2->desktop == ALLDESKTOP && server.desktop != j) {
+		if (new_tsk2->desktop == ALLDESKTOP && server.desktop != (int)j) {
 			// hide ALLDESKTOP task on non-current desktop
 			new_tsk2->area.on_screen = 0;
 		}
@@ -160,11 +160,10 @@ void remove_task (Task *tsk)
 		}
 	}
 
-	int i;
 	Task *tsk2;
 	Taskbar *tskbar;
 	GPtrArray* task_group = g_hash_table_lookup(win_to_task_table, &win);
-	for (i=0; i<task_group->len; ++i) {
+	for (size_t i = 0; i<task_group->len; ++i) {
 		tsk2 = g_ptr_array_index(task_group, i);
 		tskbar = tsk2->area.parent;
 		tskbar->area.list = g_slist_remove(tskbar->area.list, tsk2);
@@ -206,7 +205,7 @@ int get_title(Task *tsk)
 	else title[0] = 0;
 	strcat(title, name);
 	if (name) XFree (name);
-	
+
 	if (tsk->title) {
 		// check unecessary title change
 		if (strcmp(tsk->title, title) == 0) {
@@ -215,13 +214,12 @@ int get_title(Task *tsk)
 		}
 		else
 			free(tsk->title);
-	} 
+	}
 
 	tsk->title = title;
 	GPtrArray* task_group = task_get_tasks(tsk->win);
 	if (task_group) {
-		int i;
-		for (i=0; i<task_group->len; ++i) {
+		for (size_t i = 0; i<task_group->len; ++i) {
 			Task* tsk2 = g_ptr_array_index(task_group, i);
 			tsk2->title = tsk->title;
 			set_task_redraw(tsk2);
@@ -235,7 +233,7 @@ void get_icon (Task *tsk)
 {
 	Panel *panel = tsk->area.panel;
 	if (!panel->g_task.icon) return;
-	int i;
+	size_t i;
 	Imlib_Image img = NULL;
 	XWMHints *hints = 0;
 	gulong *data = 0;
@@ -249,7 +247,7 @@ void get_icon (Task *tsk)
 		}
 	}
 
-	data = server_get_property (tsk->win, server.atom._NET_WM_ICON, XA_CARDINAL, &i);
+	data = server_get_property (tsk->win, server.atom._NET_WM_ICON, XA_CARDINAL, (int*)&i);
 	if (data) {
 		// get ARGB icon
 		int w, h;
@@ -258,7 +256,7 @@ void get_icon (Task *tsk)
 		tmp_data = get_best_icon (data, get_icon_count (data, i), i, &w, &h, panel->g_task.icon_size1);
 #ifdef __x86_64__
 		DATA32 icon_data[w * h];
-		int length = w * h;
+		size_t length = w * h;
 		for (i = 0; i < length; ++i)
 			icon_data[i] =  tmp_data[i];
 		img = imlib_create_image_using_copied_data (w, h, icon_data);
@@ -409,7 +407,7 @@ void on_change_task (void *obj)
 
 	long value[] = { panel->posx+tsk->area.posx, panel->posy+tsk->area.posy, tsk->area.width, tsk->area.height };
 	XChangeProperty (server.dsp, tsk->win, server.atom._NET_WM_ICON_GEOMETRY, XA_CARDINAL, 32, PropModeReplace, (unsigned char*)value, 4);
-	
+
 	// reset Pixmap when position/size changed
 	set_task_redraw(tsk);
 }
@@ -520,8 +518,7 @@ void set_task_state(Task *tsk, int state)
 	if (tsk->current_state != state || hide_task_diff_monitor) {
 		GPtrArray* task_group = task_get_tasks(tsk->win);
 		if (task_group) {
-			int i;
-			for (i=0; i<task_group->len; ++i) {
+			for (size_t i=0; i<task_group->len; ++i) {
 				Task* tsk1 = g_ptr_array_index(task_group, i);
 				tsk1->current_state = state;
 				tsk1->area.bg = panel1[0].g_task.background[state];
@@ -568,8 +565,8 @@ void set_task_redraw(Task* tsk)
 }
 
 
-void blink_urgent(void* arg)
-{
+void blink_urgent(void* arg) {
+  UNUSED (arg);
 	GSList* urgent_task = urgent_list;
 	while (urgent_task) {
 		Task* t = urgent_task->data;

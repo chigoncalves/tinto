@@ -15,6 +15,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h" // For `UNUSED'.
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -101,8 +103,8 @@ void tooltip_trigger_show(Area* area, Panel* p, XEvent *e)
 }
 
 
-void tooltip_show(void* arg)
-{
+void tooltip_show(void* arg) {
+  UNUSED (arg);
 	int mx, my;
 	Window w;
 	XTranslateCoordinates( server.dsp, server.root_win, g_tooltip.panel->main_win, x, y, &mx, &my, &w);
@@ -259,8 +261,9 @@ void tooltip_update()
 }
 
 
-void tooltip_trigger_hide(Tooltip* tooltip)
-{
+void tooltip_trigger_hide(Tooltip* tooltip) {
+  UNUSED (tooltip);
+
 	if (g_tooltip.mapped) {
 		tooltip_copy_text(0);
 		start_hide_timeout();
@@ -272,8 +275,8 @@ void tooltip_trigger_hide(Tooltip* tooltip)
 }
 
 
-void tooltip_hide(void* arg)
-{
+void tooltip_hide(void* arg) {
+  UNUSED (arg);
 	if (g_tooltip.mapped) {
 		g_tooltip.mapped = False;
 		XUnmapWindow(server.dsp, g_tooltip.window);

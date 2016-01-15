@@ -17,7 +17,10 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h"
+
 #include <string.h>
+#include <strings.h> // For `strcasecmp'.
 #include <stdio.h>
 #include <stdlib.h>
 #include <cairo.h>
@@ -66,8 +69,8 @@ int battery_found;
 int apm_fd;
 #endif
 
-void update_battery_tick(void* arg)
-{
+void update_battery_tick(void* arg) {
+  UNUSED (arg);
 	if (!battery_enabled)
 		return;
 
@@ -75,7 +78,7 @@ void update_battery_tick(void* arg)
 	int old_percentage = battery_state.percentage;
 	int16_t old_hours = battery_state.time.hours;
 	int8_t old_minutes = battery_state.time.minutes;
-	
+
 	if (update_battery() != 0) {
 		// Reconfigure
 		init_battery();
@@ -523,7 +526,7 @@ int resize_battery(void *obj)
 	int ret = 0;
 
 	battery->area.redraw = 1;
-	
+
 	snprintf(buf_bat_percentage, sizeof(buf_bat_percentage), "%d%%", battery_state.percentage);
 	if (battery_state.state == BATTERY_FULL) {
 		strcpy(buf_bat_time, "Full");

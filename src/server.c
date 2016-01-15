@@ -214,9 +214,8 @@ void get_root_pixmap()
 
 	unsigned long *res;
 	Atom pixmap_atoms[] = { server.atom._XROOTPMAP_ID, server.atom._XROOTMAP_ID };
-	int i;
 
-	for (i=0; i<sizeof(pixmap_atoms)/sizeof(Atom); ++i) {
+	for (size_t i = 0, sz = sizeof pixmap_atoms / sizeof (Atom); i < sz; ++i) {
 		res = server_get_property (server.root_win, pixmap_atoms[i], XA_PIXMAP, 0);
 		if (res) {
 			ret = *((Pixmap*)res);

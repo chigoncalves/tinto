@@ -15,11 +15,14 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL RED HAT
  * BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN 
+ * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * Author:  Owen Taylor, Red Hat, Inc.
  */
+
+#include "conf.h"
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,8 +49,8 @@ struct _XSettingsClient
 };
 
 
-void xsettings_notify_cb (const char *name, XSettingsAction action, XSettingsSetting *setting, void *data)
-{
+void xsettings_notify_cb (const char *name, XSettingsAction action, XSettingsSetting *setting, void *data) {
+  UNUSED (data);
 	//printf("xsettings_notify_cb\n");
 	if ((action == XSETTINGS_ACTION_NEW || action == XSETTINGS_ACTION_CHANGED) && name != NULL && setting != NULL) {
 		if (!strcmp(name, "Net/IconThemeName") && setting->type == XSETTINGS_TYPE_STRING) {
@@ -57,7 +60,7 @@ void xsettings_notify_cb (const char *name, XSettingsAction action, XSettingsSet
 				free(icon_theme_name_xsettings);
 			}
 			icon_theme_name_xsettings = strdup(setting->data.v_string);
-			
+
 			int i;
 			for (i = 0 ; i < nb_panel ; i++) {
 				Launcher *launcher = &panel1[i].launcher;
@@ -108,14 +111,16 @@ static void notify_changes (XSettingsClient *client, XSettingsList *old_list)
 }
 
 
-static int ignore_errors (Display *display, XErrorEvent *event)
-{
-	return True;
+static int ignore_errors (Display *display, XErrorEvent *event) {
+  UNUSED (display);
+  UNUSED (event);
+
+  return True;
 }
 
 static char local_byte_order = '\0';
 
-#define BYTES_LEFT(buffer) ((buffer)->data + (buffer)->len - (buffer)->pos)
+#define BYTES_LEFT(buffer) ((size_t)((buffer)->data + (buffer)->len - (buffer)->pos))
 
 static XSettingsResult fetch_card16 (XSettingsBuffer *buffer, CARD16 *result)
 {
@@ -136,10 +141,10 @@ static XSettingsResult fetch_card16 (XSettingsBuffer *buffer, CARD16 *result)
 }
 
 
-static XSettingsResult fetch_ushort (XSettingsBuffer *buffer, unsigned short  *result) 
+static XSettingsResult fetch_ushort (XSettingsBuffer *buffer, unsigned short  *result)
 {
 	CARD16 x;
-	XSettingsResult r;  
+	XSettingsResult r;
 
 	r = fetch_card16 (buffer, &x);
 	if (r == XSETTINGS_SUCCESS)
@@ -396,7 +401,7 @@ static void check_manager_window (XSettingsClient *client)
 }
 
 
-XSettingsClient *xsettings_client_new (Display *display, int screen, XSettingsNotifyFunc notify, XSettingsWatchFunc watch, void *cb_data) 
+XSettingsClient *xsettings_client_new (Display *display, int screen, XSettingsNotifyFunc notify, XSettingsWatchFunc watch, void *cb_data)
 {
 	XSettingsClient *client;
 
@@ -478,4 +483,3 @@ Bool xsettings_client_process_event (XSettingsClient *client, XEvent *xev)
 
 	return False;
 }
-

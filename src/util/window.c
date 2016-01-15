@@ -242,7 +242,7 @@ Window window_get_active ()
 
 int window_is_active (Window win)
 {
-	return (win == get_property32(server.root_win, server.atom._NET_ACTIVE_WINDOW, XA_WINDOW));
+  return (win == (unsigned long)get_property32(server.root_win, server.atom._NET_ACTIVE_WINDOW, XA_WINDOW));
 }
 
 
@@ -359,5 +359,3 @@ void get_text_size2(PangoFontDescription *font, int *height_ink, int *height, in
 	cairo_surface_destroy (cs);
 	XFreePixmap (server.dsp, pmap);
 }
-
-

@@ -17,6 +17,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h"
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -260,8 +262,10 @@ void init_taskbar_panel(void *p)
 }
 
 
-void taskbar_remove_task(gpointer key, gpointer value, gpointer user_data)
-{
+void taskbar_remove_task(gpointer key, gpointer value, gpointer user_data) {
+  UNUSED (value);
+  UNUSED (user_data);
+
 	remove_task(task_get_task(*(Window*)key));
 }
 
@@ -314,11 +318,11 @@ void task_refresh_tasklist ()
 }
 
 
-void draw_taskbar (void *obj, cairo_t *c)
-{
+void draw_taskbar (void *obj, cairo_t *c) {
+  UNUSED (c);
 	Taskbar *taskbar = obj;
 	int state = (taskbar->desktop == server.desktop) ? TASKBAR_ACTIVE : TASKBAR_NORMAL;
-	
+
 	taskbar->state_pix[state] = taskbar->area.pix;
 }
 
@@ -332,7 +336,7 @@ int resize_taskbar(void *obj)
 	//printf("resize_taskbar %d %d\n", taskbar->area.posx, taskbar->area.posy);
 	if (panel_horizontal) {
 		resize_by_layout(obj, panel->g_task.maximum_width);
-		
+
 		text_width = panel->g_task.maximum_width;
 		GSList *l = taskbar->area.list;
 		if (taskbarname_enabled) l = l->next;
@@ -346,7 +350,7 @@ int resize_taskbar(void *obj)
 	}
 	else {
 		resize_by_layout(obj, panel->g_task.maximum_height);
-		
+
 		taskbar->text_width = taskbar->area.width - (2 * panel->g_taskbar.area.paddingy) - panel->g_task.text_posx -	panel->g_task.area.bg->border.width - panel->g_task.area.paddingx;
 	}
 	return 0;
@@ -376,7 +380,7 @@ void set_taskbar_state(Taskbar *tskbar, int state)
 		tskbar->bar_name.area.bg = panel1[0].g_taskbar.background_name[state];
 		tskbar->bar_name.area.pix = tskbar->bar_name.state_pix[state];
 	}
-	if (panel_mode != MULTI_DESKTOP) { 
+	if (panel_mode != MULTI_DESKTOP) {
 		if (state == TASKBAR_NORMAL)
 			tskbar->area.on_screen = 0;
 		else
@@ -542,12 +546,11 @@ void sort_taskbar_for_win(Window win)
 
 	GPtrArray* task_group = task_get_tasks(win);
 	if (task_group) {
-		int i;
 		Task* tsk0 = g_ptr_array_index(task_group, 0);
 		if (tsk0) {
 			window_get_coordinates(win, &tsk0->win_x, &tsk0->win_y, &tsk0->win_w, &tsk0->win_h);
 		}
-		for (i = 0; i < task_group->len; ++i) {
+		for (size_t i = 0; i < task_group->len; ++i) {
 			Task* tsk = g_ptr_array_index(task_group, i);
 			tsk->win_x = tsk0->win_x;
 			tsk->win_y = tsk0->win_y;

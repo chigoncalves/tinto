@@ -17,6 +17,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h" // For `UNUSED'.
+
 #include <string.h>
 #include <stdio.h>
 #include <cairo.h>
@@ -93,8 +95,8 @@ void cleanup_clock()
 }
 
 
-void update_clocks_sec(void* arg)
-{
+void update_clocks_sec(void* arg) {
+  UNUSED (arg);
 	gettimeofday(&time_clock, 0);
 	int i;
 	if (time1_format) {
@@ -104,8 +106,8 @@ void update_clocks_sec(void* arg)
 	panel_refresh = 1;
 }
 
-void update_clocks_min(void* arg)
-{
+void update_clocks_min(void* arg) {
+  UNUSED (arg);
 	// remember old_sec because after suspend/hibernate the clock should be updated directly, and not
 	// on next minute change
 	time_t old_sec = time_clock.tv_sec;
@@ -132,8 +134,8 @@ struct tm* clock_gettime_for_tz(const char* timezone) {
 	else return localtime(&time_clock.tv_sec);
 }
 
-const char* clock_get_tooltip(void* obj)
-{
+const char* clock_get_tooltip(void* obj) {
+  UNUSED (obj);
 	strftime(buf_tooltip, sizeof(buf_tooltip), time_tooltip_format, clock_gettime_for_tz(time_tooltip_timezone));
 	return buf_tooltip;
 }
@@ -164,7 +166,7 @@ void init_clock_panel(void *p)
 {
 	Panel *panel =(Panel*)p;
 	Clock *clock = &panel->clock;
-	
+
 	if (!time1_font_desc)
 		time1_font_desc = pango_font_description_from_string(DEFAULT_FONT);
 	if (!time2_font_desc)
@@ -229,7 +231,7 @@ int resize_clock (void *obj)
 	int time_height_ink, time_height, time_width, date_height_ink, date_height, date_width, ret = 0;
 
 	clock->area.redraw = 1;
-	
+
 	date_height = date_width = 0;
 	strftime(buf_time, sizeof(buf_time), time1_format, clock_gettime_for_tz(time1_timezone));
 	get_text_size2(time1_font_desc, &time_height_ink, &time_height, &time_width, panel->area.height, panel->area.width, buf_time, strlen(buf_time));
@@ -283,4 +285,3 @@ void clock_action(int button)
 	}
 	tint_exec(command);
 }
-

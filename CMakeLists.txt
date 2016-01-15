@@ -3,7 +3,7 @@ if (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
 cmake_minimum_required (VERSION 3.0)
-project (tinto VERSION 0.0.1.3 LANGUAGES C )
+project (tinto VERSION 0.0.1.9 LANGUAGES C )
 
 list (APPEND CMAKE_MODULE_PATH ";${CMAKE_SOURCE_DIR}/cmake")
 include_directories ("${CMAKE_BINARY_DIR}/include" "${CMAKE_SOURCE_DIR}/include")
