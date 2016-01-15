@@ -131,13 +131,13 @@ static int sn_pipe[2];
 #ifdef HAS_SN
 static int error_trap_depth = 0;
 
-static void error_trap_push(SnDisplay *display, Display *xdisplay)
-{
+static void error_trap_push(SnDisplay *display, Display *xdisplay) {
+  UNUSED (xdisplay);
 	++error_trap_depth;
 }
 
-static void error_trap_pop(SnDisplay *display, Display *xdisplay)
-{
+static void error_trap_pop(SnDisplay *display, Display *xdisplay) {
+  UNUSED (display);
 	if (error_trap_depth == 0) {
 		fprintf(stderr, "Error trap underflow!\n");
 		return;
@@ -148,6 +148,7 @@ static void error_trap_pop(SnDisplay *display, Display *xdisplay)
 }
 
 static void sigchld_handler(int sig) {
+  UNUSED (sig);
 	if (!startup_notifications)
 		return;
 	if (!sn_pipe_valid)
