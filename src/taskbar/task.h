@@ -7,6 +7,8 @@
 #ifndef TASK_H
 #define TASK_H
 
+#include <stdint.h>
+
 #include <X11/Xlib.h>
 #include <pango/pangocairo.h>
 #include <Imlib2.h>
@@ -54,7 +56,7 @@ typedef struct {
 
 	// TODO: group task with list of windows here
 	Window win;
-	int  desktop;
+	uint32_t  desktop;
 	int current_state;
 	Imlib_Image icon[TASK_STATE_COUNT];
 	Pixmap state_pix[TASK_STATE_COUNT];
@@ -90,4 +92,3 @@ void add_urgent(Task *tsk);
 void del_urgent(Task *tsk);
 
 #endif
-

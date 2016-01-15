@@ -132,6 +132,7 @@ static int sn_pipe[2];
 static int error_trap_depth = 0;
 
 static void error_trap_push(SnDisplay *display, Display *xdisplay) {
+  UNUSED (display);
   UNUSED (xdisplay);
 	++error_trap_depth;
 }
@@ -359,7 +360,7 @@ void window_action (Task *tsk, int action)
 				set_active(tsk->win);
 			break;
 		case DESKTOP_RIGHT:
-			if (tsk->desktop == server.nb_desktop ) break;
+		  if (tsk->desktop == (uint32_t)server.nb_desktop ) break;
 			desk = tsk->desktop + 1;
 			windows_set_desktop(tsk->win, desk);
 			if (desk == server.desktop)
@@ -788,7 +789,7 @@ void event_property_notify (XEvent *e)
 			int desktop = window_get_desktop (win);
 			//printf("  Window desktop changed %d, %d\n", tsk->desktop, desktop);
 			// bug in windowmaker : send unecessary 'desktop changed' when focus changed
-			if (desktop != tsk->desktop) {
+			if (desktop != (int)tsk->desktop) {
 				remove_task (tsk);
 				tsk = add_task (win);
 				active_task();
@@ -1015,7 +1016,7 @@ void dnd_position(XClientMessageEvent *e)
 	XTranslateCoordinates(server.dsp, server.root_win, e->window, x, y, &mapX, &mapY, &child);
 	Task* task = click_task(panel, mapX, mapY);
 	if (task) {
-		if (task->desktop != server.desktop )
+	  if (task->desktop != (uint32_t)server.desktop )
 			set_desktop (task->desktop);
 		window_action(task, TOGGLE);
 	} else {
@@ -1082,10 +1083,6 @@ int main (int argc, char *argv[])
 	GSList *it;
 	struct timeval* timeout;
 	int hidden_dnd = 0;
-
-	// Make stdout/stderr flush after a newline (for some reason they don't even if tint2 is started from a terminal)
-	setlinebuf(stdout);
-	setlinebuf(stderr);
 
 start:
 	init (argc, argv);
@@ -1277,7 +1274,7 @@ start:
 
 					case ClientMessage:
 						ev = &e.xclient;
-						if (ev->data.l[1] == server.atom._NET_WM_CM_S0) {
+						if (ev->data.l[1] == (long)server.atom._NET_WM_CM_S0) {
 							if (ev->data.l[2] == None)
 								// Stop real_transparency
 								signal_pending = SIGUSR1;
