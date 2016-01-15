@@ -88,6 +88,7 @@ set( SOURCES src/config.c
 	     src/util/debug.c
              src/util/strnatcmp.c
              src/util/timer.c
+	     src/util/string-addins.c
              src/util/window.c )
 
 if (ENABLE_BATTERY)

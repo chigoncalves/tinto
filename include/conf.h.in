@@ -10,6 +10,10 @@
 #cmakedefine DEBUG 1
 #cmakedefine TINTO_DEVEL_MODE 1
 
+#ifndef UNUSED
+#define UNUSED(var) ((void)var)
+#endif
+
 #ifndef NUL
 #define NUL '\0'
 #endif // NUL
