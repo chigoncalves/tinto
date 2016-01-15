@@ -16,8 +16,10 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 #include "conf.h" // For system checks.
+#include "debug.h"
 
 #include <stdio.h>
+#include <stdint.h> // For `uint32_t'.
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
@@ -145,7 +147,7 @@ void cleanup_panel()
 
 void init_panel()
 {
-	int i, k;
+  int i;
 	Panel *p;
 
 	if (panel_config.monitor > (server.nb_monitor-1)) {
@@ -190,20 +192,20 @@ void init_panel()
 		p->area._resize = resize_panel;
 		init_panel_size_and_position(p);
 		// add childs according to panel_items
-		for (k=0 ; k < strlen(panel_items_order) ; k++) {
+		for (size_t k = 0, len = strlen (panel_items_order); k < len ; ++k) {
 			if (panel_items_order[k] == 'L')
 				init_launcher_panel(p);
-			if (panel_items_order[k] == 'T')
+			else if (panel_items_order[k] == 'T')
 				init_taskbar_panel(p);
 #ifdef ENABLE_BATTERY
-			if (panel_items_order[k] == 'B')
+			else if (panel_items_order[k] == 'B')
 				init_battery_panel(p);
 #endif
-			if (panel_items_order[k] == 'S' && systray_on_monitor(i, nb_panel)) {
+			else if (panel_items_order[k] == 'S' && systray_on_monitor(i, nb_panel)) {
 				init_systray_panel(p);
 				refresh_systray = 1;
 			}
-			if (panel_items_order[k] == 'C')
+			else if (panel_items_order[k] == 'C')
 				init_clock_panel(p);
 		}
 		set_panel_items_order(p);
