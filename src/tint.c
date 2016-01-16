@@ -399,7 +399,7 @@ int tint2_handles_click(Panel* panel, XButtonEvent* e)
 		else
 			return 0;
 	}
-	LauncherIcon *icon = click_launcher_icon(panel, point.x, point.y);
+	LauncherIcon *icon = click_launcher_icon(panel, point);
 	if (icon) {
 		if (e->button == 1) {
 			return 1;
@@ -411,7 +411,7 @@ int tint2_handles_click(Panel* panel, XButtonEvent* e)
 	Taskbar *tskbar = click_taskbar(panel, point);
 	if (tskbar && e->button == 1 && panel_mode == MULTI_DESKTOP)
 		return 1;
-	if (click_clock(panel, point.x, point.y)) {
+	if (click_clock(panel, point)) {
 		if ( (e->button == 1 && clock_lclick_command) || (e->button == 3 && clock_rclick_command) )
 			return 1;
 		else
@@ -558,7 +558,8 @@ void event_button_release (XEvent *e)
 			break;
 	}
 
-	if ( click_clock(panel, e->xbutton.x, e->xbutton.y)) {
+	point_t btn_location = { e->xbutton.x, e->xbutton.y};
+	if (click_clock (panel, btn_location)) {
 		clock_action(e->xbutton.button);
 		if (panel_layer == BOTTOM_LAYER)
 			XLowerWindow (server.dsp, panel->main_win);
@@ -566,8 +567,8 @@ void event_button_release (XEvent *e)
 		return;
 	}
 
-	if (e->xbutton.button == 1 && click_launcher(panel, e->xbutton.x, e->xbutton.y)) {
-		LauncherIcon *icon = click_launcher_icon(panel, e->xbutton.x, e->xbutton.y);
+	if (e->xbutton.button  && click_launcher (panel, btn_location)) {
+	  LauncherIcon *icon = click_launcher_icon (panel, btn_location);
 		if (icon) {
 			launcher_action(icon, e);
 		}
@@ -575,7 +576,7 @@ void event_button_release (XEvent *e)
 		return;
 	}
 
-	Taskbar *tskbar = click_taskbar(panel, (point_t) {e->xbutton.x, e->xbutton.y});
+	Taskbar *tskbar = click_taskbar (panel, btn_location);
 	if (!tskbar) {
 		// TODO: check better solution to keep window below
 		if (panel_layer == BOTTOM_LAYER)
@@ -598,7 +599,7 @@ void event_button_release (XEvent *e)
 	}
 
 	// action on task
-	window_action( click_task(panel, (point_t){e->xbutton.x, e->xbutton.y}), action);
+	window_action (click_task (panel, btn_location), action);
 
 	// to keep window below
 	if (panel_layer == BOTTOM_LAYER)
@@ -1023,7 +1024,7 @@ void dnd_position(XClientMessageEvent *e)
 			set_desktop (task->desktop);
 		window_action(task, TOGGLE);
 	} else {
-		LauncherIcon *icon = click_launcher_icon(panel, mapX, mapY);
+	  LauncherIcon *icon = click_launcher_icon (panel, (point_t){mapX, mapY});
 		if (icon) {
 			accept = 1;
 			dnd_launcher_exec = icon->cmd;
@@ -1226,7 +1227,7 @@ start:
 							event_button_motion_notify (&e);
 
 						Panel* panel = get_panel(e.xmotion.window);
-						Area* area = click_area(panel, e.xmotion.x, e.xmotion.y);
+						Area* area = click_area (panel, (point_t){e.xmotion.x, e.xmotion.y});
 						if (area->_get_tooltip_text)
 							tooltip_trigger_show(area, panel, &e);
 						else

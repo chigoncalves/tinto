@@ -156,11 +156,11 @@ Panel *get_panel(Window win);
 
 Taskbar *click_taskbar (Panel *panel, point_t point);
 Task *click_task (Panel *panel, point_t point);
-Launcher *click_launcher (Panel *panel, int x, int y);
-LauncherIcon *click_launcher_icon (Panel *panel, int x, int y);
-int click_padding(Panel *panel, int x, int y);
-int click_clock(Panel *panel, int x, int y);
-Area* click_area(Panel *panel, int x, int y);
+Launcher *click_launcher (Panel *panel, point_t point);
+LauncherIcon *click_launcher_icon (Panel *panel, point_t point);
+int click_padding(Panel *panel, point_t point); // NOTE: Unsed function.
+int click_clock(Panel *panel, point_t point);
+Area* click_area(Panel *panel, point_t point);
 
 void autohide_show(void* p);
 void autohide_hide(void* p);

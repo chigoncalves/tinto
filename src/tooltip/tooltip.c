@@ -103,13 +103,13 @@ void tooltip_trigger_show(Area* area, Panel* p, XEvent *e)
 }
 
 
-void tooltip_show(void* arg) {
+void tooltip_show (void* arg) {
   UNUSED (arg);
-	int mx, my;
+  point_t point;
 	Window w;
-	XTranslateCoordinates( server.dsp, server.root_win, g_tooltip.panel->main_win, x, y, &mx, &my, &w);
+	XTranslateCoordinates ( server.dsp, server.root_win, g_tooltip.panel->main_win, x, y, &point.x, &point.y, &w);
 	Area* area;
-	area = click_area(g_tooltip.panel, mx, my);
+	area = click_area (g_tooltip.panel, point);
 	if (!g_tooltip.mapped && area->_get_tooltip_text) {
 		tooltip_copy_text(area);
 		g_tooltip.mapped = True;

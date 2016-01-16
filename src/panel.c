@@ -676,19 +676,18 @@ Panel *get_panel(Window win)
 
 
 Taskbar *click_taskbar (Panel *panel, point_t point) {
-	Taskbar *tskbar;
-	int i;
+  Taskbar *tskbar = NULL;
 
 	if (panel_horizontal) {
-		for (i=0; i < panel->nb_desktop ; i++) {
-			tskbar = &panel->taskbar[i];
+		for (int i=0; i < panel->nb_desktop ; ++i) {
+		  tskbar = panel->taskbar + i;
 			if (tskbar->area.on_screen && point.x >= tskbar->area.posx && point.x <= (tskbar->area.posx + tskbar->area.width))
 				return tskbar;
 		}
 	}
 	else {
-		for (i=0; i < panel->nb_desktop ; i++) {
-			tskbar = &panel->taskbar[i];
+		for (int i = 0; i < panel->nb_desktop ; ++i) {
+		  tskbar = panel->taskbar + i;
 			if (tskbar->area.on_screen && point.y >= tskbar->area.posy && point.y <= (tskbar->area.posy + tskbar->area.height))
 				return tskbar;
 		}
@@ -730,36 +729,40 @@ Task *click_task (Panel *panel, point_t point)
 }
 
 
-Launcher *click_launcher (Panel *panel, int x, int y)
+Launcher *click_launcher (Panel *panel, point_t point)
 {
 	Launcher *launcher = &panel->launcher;
 
 	if (panel_horizontal) {
-		if (launcher->area.on_screen && x >= launcher->area.posx && x <= (launcher->area.posx + launcher->area.width))
-			return launcher;
+		if (launcher->area.on_screen && point.x >= launcher->area.posx
+		    && point.x <= (launcher->area.posx + launcher->area.width)) {
+		  return launcher;
+		}
 	}
 	else {
-		if (launcher->area.on_screen && y >= launcher->area.posy && y <= (launcher->area.posy + launcher->area.height))
-			return launcher;
+		if (launcher->area.on_screen && point.y >= launcher->area.posy
+		    && point.y <= (launcher->area.posy + launcher->area.height)) {
+		  return launcher;
+		}
 	}
 	return NULL;
 }
 
 
-LauncherIcon *click_launcher_icon (Panel *panel, int x, int y)
+LauncherIcon *click_launcher_icon (Panel *panel, point_t point)
 {
 	GSList *l0;
 	Launcher *launcher;
 
-	//printf("Click x=%d y=%d\n", x, y);
-	if ( (launcher = click_launcher(panel, x, y)) ) {
+	if ( (launcher = click_launcher(panel, point)) ) {
 		LauncherIcon *icon;
 		for (l0 = launcher->list_icons; l0 ; l0 = l0->next) {
 			icon = l0->data;
-			if (x >= (launcher->area.posx + icon->x) && x <= (launcher->area.posx + icon->x + icon->icon_size) &&
-				y >= (launcher->area.posy + icon->y) && y <= (launcher->area.posy + icon->y + icon->icon_size)) {
-				//printf("Hit rect x=%d y=%d xmax=%d ymax=%d\n", launcher->area.posx + icon->x, launcher->area.posy + icon->y, launcher->area.posx + icon->x + icon->width, launcher->area.posy + icon->y + icon->height);
-				return icon;
+			if (point.x >= (launcher->area.posx + icon->x)
+			    && point.x <= (launcher->area.posx + icon->x + icon->icon_size) &&
+			    point.y >= (launcher->area.posy + icon->y)
+			    && point.y <= (launcher->area.posy + icon->y + icon->icon_size)) {
+			  return icon;
 			}
 		}
 	}
@@ -767,36 +770,39 @@ LauncherIcon *click_launcher_icon (Panel *panel, int x, int y)
 }
 
 
-int click_padding(Panel *panel, int x, int y)
+// NOTE: This function is not being used by anyone.
+int click_padding(Panel *panel, point_t point)
 {
 	if (panel_horizontal) {
-		if (x < panel->area.paddingxlr || x > panel->area.width-panel->area.paddingxlr)
-		return 1;
+		if (point.x < panel->area.paddingxlr || point.x > panel->area.width-panel->area.paddingxlr)
+		  return 1;
 	}
 	else {
-		if (y < panel->area.paddingxlr || y > panel->area.height-panel->area.paddingxlr)
-		return 1;
+		if (point.y < panel->area.paddingxlr || point.y > panel->area.height-panel->area.paddingxlr)
+		  return 1;
 	}
 	return 0;
 }
 
 
-int click_clock(Panel *panel, int x, int y)
-{
+int click_clock (Panel *panel, point_t point) {
 	Clock clk = panel->clock;
 	if (panel_horizontal) {
-		if (clk.area.on_screen && x >= clk.area.posx && x <= (clk.area.posx + clk.area.width))
-			return TRUE;
+		if (clk.area.on_screen && point.x >= clk.area.posx &&
+		    point.x <= (clk.area.posx + clk.area.width)) {
+		  return TRUE;
+		}
 	} else {
-		if (clk.area.on_screen && y >= clk.area.posy && y <= (clk.area.posy + clk.area.height))
-			return TRUE;
+		if (clk.area.on_screen && point.y >= clk.area.posy
+		    && point.y <= (clk.area.posy + clk.area.height)) {
+		  return TRUE;
+		}
 	}
 	return FALSE;
 }
 
 
-Area* click_area(Panel *panel, int x, int y)
-{
+Area* click_area (Panel *panel, point_t point) {
 	Area* result = &panel->area;
 	Area* new_result = result;
 	do {
@@ -804,8 +810,8 @@ Area* click_area(Panel *panel, int x, int y)
 		GSList* it = result->list;
 		while (it) {
 			Area* a = it->data;
-			if (a->on_screen && x >= a->posx && x <= (a->posx + a->width)
-					&& y >= a->posy && y <= (a->posy + a->height)) {
+			if (a->on_screen && point.x >= a->posx && point.x <= (a->posx + a->width)
+					&& point.y >= a->posy && point.y <= (a->posy + a->height)) {
 				new_result = a;
 				break;
 			}
