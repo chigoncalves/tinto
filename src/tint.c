@@ -81,7 +81,7 @@ void init (int argc, char *argv[])
 	default_launcher();
 	default_taskbar();
 	default_tooltip();
-	default_panel();
+	panel_default ();
 
 	// read options
 	for (i = 1; i < argc; ++i) {
@@ -267,7 +267,7 @@ void cleanup()
 #ifdef ENABLE_BATTERY
 	cleanup_battery();
 #endif
-	cleanup_panel();
+	panel_cleanup ();
 	cleanup_config();
 
 	if (default_icon) {
@@ -386,7 +386,7 @@ void window_action (Task *tsk, int action)
 int tint2_handles_click(Panel* panel, XButtonEvent* e)
 {
   point_t point = { .x = e->x, .y = e-> y };
-	Task* task = click_task(panel, point);
+	Task* task = panel_click_task(panel, point);
 	if (task) {
 		if(   (e->button == 1 && mouse_left != 0)
 			 || (e->button == 2 && mouse_middle != 0)
@@ -399,7 +399,7 @@ int tint2_handles_click(Panel* panel, XButtonEvent* e)
 		else
 			return 0;
 	}
-	LauncherIcon *icon = click_launcher_icon(panel, point);
+	LauncherIcon *icon = panel_click_launcher_icon(panel, point);
 	if (icon) {
 		if (e->button == 1) {
 			return 1;
@@ -408,10 +408,10 @@ int tint2_handles_click(Panel* panel, XButtonEvent* e)
 		}
 	}
 	// no launcher/task clicked --> check if taskbar clicked
-	Taskbar *tskbar = click_taskbar(panel, point);
+	Taskbar *tskbar = panel_click_taskbar(panel, point);
 	if (tskbar && e->button == 1 && panel_mode == MULTI_DESKTOP)
 		return 1;
-	if (click_clock(panel, point)) {
+	if (panel_click_clock(panel, point)) {
 		if ( (e->button == 1 && clock_lclick_command) || (e->button == 3 && clock_rclick_command) )
 			return 1;
 		else
@@ -438,7 +438,7 @@ void forward_click(XEvent* e)
 
 void event_button_press (XEvent *e)
 {
-	Panel *panel = get_panel(e->xany.window);
+	Panel *panel = panel_get(e->xany.window);
 	if (!panel) return;
 
 
@@ -447,7 +447,7 @@ void event_button_press (XEvent *e)
 		return;
 	}
 
-	task_drag = click_task(panel, (point_t){e->xbutton.x, e->xbutton.y});
+	task_drag = panel_click_task(panel, (point_t){e->xbutton.x, e->xbutton.y});
 
 	if (panel_layer == BOTTOM_LAYER)
 		XLowerWindow (server.dsp, panel->main_win);
@@ -455,18 +455,18 @@ void event_button_press (XEvent *e)
 
 void event_button_motion_notify (XEvent *e)
 {
-	Panel * panel = get_panel(e->xany.window);
+	Panel * panel = panel_get(e->xany.window);
 	if(!panel || !task_drag)
 		return;
 
 	// Find the taskbar on the event's location
 	point_t point = {e->xbutton.x, e->xbutton.y};
-	Taskbar * event_taskbar = click_taskbar(panel, point);
+	Taskbar * event_taskbar = panel_click_taskbar(panel, point);
 	if(event_taskbar == NULL)
 		return;
 
 	// Find the task on the event's location
-	Task * event_task = click_task(panel, point);
+	Task * event_task = panel_click_task(panel, point);
 
 	// If the event takes place on the same taskbar as the task being dragged
 	if(event_taskbar == task_drag->area.parent)	{
@@ -522,7 +522,7 @@ void event_button_motion_notify (XEvent *e)
 
 void event_button_release (XEvent *e)
 {
-	Panel *panel = get_panel(e->xany.window);
+	Panel *panel = panel_get (e->xany.window);
 	if (!panel) return;
 
 	if (wm_menu && !tint2_handles_click(panel, &e->xbutton)) {
@@ -559,7 +559,7 @@ void event_button_release (XEvent *e)
 	}
 
 	point_t btn_location = { e->xbutton.x, e->xbutton.y};
-	if (click_clock (panel, btn_location)) {
+	if (panel_click_clock (panel, btn_location)) {
 		clock_action(e->xbutton.button);
 		if (panel_layer == BOTTOM_LAYER)
 			XLowerWindow (server.dsp, panel->main_win);
@@ -567,8 +567,8 @@ void event_button_release (XEvent *e)
 		return;
 	}
 
-	if (e->xbutton.button  && click_launcher (panel, btn_location)) {
-	  LauncherIcon *icon = click_launcher_icon (panel, btn_location);
+	if (e->xbutton.button  && panel_click_launcher (panel, btn_location)) {
+	  LauncherIcon *icon = panel_click_launcher_icon (panel, btn_location);
 		if (icon) {
 			launcher_action(icon, e);
 		}
@@ -576,7 +576,7 @@ void event_button_release (XEvent *e)
 		return;
 	}
 
-	Taskbar *tskbar = click_taskbar (panel, btn_location);
+	Taskbar *tskbar = panel_click_taskbar (panel, btn_location);
 	if (!tskbar) {
 		// TODO: check better solution to keep window below
 		if (panel_layer == BOTTOM_LAYER)
@@ -599,7 +599,7 @@ void event_button_release (XEvent *e)
 	}
 
 	// action on task
-	window_action (click_task (panel, btn_location), action);
+	window_action (panel_click_task (panel, btn_location), action);
 
 	// to keep window below
 	if (panel_layer == BOTTOM_LAYER)
@@ -663,7 +663,7 @@ void event_property_notify (XEvent *e)
 			init_taskbar();
 			for (i=0 ; i < nb_panel ; i++) {
 				init_taskbar_panel(&panel1[i]);
-				set_panel_items_order(&panel1[i]);
+				panel_set_items_order (&panel1[i]);
 				visible_taskbar(&panel1[i]);
 				panel1[i].area.resize = 1;
 			}
@@ -726,7 +726,7 @@ void event_property_notify (XEvent *e)
 		else if (at == server.atom._XROOTPMAP_ID || at == server.atom._XROOTMAP_ID) {
 			// change Wallpaper
 			for (i=0 ; i < nb_panel ; i++) {
-				set_panel_background(&panel1[i]);
+				panel_set_background (&panel1[i]);
 			}
 			panel_refresh = 1;
 		}
@@ -816,7 +816,7 @@ void event_property_notify (XEvent *e)
 void event_expose (XEvent *e)
 {
 	Panel *panel;
-	panel = get_panel(e->xany.window);
+	panel = panel_get (e->xany.window);
 	if (!panel) return;
 	// TODO : one panel_refresh per panel ?
 	panel_refresh = 1;
@@ -1012,19 +1012,19 @@ void dnd_position(XClientMessageEvent *e)
 {
 	dnd_target_window = e->window;
 	int accept = 0;
-	Panel *panel = get_panel(e->window);
+	Panel *panel = panel_get (e->window);
 	int x, y, mapX, mapY;
 	Window child;
 	x = (e->data.l[2] >> 16) & 0xFFFF;
 	y = e->data.l[2] & 0xFFFF;
 	XTranslateCoordinates(server.dsp, server.root_win, e->window, x, y, &mapX, &mapY, &child);
-	Task* task = click_task(panel, (point_t){ mapX, mapY});
+	Task* task = panel_click_task(panel, (point_t){ mapX, mapY});
 	if (task) {
 	  if (task->desktop != (uint32_t)server.desktop )
 			set_desktop (task->desktop);
 		window_action(task, TOGGLE);
 	} else {
-	  LauncherIcon *icon = click_launcher_icon (panel, (point_t){mapX, mapY});
+	  LauncherIcon *icon = panel_click_launcher_icon (panel, (point_t){mapX, mapY});
 		if (icon) {
 			accept = 1;
 			dnd_launcher_exec = icon->cmd;
@@ -1106,7 +1106,7 @@ start:
 
 	init_X11_post_config();
 
-	init_panel();
+	panel_init ();
 	if (snapshot_path) {
 		get_snapshot(snapshot_path);
 		cleanup();
@@ -1191,16 +1191,16 @@ start:
 						sn_display_process_event(server.sn_dsp, &e);
 #endif // HAS_SN
 
-					panel = get_panel(e.xany.window);
+					panel = panel_get (e.xany.window);
 					if (panel && panel_autohide) {
 						if (e.type == EnterNotify)
-							autohide_trigger_show(panel);
+							panel_autohide_trigger_show(panel);
 						else if (e.type == LeaveNotify)
-							autohide_trigger_hide(panel);
+						  panel_autohide_trigger_hide (panel);
 						if (panel->is_hidden) {
 							if (e.type == ClientMessage && e.xclient.message_type == server.atom.XdndPosition) {
 								hidden_dnd = 1;
-								autohide_show(panel);
+								panel_autohide_show (panel);
 							}
 							else
 								continue;   // discard further processing of this event because the panel is not visible yet
@@ -1226,8 +1226,8 @@ start:
 						if (e.xmotion.state & button_mask)
 							event_button_motion_notify (&e);
 
-						Panel* panel = get_panel(e.xmotion.window);
-						Area* area = click_area (panel, (point_t){e.xmotion.x, e.xmotion.y});
+						Panel* panel = panel_get (e.xmotion.window);
+						Area* area = panel_click_area (panel, (point_t){e.xmotion.x, e.xmotion.y});
 						if (area->_get_tooltip_text)
 							tooltip_trigger_show(area, panel, &e);
 						else

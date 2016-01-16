@@ -77,8 +77,12 @@ GArray* backgrounds;
 
 Imlib_Image default_icon;
 
-void default_panel()
-{
+
+static int  panel_resize (void *self);
+static void panel_set_properties (Panel *p);
+static void panel_init_size_and_position (Panel *panel);
+
+void panel_default (void) {
 	panel1 = 0;
 	nb_panel = 0;
 	default_icon = NULL;
@@ -107,8 +111,7 @@ void default_panel()
 	g_array_append_val(backgrounds, transparent_bg);
 }
 
-void cleanup_panel()
-{
+void panel_cleanup (void) {
 	if (!panel1)
 		return;
 
@@ -145,8 +148,7 @@ void cleanup_panel()
 	panel_config.g_task.font_desc = NULL;
 }
 
-void init_panel()
-{
+void panel_init (void) {
   int i;
 	Panel *p;
 
@@ -189,8 +191,8 @@ void init_panel()
 		p->area.on_screen = 1;
 		p->area.resize = 1;
 		p->area.size_mode = SIZE_BY_LAYOUT;
-		p->area._resize = resize_panel;
-		init_panel_size_and_position(p);
+		p->area._resize = panel_resize;
+		panel_init_size_and_position (p);
 		// add childs according to panel_items
 		for (size_t k = 0, len = strlen (panel_items_order); k < len ; ++k) {
 			if (panel_items_order[k] == 'L')
@@ -208,7 +210,7 @@ void init_panel()
 			else if (panel_items_order[k] == 'C')
 				init_clock_panel(p);
 		}
-		set_panel_items_order(p);
+		panel_set_items_order (p);
 
 		// catch some events
 		XSetWindowAttributes att = { .colormap=server.colormap, .background_pixel=0, .border_pixel=0 };
@@ -227,15 +229,14 @@ void init_panel()
 			server.gc = XCreateGC(server.dsp, p->main_win, 0, &gcv);
 		}
 		//printf("panel %d : %d, %d, %d, %d\n", i, p->posx, p->posy, p->area.width, p->area.height);
-		set_panel_properties(p);
-		set_panel_background(p);
+		panel_set_properties (p);
+		panel_set_background (p);
 		if (snapshot_path == 0) {
 			// if we are not in 'snapshot' mode then map new panel
 			XMapWindow (server.dsp, p->main_win);
 		}
 
-		if (panel_autohide)
-			autohide_trigger_hide(p);
+		if (panel_autohide) panel_autohide_trigger_hide (p);
 
 		visible_taskbar(p);
 	}
@@ -245,8 +246,7 @@ void init_panel()
 }
 
 
-void init_panel_size_and_position(Panel *panel)
-{
+static void panel_init_size_and_position (Panel *panel) {
 	// detect panel size
 	if (panel_horizontal) {
 		if (panel->pourcentx)
@@ -323,7 +323,7 @@ void init_panel_size_and_position(Panel *panel)
 }
 
 
-int resize_panel(void *obj)
+static int panel_resize (void *obj)
 {
 	resize_by_layout(obj, 0);
 
@@ -479,9 +479,7 @@ void update_strut(Panel* p)
 	XChangeProperty (server.dsp, p->main_win, server.atom._NET_WM_STRUT_PARTIAL, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &struts, 12);
 }
 
-
-void set_panel_items_order(Panel *p)
-{
+void panel_set_items_order (Panel *p) {
 	int j;
 
 	if (p->area.list) {
@@ -514,8 +512,7 @@ void set_panel_items_order(Panel *p)
 }
 
 
-void set_panel_properties(Panel *p)
-{
+static void panel_set_properties (Panel *p) {
 	XStoreName (server.dsp, p->main_win, panel_window_name);
 	XSetIconName (server.dsp, p->main_win, panel_window_name);
 
@@ -591,7 +588,7 @@ void set_panel_properties(Panel *p)
 }
 
 
-void set_panel_background(Panel *p)
+void panel_set_background (Panel *p)
 {
 	if (p->area.pix) XFreePixmap (server.dsp, p->area.pix);
 	p->area.pix = XCreatePixmap (server.dsp, server.root_win, p->area.width, p->area.height, server.depth);
@@ -663,8 +660,7 @@ void set_panel_background(Panel *p)
 }
 
 
-Panel *get_panel(Window win)
-{
+Panel* panel_get (Window win) {
 
 	for (int i = 0 ; i < nb_panel ; ++i) {
 		if (panel1[i].main_win == win) {
@@ -675,7 +671,7 @@ Panel *get_panel(Window win)
 }
 
 
-Taskbar *click_taskbar (Panel *panel, point_t point) {
+Taskbar *panel_click_taskbar (Panel *panel, point_t point) {
   Taskbar *tskbar = NULL;
 
 	if (panel_horizontal) {
@@ -696,11 +692,11 @@ Taskbar *click_taskbar (Panel *panel, point_t point) {
 }
 
 
-Task *click_task (Panel *panel, point_t point)
+Task* panel_click_task (Panel *panel, point_t point)
 {
 	GSList *l0;
 
-  Taskbar* tskbar = click_taskbar(panel, point);
+  Taskbar* tskbar = panel_click_taskbar (panel, point);
 	if (tskbar) {
 		if (panel_horizontal) {
 			Task *tsk;
@@ -729,7 +725,7 @@ Task *click_task (Panel *panel, point_t point)
 }
 
 
-Launcher *click_launcher (Panel *panel, point_t point)
+Launcher *panel_click_launcher (Panel *panel, point_t point)
 {
 	Launcher *launcher = &panel->launcher;
 
@@ -749,12 +745,12 @@ Launcher *click_launcher (Panel *panel, point_t point)
 }
 
 
-LauncherIcon *click_launcher_icon (Panel *panel, point_t point)
+LauncherIcon *panel_click_launcher_icon (Panel *panel, point_t point)
 {
 	GSList *l0;
 	Launcher *launcher;
 
-	if ( (launcher = click_launcher(panel, point)) ) {
+	if ( (launcher = panel_click_launcher (panel, point)) ) {
 		LauncherIcon *icon;
 		for (l0 = launcher->list_icons; l0 ; l0 = l0->next) {
 			icon = l0->data;
@@ -771,7 +767,7 @@ LauncherIcon *click_launcher_icon (Panel *panel, point_t point)
 
 
 // NOTE: This function is not being used by anyone.
-int click_padding(Panel *panel, point_t point)
+int panel_click_padding (Panel *panel, point_t point)
 {
 	if (panel_horizontal) {
 		if (point.x < panel->area.paddingxlr || point.x > panel->area.width-panel->area.paddingxlr)
@@ -785,7 +781,7 @@ int click_padding(Panel *panel, point_t point)
 }
 
 
-int click_clock (Panel *panel, point_t point) {
+int panel_click_clock (Panel *panel, point_t point) {
 	Clock clk = panel->clock;
 	if (panel_horizontal) {
 		if (clk.area.on_screen && point.x >= clk.area.posx &&
@@ -802,7 +798,7 @@ int click_clock (Panel *panel, point_t point) {
 }
 
 
-Area* click_area (Panel *panel, point_t point) {
+Area* panel_click_area (Panel *panel, point_t point) {
 	Area* result = &panel->area;
 	Area* new_result = result;
 	do {
@@ -828,7 +824,7 @@ void stop_autohide_timeout(Panel* p)
 }
 
 
-void autohide_show(void* p)
+void panel_autohide_show(void* p)
 {
 	Panel* panel = p;
 	stop_autohide_timeout(panel);
@@ -881,16 +877,14 @@ void autohide_hide(void* p)
 }
 
 
-void autohide_trigger_show(Panel* p)
-{
+void panel_autohide_trigger_show (Panel* p) {
 	if (!p)
 		return;
-	change_timeout(&p->autohide_timeout, panel_autohide_show_timeout, 0, autohide_show, p);
+	change_timeout(&p->autohide_timeout, panel_autohide_show_timeout, 0, panel_autohide_show, p);
 }
 
 
-void autohide_trigger_hide(Panel* p)
-{
+void panel_autohide_trigger_hide (Panel* p) {
 	if (!p)
 		return;
 

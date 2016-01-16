@@ -109,7 +109,7 @@ void tooltip_show (void* arg) {
 	Window w;
 	XTranslateCoordinates ( server.dsp, server.root_win, g_tooltip.panel->main_win, x, y, &point.x, &point.y, &w);
 	Area* area;
-	area = click_area (g_tooltip.panel, point);
+	area = panel_click_area (g_tooltip.panel, point);
 	if (!g_tooltip.mapped && area->_get_tooltip_text) {
 		tooltip_copy_text(area);
 		g_tooltip.mapped = True;

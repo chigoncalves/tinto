@@ -133,38 +133,34 @@ extern int  nb_panel;
 
 
 // default global data
-void default_panel();
+void panel_default (void);
 
 // freed memory
-void cleanup_panel();
+void panel_cleanup (void);
 
 // realloc panels according to number of monitor
 // use panel_config as default value
-void init_panel();
+void panel_init (void);
 
-void init_panel_size_and_position(Panel *panel);
-int  resize_panel(void *obj);
-
-void set_panel_items_order(Panel *p);
-void set_panel_properties(Panel *p);
+void panel_set_items_order (Panel *p);
 
 // draw background panel
-void set_panel_background(Panel *p);
+void panel_set_background (Panel *p);
 
 // detect witch panel
-Panel *get_panel(Window win);
+Panel* panel_get (Window win);
 
-Taskbar *click_taskbar (Panel *panel, point_t point);
-Task *click_task (Panel *panel, point_t point);
-Launcher *click_launcher (Panel *panel, point_t point);
-LauncherIcon *click_launcher_icon (Panel *panel, point_t point);
-int click_padding(Panel *panel, point_t point); // NOTE: Unsed function.
-int click_clock(Panel *panel, point_t point);
-Area* click_area(Panel *panel, point_t point);
+Taskbar* panel_click_taskbar (Panel *panel, point_t point);
+Task* panel_click_task (Panel *panel, point_t point);
+Launcher* panel_click_launcher (Panel *panel, point_t point);
+LauncherIcon* panel_click_launcher_icon (Panel *panel, point_t point);
+int panel_click_padding (Panel *panel, point_t point); // NOTE: Unused function.
+int panel_click_clock (Panel *panel, point_t point);
+Area* panel_click_area (Panel *panel, point_t point);
 
-void autohide_show(void* p);
-void autohide_hide(void* p);
-void autohide_trigger_show(Panel* p);
-void autohide_trigger_hide(Panel* p);
+void panel_autohide_show (void* p);
+void autohide_hide(void* p); // NOTE: cant refactor its name now.
+void panel_autohide_trigger_show (Panel* p);
+void panel_autohide_trigger_hide (Panel* p);
 
 #endif

@@ -605,7 +605,7 @@ void add_urgent(Task *tsk)
 
 	Panel *panel = tsk->area.panel;
 	if (panel->is_hidden)
-		autohide_show(panel);
+	  panel_autohide_show(panel);
 }
 
 
