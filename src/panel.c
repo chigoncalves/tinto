@@ -572,18 +572,20 @@ void set_panel_properties(Panel *p)
 	// Allow panel move and resize when tint2 reload config file
 	int minwidth = panel_autohide ? p->hidden_width : p->area.width;
 	int minheight = panel_autohide ? p->hidden_height : p->area.height;
-	XSizeHints size_hints;
-	size_hints.flags = PPosition|PMinSize|PMaxSize;
-	size_hints.min_width = minwidth;
-	size_hints.max_width = p->area.width;
-	size_hints.min_height = minheight;
-	size_hints.max_height = p->area.height;
+	XSizeHints size_hints = {
+	  .flags = PPosition | PMinSize | PMaxSize,
+	  .min_width = minwidth,
+	  .max_width = p->area.width,
+	  .min_height = minheight,
+	  .max_height = p->area.height,
+	};
+
 	XSetWMNormalHints(server.dsp, p->main_win, &size_hints);
 
 	// Set WM_CLASS
 	XClassHint* classhint = XAllocClassHint();
-	classhint->res_name = "tint2";
-	classhint->res_class = "Tint2";
+	classhint->res_name = PROJECT_NAME;
+	classhint->res_class = PROJECT_NAME;
 	XSetClassHint(server.dsp, p->main_win, classhint);
 	XFree(classhint);
 }
@@ -618,10 +620,9 @@ void set_panel_background(Panel *p)
 	}
 
 	// draw background panel
-	cairo_surface_t *cs;
-	cairo_t *c;
-	cs = cairo_xlib_surface_create (server.dsp, p->area.pix, server.visual, p->area.width, p->area.height);
-	c = cairo_create (cs);
+	cairo_surface_t *cs = cairo_xlib_surface_create (server.dsp, p->area.pix, server.visual, p->area.width, p->area.height);;
+	cairo_t *c  = cairo_create (cs);;
+
 	draw_background(&p->area, c);
 	cairo_destroy (c);
 	cairo_surface_destroy (cs);
@@ -664,32 +665,31 @@ void set_panel_background(Panel *p)
 
 Panel *get_panel(Window win)
 {
-	int i;
-	for (i=0 ; i < nb_panel ; i++) {
+
+	for (int i = 0 ; i < nb_panel ; ++i) {
 		if (panel1[i].main_win == win) {
-			return &panel1[i];
+			return panel1 + i;
 		}
 	}
 	return 0;
 }
 
 
-Taskbar *click_taskbar (Panel *panel, int x, int y)
-{
+Taskbar *click_taskbar (Panel *panel, point_t point) {
 	Taskbar *tskbar;
 	int i;
 
 	if (panel_horizontal) {
 		for (i=0; i < panel->nb_desktop ; i++) {
 			tskbar = &panel->taskbar[i];
-			if (tskbar->area.on_screen && x >= tskbar->area.posx && x <= (tskbar->area.posx + tskbar->area.width))
+			if (tskbar->area.on_screen && point.x >= tskbar->area.posx && point.x <= (tskbar->area.posx + tskbar->area.width))
 				return tskbar;
 		}
 	}
 	else {
 		for (i=0; i < panel->nb_desktop ; i++) {
 			tskbar = &panel->taskbar[i];
-			if (tskbar->area.on_screen && y >= tskbar->area.posy && y <= (tskbar->area.posy + tskbar->area.height))
+			if (tskbar->area.on_screen && point.y >= tskbar->area.posy && point.y <= (tskbar->area.posy + tskbar->area.height))
 				return tskbar;
 		}
 	}
@@ -697,19 +697,19 @@ Taskbar *click_taskbar (Panel *panel, int x, int y)
 }
 
 
-Task *click_task (Panel *panel, int x, int y)
+Task *click_task (Panel *panel, point_t point)
 {
 	GSList *l0;
-	Taskbar *tskbar;
 
-	if ( (tskbar = click_taskbar(panel, x, y)) ) {
+  Taskbar* tskbar = click_taskbar(panel, point);
+	if (tskbar) {
 		if (panel_horizontal) {
 			Task *tsk;
 			l0 = tskbar->area.list;
 			if (taskbarname_enabled) l0 = l0->next;
 			for (; l0 ; l0 = l0->next) {
 				tsk = l0->data;
-				if (tsk->area.on_screen && x >= tsk->area.posx && x <= (tsk->area.posx + tsk->area.width)) {
+				if (tsk->area.on_screen && point.x >= tsk->area.posx && point.x <= (tsk->area.posx + tsk->area.width)) {
 					return tsk;
 				}
 			}
@@ -720,7 +720,7 @@ Task *click_task (Panel *panel, int x, int y)
 			if (taskbarname_enabled) l0 = l0->next;
 			for (; l0 ; l0 = l0->next) {
 				tsk = l0->data;
-				if (tsk->area.on_screen && y >= tsk->area.posy && y <= (tsk->area.posy + tsk->area.height)) {
+				if (tsk->area.on_screen && point.y >= tsk->area.posy && point.y <= (tsk->area.posy + tsk->area.height)) {
 					return tsk;
 				}
 			}

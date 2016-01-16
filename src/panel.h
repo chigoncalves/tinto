@@ -17,6 +17,7 @@
 #include <sys/time.h>
 
 #include "common.h"
+#include "area.h"
 #include "clock.h"
 #include "task.h"
 #include "taskbar.h"
@@ -153,8 +154,8 @@ void set_panel_background(Panel *p);
 // detect witch panel
 Panel *get_panel(Window win);
 
-Taskbar *click_taskbar (Panel *panel, int x, int y);
-Task *click_task (Panel *panel, int x, int y);
+Taskbar *click_taskbar (Panel *panel, point_t point);
+Task *click_task (Panel *panel, point_t point);
 Launcher *click_launcher (Panel *panel, int x, int y);
 LauncherIcon *click_launcher_icon (Panel *panel, int x, int y);
 int click_padding(Panel *panel, int x, int y);

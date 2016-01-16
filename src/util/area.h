@@ -25,6 +25,11 @@
 #include <cairo-xlib.h>
 
 
+typedef struct {
+  int x;
+  int y;
+} point_t;
+
 typedef struct
 {
 	double color[3];
@@ -63,7 +68,7 @@ typedef struct {
 	// list of child : Area object
 	GSList *list;
 
-	// object visible on screen. 
+	// object visible on screen.
 	// An object (like systray) could be enabled but hidden (because no tray icon).
 	int on_screen;
 	// way to calculate the size (SIZE_BY_CONTENT or SIZE_BY_LAYOUT)
@@ -82,7 +87,7 @@ typedef struct {
 
 	// each object can overwrite following function
 	void (*_draw_foreground)(void *obj, cairo_t *c);
-	// update area's content and update size (width/heith). 
+	// update area's content and update size (width/heith).
 	// return '1' if size changed, '0' otherwise.
 	int (*_resize)(void *obj);
 	// after pos/size changed, the rendering engine will call _on_change_layout(Area*)
@@ -99,7 +104,7 @@ void size_by_content (Area *a);
 void size_by_layout (Area *a, int pos, int level);
 // draw background and foreground
 void refresh (Area *a);
- 
+
 // generic resize for SIZE_BY_LAYOUT objects
 int resize_by_layout(void *obj, int maximum_size);
 
@@ -124,4 +129,3 @@ void draw_rect(cairo_t *c, double x, double y, double w, double h, double r);
 // clear pixmap with transparent color
 void clear_pixmap(Pixmap p, int x, int y, int w, int h);
 #endif
-

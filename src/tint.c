@@ -385,7 +385,8 @@ void window_action (Task *tsk, int action)
 
 int tint2_handles_click(Panel* panel, XButtonEvent* e)
 {
-	Task* task = click_task(panel, e->x, e->y);
+  point_t point = { .x = e->x, .y = e-> y };
+	Task* task = click_task(panel, point);
 	if (task) {
 		if(   (e->button == 1 && mouse_left != 0)
 			 || (e->button == 2 && mouse_middle != 0)
@@ -398,7 +399,7 @@ int tint2_handles_click(Panel* panel, XButtonEvent* e)
 		else
 			return 0;
 	}
-	LauncherIcon *icon = click_launcher_icon(panel, e->x, e->y);
+	LauncherIcon *icon = click_launcher_icon(panel, point.x, point.y);
 	if (icon) {
 		if (e->button == 1) {
 			return 1;
@@ -407,10 +408,10 @@ int tint2_handles_click(Panel* panel, XButtonEvent* e)
 		}
 	}
 	// no launcher/task clicked --> check if taskbar clicked
-	Taskbar *tskbar = click_taskbar(panel, e->x, e->y);
+	Taskbar *tskbar = click_taskbar(panel, point);
 	if (tskbar && e->button == 1 && panel_mode == MULTI_DESKTOP)
 		return 1;
-	if (click_clock(panel, e->x, e->y)) {
+	if (click_clock(panel, point.x, point.y)) {
 		if ( (e->button == 1 && clock_lclick_command) || (e->button == 3 && clock_rclick_command) )
 			return 1;
 		else
@@ -445,7 +446,8 @@ void event_button_press (XEvent *e)
 		forward_click(e);
 		return;
 	}
-	task_drag = click_task(panel, e->xbutton.x, e->xbutton.y);
+
+	task_drag = click_task(panel, (point_t){e->xbutton.x, e->xbutton.y});
 
 	if (panel_layer == BOTTOM_LAYER)
 		XLowerWindow (server.dsp, panel->main_win);
@@ -458,12 +460,13 @@ void event_button_motion_notify (XEvent *e)
 		return;
 
 	// Find the taskbar on the event's location
-	Taskbar * event_taskbar = click_taskbar(panel, e->xbutton.x, e->xbutton.y);
+	point_t point = {e->xbutton.x, e->xbutton.y};
+	Taskbar * event_taskbar = click_taskbar(panel, point);
 	if(event_taskbar == NULL)
 		return;
 
 	// Find the task on the event's location
-	Task * event_task = click_task(panel, e->xbutton.x, e->xbutton.y);
+	Task * event_task = click_task(panel, point);
 
 	// If the event takes place on the same taskbar as the task being dragged
 	if(event_taskbar == task_drag->area.parent)	{
@@ -572,8 +575,8 @@ void event_button_release (XEvent *e)
 		return;
 	}
 
-	Taskbar *tskbar;
-	if ( !(tskbar = click_taskbar(panel, e->xbutton.x, e->xbutton.y)) ) {
+	Taskbar *tskbar = click_taskbar(panel, (point_t) {e->xbutton.x, e->xbutton.y});
+	if (!tskbar) {
 		// TODO: check better solution to keep window below
 		if (panel_layer == BOTTOM_LAYER)
 			XLowerWindow (server.dsp, panel->main_win);
@@ -595,7 +598,7 @@ void event_button_release (XEvent *e)
 	}
 
 	// action on task
-	window_action( click_task(panel, e->xbutton.x, e->xbutton.y), action);
+	window_action( click_task(panel, (point_t){e->xbutton.x, e->xbutton.y}), action);
 
 	// to keep window below
 	if (panel_layer == BOTTOM_LAYER)
@@ -1014,7 +1017,7 @@ void dnd_position(XClientMessageEvent *e)
 	x = (e->data.l[2] >> 16) & 0xFFFF;
 	y = e->data.l[2] & 0xFFFF;
 	XTranslateCoordinates(server.dsp, server.root_win, e->window, x, y, &mapX, &mapY, &child);
-	Task* task = click_task(panel, mapX, mapY);
+	Task* task = click_task(panel, (point_t){ mapX, mapY});
 	if (task) {
 	  if (task->desktop != (uint32_t)server.desktop )
 			set_desktop (task->desktop);
