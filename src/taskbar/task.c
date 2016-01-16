@@ -22,6 +22,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <stdio.h>
+#include <stdint.h> // For `uint32_t'.
 #include <stdlib.h>
 #include <string.h>
 #include <glib.h>
@@ -272,8 +273,8 @@ void get_icon (Task *tsk)
 				// get width, height and depth for the pixmap
 				Window root;
 				int  icon_x, icon_y;
-				uint border_width, bpp;
-				uint w, h;
+				uint32_t border_width, bpp;
+				uint32_t w, h;
 
 				//printf("  get pixmap\n");
 				XGetGeometry(server.dsp, hints->icon_pixmap, &root, &icon_x, &icon_y, &w, &h, &border_width, &bpp);

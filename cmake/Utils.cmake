@@ -10,7 +10,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   mark_as_advanced (NDEBUG TINTO_DEVEL_MODE)
 
   if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -Werror")
+    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -Werror -std=c99 -pedantic")
     if (ENABLE_ASAN)
       string (TOLOWER ${ENABLE_SAN} ENABLE_SAN)
     else ()

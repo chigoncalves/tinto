@@ -18,6 +18,8 @@
 
 /* http://standards.freedesktop.org/icon-theme-spec/ */
 
+#include "conf.h"
+#include <string.h>
 #include "icon-theme-common.h"
 
 #include <stdio.h>

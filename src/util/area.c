@@ -17,6 +17,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h" // For system checks.
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -33,23 +35,23 @@
 
 /************************************************************
  * !!! This design is experimental and not yet fully implemented !!!!!!!!!!!!!
- * 
+ *
  * DATA ORGANISATION :
- * Areas in tint2 are similar to widgets in a GUI. 
+ * Areas in tint2 are similar to widgets in a GUI.
  * All graphical objects (panel, taskbar, task, systray, clock, ...) 'inherit' an abstract class 'Area'.
  * This class 'Area' manage the background, border, size, position and padding.
  * Area is at the begining of each object (&object == &area).
- * 
+ *
  * tint2 define one panel per monitor. And each panel have a tree of Area.
  * The root of the tree is Panel.Area. And task, clock, systray, taskbar,... are nodes.
- * 
+ *
  * The tree give the localisation of each object :
  * - tree's root is in the background while tree's leafe are foreground objects
  * - position of a node/Area depend on the layout : parent's position (posx, posy), size of previous brothers and parent's padding
- * - size of a node/Area depend on the content (SIZE_BY_CONTENT objects) or on the layout (SIZE_BY_LAYOUT objects) 
- * 
+ * - size of a node/Area depend on the content (SIZE_BY_CONTENT objects) or on the layout (SIZE_BY_LAYOUT objects)
+ *
  * DRAWING AND LAYERING ENGINE :
- * Redrawing an object (like the clock) could come from an 'external event' (date change) 
+ * Redrawing an object (like the clock) could come from an 'external event' (date change)
  * or from a 'layering event' (position change).
  * The following 'drawing engine' take care of :
  * - posx/posy of all Area
@@ -74,7 +76,7 @@
 void init_rendering(void *obj, int pos)
 {
 	Area *a = (Area*)obj;
-	
+
 	// initialize fixed position/size
 	GSList *l;
 	for (l = a->list; l ; l = l->next) {
@@ -103,7 +105,7 @@ void rendering(void *obj)
 
 	size_by_content(&panel->area);
 	size_by_layout(&panel->area, 0, 1);
-	
+
 	refresh(&panel->area);
 }
 
@@ -117,7 +119,7 @@ void size_by_content (Area *a)
 	GSList *l;
 	for (l = a->list; l ; l = l->next)
 		size_by_content(l->data);
-	
+
 	// calculate area's size
 	a->on_changed = 0;
 	if (a->resize && a->size_mode == SIZE_BY_CONTENT) {
@@ -163,7 +165,7 @@ void size_by_layout (Area *a, int pos, int level)
 		Area *child = ((Area*)l->data);
 		if (!child->on_screen) continue;
 		i++;
-		
+
 		if (panel_horizontal) {
 			if (pos != child->posx) {
 				// pos changed => redraw
@@ -178,18 +180,18 @@ void size_by_layout (Area *a, int pos, int level)
 				child->on_changed = 1;
 			}
 		}
-		
+
 		/*// position of each visible object
 		int k;
 		for (k=0 ; k < level ; k++) printf("  ");
 		printf("tree level %d, object %d, pos %d, %s\n", level, i, pos, (child->size_mode == SIZE_BY_LAYOUT) ? "SIZE_BY_LAYOUT" : "SIZE_BY_CONTENT");*/
 		size_by_layout(child, pos, level+1);
-		
+
 		if (panel_horizontal)
 			pos += child->width + a->paddingx;
 		else
 			pos += child->height + a->paddingx;
-	}	
+	}
 
 	if (a->on_changed) {
 		// pos/size changed
@@ -233,7 +235,7 @@ int resize_by_layout(void *obj, int maximum_size)
 	Area *child, *a = (Area*)obj;
 	int size, nb_by_content=0, nb_by_layout=0;
 
-	if (panel_horizontal) {		
+	if (panel_horizontal) {
 		// detect free size for SIZE_BY_LAYOUT's Area
 		size = a->width - (2 * (a->paddingxlr + a->bg->border.width));
 		GSList *l;

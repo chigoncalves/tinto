@@ -18,6 +18,7 @@
 
 /* http://standards.freedesktop.org/desktop-entry-spec/ */
 
+#include "conf.h"
 #include "apps-common.h"
 
 #include <glib.h>

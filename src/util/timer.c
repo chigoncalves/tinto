@@ -15,6 +15,8 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
 
+#include "conf.h"
+
 #include <time.h>
 #include <sys/time.h>
 #include <stdlib.h>

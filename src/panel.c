@@ -521,7 +521,7 @@ void set_panel_properties(Panel *p)
 
 	gsize len;
 	gchar *name = g_locale_to_utf8(panel_window_name, -1, NULL, &len, NULL);
-	if (name != NULL) {
+	if (name) {
 		XChangeProperty(server.dsp, p->main_win, server.atom._NET_WM_NAME, server.atom.UTF8_STRING, 8, PropModeReplace, (unsigned char *) name, (int) len);
 		XChangeProperty(server.dsp, p->main_win, server.atom._NET_WM_ICON_NAME, server.atom.UTF8_STRING, 8, PropModeReplace, (unsigned char *) name, (int) len);
 		g_free(name);
@@ -534,11 +534,13 @@ void set_panel_properties(Panel *p)
 	val = ALLDESKTOP;
 	XChangeProperty (server.dsp, p->main_win, server.atom._NET_WM_DESKTOP, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &val, 1);
 
-	Atom state[4];
-	state[0] = server.atom._NET_WM_STATE_SKIP_PAGER;
-	state[1] = server.atom._NET_WM_STATE_SKIP_TASKBAR;
-	state[2] = server.atom._NET_WM_STATE_STICKY;
-	state[3] = panel_layer == BOTTOM_LAYER ? server.atom._NET_WM_STATE_BELOW : server.atom._NET_WM_STATE_ABOVE;
+	Atom state[] = {
+	  server.atom._NET_WM_STATE_SKIP_PAGER,
+	  server.atom._NET_WM_STATE_SKIP_TASKBAR,
+	  server.atom._NET_WM_STATE_STICKY,
+	  panel_layer == BOTTOM_LAYER ? server.atom._NET_WM_STATE_BELOW : server.atom._NET_WM_STATE_ABOVE,
+	};
+
 	int nb_atoms = panel_layer == NORMAL_LAYER ? 3 : 4;
 	XChangeProperty (server.dsp, p->main_win, server.atom._NET_WM_STATE, XA_ATOM, 32, PropModeReplace, (unsigned char *) state, nb_atoms);
 
