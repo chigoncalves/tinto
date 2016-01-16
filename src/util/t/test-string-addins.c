@@ -138,10 +138,7 @@ void test_strendswith (void) {
   CU_ASSERT (strendswith (WORD_B, WORD_B) == true);
 }
 
-int main (int argc, char* argv[]) {
-  UNUSED (argc);
-  UNUSED (argv);
-
+int main (void) {
   if (CUE_SUCCESS != CU_initialize_registry ())
     return CU_get_error ();
 
@@ -160,7 +157,6 @@ int main (int argc, char* argv[]) {
     return CU_get_error();
   }
 
-  /* Run all tests using the CUnit Basic interface */
   CU_basic_set_mode(CU_BRM_VERBOSE);
   CU_basic_run_tests();
   CU_cleanup_registry();

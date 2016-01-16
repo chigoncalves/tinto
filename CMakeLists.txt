@@ -26,15 +26,29 @@ ThreadSanitizer or MemorySanitizer, use this options with theses values: asan, m
     src/util/t/test-string-addins.c
   )
 
+  add_executable (
+    test-dimension
+    src/util/misc.c
+    src/util/string-addins.c
+    src/util/t/test-dimension.c
+  )
+
   target_link_libraries (
     test-string-addins
+    cunit
+  )
+
+  target_link_libraries (
+    test-dimension
     cunit
   )
 
   add_custom_target (
     tests
     COMMAND ${CMAKE_BINARY_DIR}/test-string-addins
+    COMMAND ${CMAKE_BINARY_DIR}/test-dimension
     DEPENDS test-string-addins
+    DEPENDS test-dimension
   )
 endif ()
 
@@ -104,6 +118,7 @@ set( SOURCES src/config.c
              src/util/area.c
              src/util/common.c
 	     src/util/debug.c
+	     src/util/misc.c
              src/util/strnatcmp.c
              src/util/timer.c
 	     src/util/string-addins.c
