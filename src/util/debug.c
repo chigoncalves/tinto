@@ -1,4 +1,4 @@
-#include "conf.h"
+#include "conf.h" // For system checks.
 
 #include <stdarg.h> // For `va_list` and `va_start`.
 #include <stdbool.h> // For `bool`, `true` and `false`.
@@ -15,9 +15,9 @@
 static const char* path_shortify (const char* path);
 static void _common (const char* fmt, va_list rest);
 
-void debug (const char* fname, int linum, const char* fmt, ...) {
+void warn (const char* fname, int linum, const char* fmt, ...) {
   const char* path = path_shortify (fname);
-  fprintf (stderr, "[Debug @ %s:%d] - ", path, linum);
+  fprintf (stderr, "[WARING @ %s:%d] - ", path, linum);
 
   va_list rest;
   va_start (rest, fmt);
