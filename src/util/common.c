@@ -36,33 +36,40 @@
 #include <glib.h>
 
 #include "common.h"
+#include "debug.h"
 #include "server.h"
 #include "string-addins.h" // For `strtrim'.
 
-#define BUFFER_SZ 100U
+#define BUFFER_SZ 128U
 
 
-void copy_file(const char *pathSrc, const char *pathDest)
-{
-	FILE *fileSrc = NULL, *fileDest = NULL;
-	char buffer[BUFFER_SZ];
-	size_t bytes = 0;
-
-	fileSrc = fopen(pathSrc, "rb");
+/*!
+ * \brief Copy the contents of a file.
+ *
+ * \param pathSrc source file.
+ *
+ * \param pathDest destination file.
+ */
+void
+copy_file(const char *pathSrc, const char *pathDest) {
+  FILE* fileSrc = fopen(pathSrc, "rb");
 	if (!fileSrc) return;
 
-	fileDest = fopen(pathDest, "wb");
+  FILE* fileDest = fopen(pathDest, "wb");
 	if (!fileDest) {
 	  fclose (fileSrc);
 	  return;
 	}
+
+  char buffer[BUFFER_SZ];
+  size_t bytes = 0;
 
 	while (feof (fileSrc) == 0) {
 	 bytes = fread (buffer, 1U, BUFFER_SZ, fileSrc);
 
 	 if (bytes != fwrite (buffer, 1, bytes, fileDest)) {
 #ifdef TINTO_DEVEL_MODE
-	   printf("Error while copying file %s to %s\n", pathSrc, pathDest);
+  WARN ("Bytes read mismatched bytes wrote");
 #endif // TINTO_DEVEL_MODE
 	 }
 	}
