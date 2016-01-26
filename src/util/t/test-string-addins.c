@@ -168,7 +168,7 @@ int main (void) {
       || !CU_add_test(suite, "Test strtrim ()", test_both_sides_trim)
       || !CU_add_test(suite, "Test strrtrim ()", test_right_side_trim)
       || !CU_add_test (suite, "Test strendswith()", test_strendswith)
-      || !CU_add_test (suite, "Test strendswith()", test_strstartswith)) {
+      || !CU_add_test (suite, "Test strstartswith()", test_strstartswith)) {
 
     CU_cleanup_registry();
     return CU_get_error();
