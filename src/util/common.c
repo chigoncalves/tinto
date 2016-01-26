@@ -80,12 +80,10 @@ copy_file(const char *pathSrc, const char *pathDest) {
 
 
 int parse_line (char *line, char **key, char **value) {
-  char *first = NULL;
-
 	// Skip comments or blank lines.
 	if (*line == '#' || *line == '\n') return 0;
 
-	first = strchr (line, '=');
+  char* first = strchr (line, '=');
 	if (!first) return 0;
 
 	/* overwrite '=' with '\0' */
@@ -96,7 +94,7 @@ int parse_line (char *line, char **key, char **value) {
 	char* ptr = strchr (first, '\n');
 	if (ptr) *ptr = '\0';
 
-	*value = strdup (g_strstrip (first));
+	*value = strdup (strtrim(first));
 
 	return 1;
 }

@@ -5,7 +5,7 @@
 #define WARN(...)
 #define DIE(...)
 #else
-#define WARN(...) debug (__FILE__, __LINE__, __VA_ARGS__)
+#define WARN(...) warn (__FILE__, __LINE__, __VA_ARGS__)
 #define DIE(...) die (__FILE__, __LINE__, __VA_ARGS__)
 #endif // NDEBUG
 
