@@ -17,23 +17,27 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
+
 #include "conf.h" // For system checks.
-#include "string-addins.h" // For `strtrim'.
+
+#include <unistd.h>
+
+#include <ctype.h> // For `tolower`.
+#include <stddef.h> // For `size_t`.
+#include <stdio.h>
+#include <stdlib.h> // For `free`
+#include <string.h>
+#include <math.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/Xrender.h>
-#include <ctype.h> // For `tolower`.
-#include <stdio.h>
-#include <stdlib.h> // For `free`
-#include <string.h>
-#include <stddef.h> // For `size_t`.
-#include <math.h>
-#include <unistd.h>
 #include <glib.h>
+
 #include "common.h"
-#include "../server.h"
+#include "server.h"
+#include "string-addins.h" // For `strtrim'.
 
 #define BUFFER_SZ 100U
 
