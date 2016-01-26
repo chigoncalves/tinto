@@ -15,4 +15,7 @@ strtrim (char* str);
 bool
 strendswith (const char* word, const char* suffix);
 
+bool
+strstartswith (const char* restrict word, const char* restrict prefix);
+
 #endif // SRC_UTIL_STRING_ADDINS

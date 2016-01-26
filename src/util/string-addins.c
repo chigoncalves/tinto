@@ -56,3 +56,16 @@ strendswith (const char* restrict word, const char* restrict suffix) {
   else if (word_len > suff_len) return strcmp (word + (word_len - suff_len), suffix) == 0;
   else return strcmp (suffix + (suff_len - word_len), word) == 0;
 }
+
+bool
+strstartswith (const char* restrict word, const char* restrict prefix){
+  if (!word || !prefix) return NULL;
+
+  const size_t word_len = strlen (word);
+  const size_t prefix_len = strlen (prefix);
+
+
+  if (word_len == prefix_len) return strcmp (word, prefix) == 0;
+  else if (word_len > prefix_len) return strncmp (prefix, word, prefix_len) == 0;
+  else return false;
+}

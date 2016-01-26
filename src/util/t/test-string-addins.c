@@ -55,15 +55,20 @@
 #define WORD_A "Sounds like..."
 #define WORD_A_GOOD_SUFFIX  "ike..."
 #define WORD_A_BAD_SUFFIX "ike"
+#define WORD_A_GOOD_PREFIX "Sounds"
+#define WORD_A_BAD_PREFIX "sounds"
 
 #define WORD_B "~/tasks.org"
 #define WORD_B_GOOD_SUFFIX ".org"
 #define WORD_B_BAD_SUFFIX ".or"
+#define WORD_B_BAD_PREFIX "~/foo"
+#define WORD_B_GOOD_PREFIX "~/task"
+#define WORD_B_BAD_SUFFIX_A "~/tasks.org~"
+
 
 char* str_a, *str_b, *str_c, *str_d;
 char * str_e, *str_f, *str_g, *str_h;
 char * str_i, *str_j, *str_k, *str_l;
-
 
 int setup (void) {
   str_a = strdup (STR_A_VALUE);
@@ -131,11 +136,22 @@ void test_strendswith (void) {
   CU_ASSERT (strendswith (WORD_A_BAD_SUFFIX, WORD_A) == false);
   CU_ASSERT (strendswith (WORD_A, WORD_A) == true);
 
+
   CU_ASSERT (strendswith (WORD_B, WORD_B_BAD_SUFFIX) == false);
   CU_ASSERT (strendswith (WORD_B, WORD_B_GOOD_SUFFIX) == true);
   CU_ASSERT (strendswith (WORD_B_GOOD_SUFFIX, WORD_B) == true);
   CU_ASSERT (strendswith (WORD_B_BAD_SUFFIX, WORD_B) == false);
   CU_ASSERT (strendswith (WORD_B, WORD_B) == true);
+}
+
+void test_strstartswith (void) {
+  CU_ASSERT (strstartswith (WORD_A, WORD_A_GOOD_PREFIX));
+  CU_ASSERT (strstartswith( WORD_A, WORD_A_BAD_PREFIX) == false);
+
+  CU_ASSERT (strstartswith (WORD_B, WORD_B_BAD_PREFIX) == false);
+  CU_ASSERT (strstartswith (WORD_B, WORD_B_GOOD_PREFIX));
+  CU_ASSERT (strstartswith (WORD_B, WORD_B));
+  CU_ASSERT (strstartswith (WORD_B, WORD_B_BAD_SUFFIX_A) == false);
 }
 
 int main (void) {
@@ -151,7 +167,8 @@ int main (void) {
   if (!CU_add_test(suite, "Test strltrim ()", test_left_side_trim)
       || !CU_add_test(suite, "Test strtrim ()", test_both_sides_trim)
       || !CU_add_test(suite, "Test strrtrim ()", test_right_side_trim)
-      || !CU_add_test (suite, "Test strendswith()", test_strendswith)) {
+      || !CU_add_test (suite, "Test strendswith()", test_strendswith)
+      || !CU_add_test (suite, "Test strendswith()", test_strstartswith)) {
 
     CU_cleanup_registry();
     return CU_get_error();
