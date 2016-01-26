@@ -1,42 +1,28 @@
-/**************************************************************************
-* Common declarations
-*
-**************************************************************************/
-
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef TINTO_SRC_UTIL_COMMON_H
+#define TINTO_SRC_UTIL_COMMON_H
 
 
 #define WM_CLASS_TINT   "panel"
 
 #include <Imlib2.h>
 #include <pango/pangocairo.h>
-#include "area.h"
 
-/*
-void fxfree(void** ptr){
-  if(*ptr){
-    free(*ptr);
-    *ptr=NULL;
-    }
-  }
-FXint fxmalloc(void** ptr,unsigned long size){
-  *ptr=NULL;
-  if(size!=0){
-    if((*ptr=malloc(size))==NULL) return FALSE;
-    }
-  return TRUE;
-  }
-*/
+#include "area.h"
 
 // mouse actions
 enum { NONE=0, CLOSE, TOGGLE, ICONIFY, SHADE, TOGGLE_ICONIFY, MAXIMIZE_RESTORE, MAXIMIZE, RESTORE, DESKTOP_LEFT, DESKTOP_RIGHT, NEXT_TASK, PREV_TASK };
 
 #define ALLDESKTOP  0xFFFFFFFF
 
-
-// copy file source to file dest
-void copy_file(const char *pathSrc, const char *pathDest);
+/*!
+ * \brief Copy the contents of a file.
+ *
+ * \param src source file.
+ *
+ * \param dest destination file.
+ */
+void
+copy_file (const char* src, const char* dest);
 
 // extract key = value
 int parse_line (char *line, char **key, char **value);
