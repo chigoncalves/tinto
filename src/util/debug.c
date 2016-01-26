@@ -17,7 +17,7 @@ static void _common (const char* fmt, va_list rest);
 
 void warn (const char* fname, int linum, const char* fmt, ...) {
   const char* path = path_shortify (fname);
-  fprintf (stderr, "[WARING @ %s:%d] - ", path, linum);
+  fprintf (stderr, "[WARNING @ %s:%d] - ", path, linum);
 
   va_list rest;
   va_start (rest, fmt);
