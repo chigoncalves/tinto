@@ -1,3 +1,5 @@
+.. _readme:
+
 =============
  Tinto Panel
 =============
@@ -5,13 +7,15 @@ Tinto panel is simple ligthweight X11 desktop panel, it is a fork of `tint2 <htt
 is also a fork of `ttm <http://code.google.com/p/ttm/>`_.
 
 Getting the sources
--------------------
+===================
 Just issue the following command:
-::
+
+.. code-block:: shell
+
    % git clone https://bitbucket.org/crowseye/tinto
 
 Building & Instalation
-----------------------
+======================
 To build tinto yourself you will need the development version of these libraries, note that some Linux distributions
 called ``libXXX-dev``, ``libXXX-devel``, ``XXX-dev`` or ``XXX-devel``, so you will need you find what your distribution
 call them.
@@ -33,22 +37,27 @@ call them.
 * Startup Notification
 
 Once you have insalled the dependencies then issue these commands to build tinto:
-::
+
+.. code-block:: shell
+
    % cd tinto
    % cmake . -Bbuild
    % make install
 
 Running
--------
+=======
 To run the apllication just issue the following commands in your terminal.
-::
+
+.. code-block:: shell
+
    % tinto  -c  path-to-config-file
 
 
 Credits
--------
+=======
+
 Developers
-^^^^^^^^^^
+----------
 * Pål Staurland <staura at gmail.com> - for the original `ttm <http://code.google.com/p/ttm/>`_
 * Thierry Lorthiois <lorthiois at bbsoft.fr> from Omega distribution
 * Andreas Fink <andreas.fink85 at googlemail.com>
@@ -57,7 +66,7 @@ Developers
 * Ovidiu M <mrovi9000 at gmail.com> : launcher, bug fixes
 
 Contributors
-^^^^^^^^^^^^
+------------
 * Kwaku Yeboah <kwakuyeboah at gmail.com> : wiki page
 * Daniel Moerner <dmoerner at gmail.com> : man page and debian package
 * Doug Barton : freebsd package
