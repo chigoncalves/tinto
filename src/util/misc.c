@@ -65,6 +65,9 @@ dimension_calculate_width (dimension_t dimen, double reference) {
 
   case Percentage:
     return reference * dimen.width.value / 100.0;
+
+  default:
+    return 0.0;
   }
 }
 
@@ -76,5 +79,8 @@ dimension_calculate_height (dimension_t dimen, double reference) {
 
   case Percentage:
     return reference * dimen.height.value / 100.0;
+
+  default:
+    return 0.0;
   }
 }

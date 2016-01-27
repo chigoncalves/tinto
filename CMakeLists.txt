@@ -3,7 +3,7 @@ if (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
 cmake_minimum_required (VERSION 3.0)
-project (tinto VERSION 0.0.1.9 LANGUAGES C )
+project (tinto VERSION 0.0.2.1 LANGUAGES C )
 
 list (APPEND CMAKE_MODULE_PATH ";${CMAKE_SOURCE_DIR}/cmake")
 include_directories ("${CMAKE_BINARY_DIR}/include" "${CMAKE_SOURCE_DIR}/include")
@@ -13,58 +13,12 @@ option (ENABLE_BATTERY "Enable battery status plugin." ON)
 option (ENABLE_TINT2CONF "Enable tint2conf build, a Gtk+2 theme configurator for `tinto`." OFF)
 option( ENABLE_EXAMPLES "Install additional tin2rc examples" OFF )
 option (ENABLE_RSVG "Enable `rsvg` support for launcher icons." ON )
-option( ENABLE_SN "Enable `startup notification` support." ON )
+option (ENABLE_SN "Enable `startup notification` support." ON)
 
-if (TINTO_DEVEL_MODE)
-  option (ENABLE_SAN "Build with for Googles: AddressSanitizec AddressSanitizer, LeakSanitizer, \
-ThreadSanitizer or MemorySanitizer, use this options with theses values: asan, msan, tsan or lsan." on)
-
-
-  add_executable (
-    test-string-addins
-    src/util/string-addins.c
-    src/util/t/test-string-addins.c
-  )
-
-  add_executable (
-    test-dimension
-    src/util/misc.c
-    src/util/string-addins.c
-    src/util/t/test-dimension.c
-  )
-
- add_executable (
-    test-path-utils
-    src/util/path-utils.c
-    src/util/string-addins.c
-    src/util/t/test-path-utils.c
-  )
-
-  target_link_libraries (
-    test-string-addins
-    cunit
-  )
-
-  target_link_libraries (
-    test-dimension
-    cunit
-  )
-
-  target_link_libraries (
-    test-path-utils
-    cunit
-  )
-
-  add_custom_target (
-    tests
-    COMMAND ${CMAKE_BINARY_DIR}/test-string-addins
-    COMMAND ${CMAKE_BINARY_DIR}/test-dimension
-    COMMAND ${CMAKE_BINARY_DIR}/test-path-utils
-    DEPENDS test-string-addins
-    DEPENDS test-dimension
-  )
+find_package (X11)
+if (NOT X11_Xdamage_FOUND OR NOT X11_Xrandr_FOUND OR NOT X11_Xrender_FOUND OR NOT X11_Xinerama_FOUND OR NOT X11_Xcomposite_FOUND)
+  message (FATAL_ERROR "Could not find all X11 libraries!")
 endif ()
-
 
 include_directories (
   ${X11_Xrender_INCLUDE_PATH}
@@ -85,8 +39,6 @@ include_directories (${GTK2_INCLUDE_DIRS})
 include( FindPkgConfig )
 include( CheckLibraryExists )
 pkg_check_modules( IMLIB2 REQUIRED imlib2>=1.4.2 )
-pkg_check_modules( RSVG librsvg-2.0>=2.14.0 )
-pkg_check_modules( SN libstartup-notification-1.0>=0.12 )
 
 string( REPLACE ";" " " FLAGS_REPLACED "${IMLIB2_LDFLAGS}" )
 set( CMAKE_REQUIRED_FLAGS "${FLAGS_REPLACED}" )
@@ -97,7 +49,6 @@ endif( NOT IMLIB_BUILD_WITH_X )
 
 include_directories (
   src
-  src/battery
   src/clock
   src/systray
   src/taskbar
@@ -105,41 +56,46 @@ include_directories (
   src/tooltip
   src/util
   ${IMLIB2_INCLUDE_DIRS}
-  ${RSVG_INCLUDE_DIRS}
-  ${SN_INCLUDE_DIRS}
 )
 
-set( SOURCES src/config.c
-             src/panel.c
-             src/server.c
-             src/tint.c
-             src/clock/clock.c
-             src/systray/systraybar.c
-             src/launcher/launcher.c
-             src/launcher/apps-common.c
-             src/launcher/icon-theme-common.c
-             src/launcher/xsettings-client.c
-             src/launcher/xsettings-common.c
-             src/taskbar/task.c
-             src/taskbar/taskbar.c
-             src/taskbar/taskbarname.c
-             src/tooltip/tooltip.c
-             src/util/area.c
-             src/util/common.c
-	     src/util/debug.c
-	     src/util/misc.c
-	     src/util/path-utils.c
-             src/util/strnatcmp.c
-             src/util/timer.c
-	     src/util/string-addins.c
-             src/util/window.c )
+set (SOURCES
+  src/config.c
+  src/panel.c
+  src/server.c
+  src/tint.c
+  src/clock/clock.c
+  src/systray/systraybar.c
+  src/launcher/launcher.c
+  src/launcher/apps-common.c
+  src/launcher/icon-theme-common.c
+  src/launcher/xsettings-client.c
+  src/launcher/xsettings-common.c
+  src/taskbar/task.c
+  src/taskbar/taskbar.c
+  src/taskbar/taskbarname.c
+  src/tooltip/tooltip.c
+  src/util/area.c
+  src/util/common.c
+  src/util/debug.c
+  src/util/misc.c
+  src/util/path-utils.c
+  src/util/strnatcmp.c
+  src/util/timer.c
+  src/util/string-addins.c
+  src/util/window.c
+)
 
 if (ENABLE_BATTERY)
   list (APPEND SOURCES src/battery/battery.c)
+  include_directories (src/battery)
 endif ()
 
 if (ENABLE_RSVG)
+  pkg_check_modules (RSVG librsvg-2.0>=2.14.0)
   if (RSVG_FOUND)
+    include_directories (${RSVG_INCLUDE_DIRS})
+    link_libraries (${RSVG_LIBRARIES})
+    link_directories (${RSVG_LIBRARY_DIRS})
     set (HAS_RSVG 1)
   else ()
     message (FATAL_ERROR "SVG support enabled yet dependency not fulfilled: librsvg-2.0" )
@@ -147,7 +103,11 @@ if (ENABLE_RSVG)
 endif ()
 
 if (ENABLE_SN)
+  pkg_check_modules( SN libstartup-notification-1.0>=0.12 )
   if (SN_FOUND)
+    include_directories (${SN_INCLUDE_DIRS})
+    link_libraries (${SN_LIBRARIES})
+    link_directories (${SN_LIBRARY_DIRS})
     set (HAS_SN 1)
     set (SN_API_NOT_YET_FROZEN 1)
   else()
@@ -172,11 +132,7 @@ set( DATADIR share CACHE PATH "Directory for shared data" )
 set( SYSCONFDIR /etc CACHE PATH "Directory for configuration files" )
 set( DOCDIR share/doc/tint2 CACHE PATH "Directory for documentation files" )
 
-link_directories(
-  ${IMLIB2_LIBRARY_DIRS}
-  ${RSVG_LIBRARY_DIRS}
-  ${SN_LIBRARY_DIRS}
-)
+link_directories (${IMLIB2_LIBRARY_DIRS})
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
@@ -189,12 +145,10 @@ target_link_libraries (${PROJECT_NAME}
   ${X11_Xrender_LIB}
   ${GTK2_LIBRARIES}
   ${IMLIB2_LIBRARIES}
-  ${RSVG_LIBRARIES}
-  ${SN_LIBRARIES}
+  m
 )
 
 configure_file ("${CMAKE_SOURCE_DIR}/include/conf.h.in" "${CMAKE_BINARY_DIR}/include/conf.h")
-target_link_libraries( ${PROJECT_NAME} m )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}" )
 set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}" )
