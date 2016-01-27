@@ -2,7 +2,7 @@
 
 #include <stdarg.h> // For `va_list` and `va_start`.
 #include <stdbool.h> // For `bool`, `true` and `false`.
-#include <stdio.h> // For `fprintf`, `fputc`, `stderr` and `stdio`.
+#include <stdio.h> // For `fprintf`, `fputc`, `stderr`, `vfprintf' and `stdout`,.
 #include <stdlib.h> // For `exit` and `EXIT_FAILURE`.
 #include <string.h> // For `strlen` and `strncpy`.
 
@@ -21,9 +21,7 @@ void warn (const char* fname, int linum, const char* fmt, ...) {
 
   va_list rest;
   va_start (rest, fmt);
-  /* _common (fmt, rest); */
-  fprintf (stderr, fmt, rest);;
-  fputc ('\n', stderr);
+  _common (fmt, rest);
   va_end (rest);
 }
 
@@ -46,7 +44,7 @@ void msg (const char* fmt, ...) {
 }
 
 static void _common (const char* fmt, va_list rest)  {
-  fprintf (stderr, fmt, rest);;
+  vfprintf (stderr, fmt, rest);;
   fputc ('\n', stderr);
   fflush (stderr);
 }
