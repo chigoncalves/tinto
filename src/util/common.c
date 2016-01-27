@@ -33,7 +33,6 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/Xrender.h>
-#include <glib.h>
 
 #include "common.h"
 #include "debug.h"
@@ -185,7 +184,7 @@ void extract_values (const char *value, char **value1, char **value2, char **val
 		*value3 = 0;
 	}
 	*value1 = strdup (value);
-	g_strstrip(*value1);
+	strtrim (*value1);
 
 	if (b) {
 		if ((c = strchr (b, ' '))) {
@@ -197,12 +196,12 @@ void extract_values (const char *value, char **value1, char **value2, char **val
 			*value3 = 0;
 		}
 		*value2 = strdup (b);
-		g_strstrip(*value2);
+		strtrim (*value2);
 	}
 
 	if (c) {
 		*value3 = strdup (c);
-		g_strstrip(*value3);
+		strtrim (*value3);
 	}
 }
 
