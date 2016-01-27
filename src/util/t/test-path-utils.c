@@ -18,15 +18,33 @@
 #define TEST_PATH_D "/usr"
 #define EXPECTED_PATH_D "/usr"
 
+#define TEST_PATH_E "/home/crowseye"
+#define TEST_PATH_E_EXPECTED "~"
+#define TEST_PATH_F "/home/crowseye/"
+#define TEST_PATH_F_EXPECTED "~/"
+#define TEST_PATH_G "/home/crowseye/foo.pl"
+#define TEST_PATH_G_EXPECTED "~/foo.pl"
+#define TEST_PATH_H "/usr"
+#define TEST_PATH_H_EXPECTED "/usr"
+
 char* path_a = NULL;
 char* path_b = NULL;
 char* path_c = NULL;
 char* path_d = NULL;
+char* unexpand_path_e = NULL;
+char* unexpand_path_f = NULL;
+char* unexpand_path_g = NULL;
+char* unexpand_path_h = NULL;
 char* home = NULL;
 
 int
  test_suite_setup (void)  {
   home = path_current_user_home ();
+
+  unexpand_path_e = path_unexpand_tilde (TEST_PATH_E);
+  unexpand_path_f = path_unexpand_tilde (TEST_PATH_F);
+  unexpand_path_g = path_unexpand_tilde (TEST_PATH_G);
+  unexpand_path_h = path_unexpand_tilde (TEST_PATH_H);
 
   return 0;
 }
@@ -38,6 +56,11 @@ test_suite_teardown (void) {
   free (path_c);
   free (path_d);
   free (home);
+
+  free (unexpand_path_e);
+  free (unexpand_path_f);
+  free (unexpand_path_g);
+  free (unexpand_path_h);
 
   return 0;
 }
@@ -69,6 +92,23 @@ test_path_current_user_home (void) {
   CU_ASSERT (strcmp (home, home_expected) == 0);
 }
 
+#include <stdio.h>
+
+void
+test_path_unexpand_tilde (void) {
+  CU_ASSERT (unexpand_path_e != NULL);
+  CU_ASSERT (strcmp (TEST_PATH_E_EXPECTED, unexpand_path_e) == 0);
+
+  CU_ASSERT (unexpand_path_f != NULL);
+  CU_ASSERT (strcmp (TEST_PATH_F_EXPECTED, unexpand_path_f) == 0);
+
+  CU_ASSERT (unexpand_path_g != NULL);
+  CU_ASSERT (strcmp (TEST_PATH_G_EXPECTED, unexpand_path_g) == 0);
+
+  CU_ASSERT (unexpand_path_h != NULL);
+  CU_ASSERT (strcmp (TEST_PATH_H_EXPECTED, unexpand_path_h) == 0);
+}
+
 int main (void) {
 
   if (CU_initialize_registry () != CUE_SUCCESS) return CU_get_error ();
@@ -83,7 +123,9 @@ int main (void) {
   if (!CU_add_test (suite, "Test path_exapand_tilde ().",
 		    test_path_expand_file_tilde)
       || !CU_add_test (suite, "Test path_current_user_home ().",
-		       test_path_current_user_home)) {
+		       test_path_current_user_home)
+      || !CU_add_test (suite, "Test path_unexpand_tilde ()",
+		       test_path_unexpand_tilde)) {
 
     CU_cleanup_registry ();
     return CU_get_error ();

@@ -42,3 +42,29 @@ path_current_user_home (void) {
 
   return strdup (pwd->pw_dir);
 }
+
+
+char* path_unexpand_tilde (const char *path) {
+  char *home = path_current_user_home ();
+  if (!home) return NULL;
+  else if (!strstartswith (path, home)) return strdup (path);
+
+  const size_t home_len = strlen (home);
+  const size_t new_len = strlen (path + home_len) + 1; // For 1+ "~".
+
+  if (home_len != new_len) {
+    char* aux = realloc (home, new_len);
+    if (!aux) {
+      free (home);
+      return NULL;
+    }
+
+    home = aux;
+    aux = NULL;
+  }
+
+  strncpy (home, "~", 2);
+  strncat (home, path + home_len, new_len - 1);
+
+  return home;
+}
