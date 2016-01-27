@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 	GtkActionGroup *actionGroup;
 
 	gtk_init(&argc, &argv);
-	g_thread_init((NULL));
+	//	g_thread_init((NULL));
 
 	g_path_dir = g_build_filename(g_get_user_config_dir(), "tint2", NULL);
 	if (!g_file_test(g_path_dir, G_FILE_TEST_IS_DIR))
@@ -176,6 +176,7 @@ int main(int argc, char **argv)
 
 static void menuAddWidget(GtkUIManager * p_uiManager, GtkWidget * p_widget, GtkContainer * p_box)
 {
+  UNUSED (p_uiManager);
 	gtk_box_pack_start(GTK_BOX(p_box), p_widget, FALSE, FALSE, 0);
 	gtk_widget_show(p_widget);
 }
@@ -402,6 +403,8 @@ static void menuRefreshAll()
 
 static void view_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
 {
+  UNUSED (treeview);
+  UNUSED (userdata);
 	GtkWidget *w = gtk_ui_manager_get_widget(globalUIManager, "/ThemePopup");
 
 	gtk_menu_popup(GTK_MENU(w), NULL, NULL, NULL, NULL, (event != NULL) ? event->button : 0, gdk_event_get_time((GdkEvent*)event));
@@ -438,8 +441,14 @@ static gboolean view_onPopupMenu(GtkWidget *treeview, gpointer userdata)
 	return TRUE;
 }
 
-static void viewRowActivated(GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column, gpointer user_data)
-{}
+static void viewRowActivated (GtkTreeView *tree_view, GtkTreePath *path,
+			      GtkTreeViewColumn *column, gpointer user_data) {
+
+  UNUSED (tree_view);
+  UNUSED (path);
+  UNUSED (column);
+  UNUSED (user_data);
+}
 
 static void windowSizeAllocated()
 {
