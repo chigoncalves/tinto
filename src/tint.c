@@ -139,7 +139,7 @@ void init (int argc, char *argv[]) {
 //	sigprocmask(SIG_BLOCK, &block_mask, 0);
 }
 
-static int sn_pipe_valid = 0;
+ static int sn_pipe_valid = 0;
 static int sn_pipe[2];
 
 #ifdef HAS_SN
@@ -203,13 +203,11 @@ static gint cmp_ptr(gconstpointer a, gconstpointer b) {
 static void sigchld_handler_async() {}
 #endif // HAS_SN
 
-void init_X11_pre_config()
-{
-	server.dsp = XOpenDisplay (NULL);
-	if (!server.dsp) {
-		fprintf(stderr, "tint2 exit : could not open display.\n");
-		exit(0);
-	}
+void init_X11_pre_config (void) {
+  server.dsp = XOpenDisplay (getenv ("DISPLAY"));
+  if (!server.dsp)
+    DIE ("%s Failed to open display.", PROJECT_NAME);
+
 	server_init_atoms ();
 	server.screen = DefaultScreen (server.dsp);
 	server.root_win = RootWindow(server.dsp, server.screen);
@@ -1113,9 +1111,8 @@ start:
 	else
 		i = config_read ();
 	if (!i) {
-		fprintf(stderr, "usage: tint2 [-c] <config_file>\n");
-		cleanup();
-		exit(1);
+	  cleanup();
+	  tinto_usage ();
 	}
 
 	init_X11_post_config();
