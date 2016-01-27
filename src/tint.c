@@ -90,7 +90,7 @@ void init (int argc, char *argv[]) {
 	memset(&server, 0, sizeof(Server_global));
 #ifdef ENABLE_BATTERY
 	default_battery();
-#endif
+#endif // ENABLE_BATTERY
 	default_clock();
 	default_launcher();
 	default_taskbar();
@@ -103,21 +103,21 @@ void init (int argc, char *argv[]) {
       tinto_usage ();
     }
 
-    if (strcmp (argv[i], "-v") == 0 || strcmp (argv[i], "--version") == 0) {
+    else if (strcmp (argv[i], "-v") == 0 || strcmp (argv[i], "--version") == 0) {
       MSG ("%s version %s\n", PROJECT_NAME, PROJECT_VERSION);
       exit(0);
-		}
-    if (strcmp (argv[i], "-c") == 0) {
+    }
+    else if (strcmp (argv[i], "-c") == 0) {
 			i++;
 			if (i < argc)
 				config_path = strdup(argv[i]);
-		}
-    if (strcmp (argv[i], "-s") == 0) {
+    }
+    else if (strcmp (argv[i], "-s") == 0) {
 			i++;
 			if (i < argc)
 				snapshot_path = strdup(argv[i]);
-		}
-	}
+    }
+  }
 	// Set signal handler
 	signal_pending = 0;
 	struct sigaction sa = { .sa_handler = signal_handler };
