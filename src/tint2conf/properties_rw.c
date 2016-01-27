@@ -435,7 +435,7 @@ void config_write_launcher(FILE *fp)
 		gtk_tree_model_get(GTK_TREE_MODEL(launcher_apps), &iter,
 						   appsColPath, &app_path,
 						   -1);
-		char *contracted = contract_tilde(app_path);
+		char *contracted = path_unexpand_tilde (app_path);
 		fprintf(fp, "launcher_item_app = %s\n", contracted);
 		free(contracted);
 		g_free(app_path);
@@ -446,7 +446,7 @@ void config_write_launcher(FILE *fp)
 		gchar *dir = app_dirs[index];
 		g_strstrip(dir);
 		if (strlen(dir) > 0) {
-			char *contracted = contract_tilde(dir);
+			char *contracted = path_unexpand_tilde(dir);
 			fprintf(fp, "launcher_item_app = %s\n", contracted);
 			free(contracted);
 		}

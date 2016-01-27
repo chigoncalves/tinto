@@ -30,10 +30,6 @@ int parse_line (char *line, char **key, char **value);
 // execute a command by calling fork
 void tint_exec(const char* command);
 
-// The opposite of expand_tilde: replaces the path to the user's home directory with "~".
-// The returned string must be freed by the caller.
-char *contract_tilde(char *s);
-
 // conversion
 int hex_char_to_int (char c);
 int hex_to_rgb (char *hex, int *r, int *g, int *b);
