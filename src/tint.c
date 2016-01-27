@@ -37,6 +37,9 @@
 #include <sys/wait.h>
 #endif // HAS_SN
 
+#include <stdnoreturn.h>
+
+#include "debug.h"
 #include "server.h"
 #include "window.h"
 #include "config.h"
@@ -58,6 +61,20 @@ Atom dnd_atom;
 int dnd_sent_request;
 char *dnd_launcher_exec;
 
+noreturn void tinto_usage (void) {
+  MSG ("Usage\n");
+  MSG ("  %s [options]\n", PROJECT_NAME);
+
+  MSG ("Options");
+  MSG ("  --config-file, -c <file-name>");
+  MSG ("  --help, -h");
+  MSG ("  --panel-screenshot, -s");
+  MSG ("  --version, -v");
+
+  exit (EXIT_FAILURE);
+}
+
+
 void signal_handler(int sig)
 {
 	// signal handler is light as it should be
@@ -65,10 +82,7 @@ void signal_handler(int sig)
 }
 
 
-void init (int argc, char *argv[])
-{
-	int i;
-
+void init (int argc, char *argv[]) {
 	// set global data
 	default_config();
 	default_timeout();
@@ -84,21 +98,21 @@ void init (int argc, char *argv[])
 	panel_default ();
 
 	// read options
-	for (i = 1; i < argc; ++i) {
-		if (!strcmp(argv[i], "-h") || !strcmp(argv[i], "--help"))	{
-			printf("Usage: tint2 [-c] <config_file>\n");
-			exit(0);
+  for (int i = 1; i < argc; ++i) {
+    if (strcmp (argv[i], "-h") == 0 || strcmp (argv[i], "--help") == 0) {
+      tinto_usage ();
+    }
+
+    if (strcmp (argv[i], "-v") == 0 || strcmp (argv[i], "--version") == 0) {
+      MSG ("%s version %s\n", PROJECT_NAME, PROJECT_VERSION);
+      exit(0);
 		}
-		if (!strcmp(argv[i], "-v") || !strcmp(argv[i], "--version"))	{
-			printf("tint2 version %s\n", PROJECT_VERSION);
-			exit(0);
-		}
-		if (!strcmp(argv[i], "-c")) {
+    if (strcmp (argv[i], "-c") == 0) {
 			i++;
 			if (i < argc)
 				config_path = strdup(argv[i]);
 		}
-		if (!strcmp(argv[i], "-s"))	{
+    if (strcmp (argv[i], "-s") == 0) {
 			i++;
 			if (i < argc)
 				snapshot_path = strdup(argv[i]);
