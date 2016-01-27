@@ -1,18 +1,12 @@
 #include "conf.h" // For system checks.
 
 #include <stdarg.h> // For `va_list` and `va_start`.
-#include <stdbool.h> // For `bool`, `true` and `false`.
 #include <stdio.h> // For `fprintf`, `fputc`, `stderr`, `vfprintf' and `stdout`,.
 #include <stdlib.h> // For `exit` and `EXIT_FAILURE`.
-#include <string.h> // For `strlen` and `strncpy`.
-
-#include <libgen.h> // For `basename` and `dirname`.
 
 #include "debug.h"
+#include "path-utils.h"
 
-#define BUFF_SZ 256
-
-static const char* path_shortify (const char* path);
 static void _common (const char* fmt, va_list rest);
 
 void warn (const char* fname, int linum, const char* fmt, ...) {
@@ -47,18 +41,4 @@ static void _common (const char* fmt, va_list rest)  {
   vfprintf (stderr, fmt, rest);;
   fputc ('\n', stderr);
   fflush (stderr);
-}
-
-static const char* path_shortify (const char* path) {
-  if (!path) return NULL;
-  static char buff[BUFF_SZ];
-  const size_t len = strlen (path) + 1;
-  if (len > BUFF_SZ) return path;
-
-  strncpy (buff, path, len);
-  char* bname = basename (buff);
-  char* dname = basename (dirname (buff));
-  sprintf (buff, "%s/%s", dname, bname);
-
-  return buff;
 }

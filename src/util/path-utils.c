@@ -1,10 +1,11 @@
 #include "conf.h"
 
+#include <libgen.h> // For `basename` and `dirname`.
 #include <unistd.h> // For `uid_t' ant `getuid'.
 #include <pwd.h> // For `getpwuid'.
 
 #include <stddef.h> // For `size_t`.
-#include <stdio.h>
+#include <stdio.h>  // For `fread', `feof', `fwrite', `sprintf', `fopen' and `fclose'.
 #include <stdlib.h> // For `realloc'.
 #include <string.h> // For `strlen', `strncat', `strncpy' and `strdup'.
 
@@ -12,7 +13,7 @@
 #include "path-utils.h"
 #include "string-addins.h"
 
-#define BUFFER_SZ 128U
+#define BUFFER_SZ 256U
 
 char*
 path_expand_tilde (const char* str) {
@@ -107,4 +108,19 @@ path_copy_file (const char *pathSrc, const char *pathDest) {
 
   fclose (fileDest);
   fclose (fileSrc);
+}
+
+const char*
+path_shortify (const char* path) {
+  if (!path) return NULL;
+  static char buff[BUFFER_SZ];
+  const size_t len = strlen (path) + 1;
+  if (len > BUFFER_SZ) return path;
+
+  strncpy (buff, path, len);
+  char* bname = basename (buff);
+  char* dname = basename (dirname (buff));
+  sprintf (buff, "%s/%s", dname, bname);
+
+  return buff;
 }

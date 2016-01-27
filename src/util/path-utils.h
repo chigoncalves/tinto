@@ -20,4 +20,9 @@ path_unexpand_tilde (const char* path);
 void
 path_copy_file (const char *pathSrc, const char *pathDest);
 
+
+const char*
+path_shortify (const char* path);
+
+
 #endif // TINTO_SRC_UTILS_PATH_UTILS
