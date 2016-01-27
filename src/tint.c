@@ -66,10 +66,12 @@ noreturn void tinto_usage (void) {
   MSG ("  %s [options]\n", PROJECT_NAME);
 
   MSG ("Options");
-  MSG ("  --config-file, -c <file-name>");
-  MSG ("  --help, -h");
-  MSG ("  --panel-screenshot, -s");
-  MSG ("  --version, -v");
+  MSG ("  --config-file, -c <filename>\t\t\tStart tinto using"
+       " \"filename\" as config file.\n");
+  MSG ("  --help, -h\t\t\t\t\tPrint this help message then exit.\n");
+  MSG ("  --panel-snapshot, -s <path-to-a-new-image>    Take a new"
+       " snapshot of the panel an save it as \"new-image\".\n");
+  MSG ("  --version, -v\t\t\t\t\tPrint version information then exit.");
 
   exit (EXIT_FAILURE);
 }
@@ -105,17 +107,15 @@ void init (int argc, char *argv[]) {
 
     else if (strcmp (argv[i], "-v") == 0 || strcmp (argv[i], "--version") == 0) {
       MSG ("%s version %s\n", PROJECT_NAME, PROJECT_VERSION);
-      exit(0);
+      exit (EXIT_SUCCESS);
     }
-    else if (strcmp (argv[i], "-c") == 0) {
-			i++;
-			if (i < argc)
-				config_path = strdup(argv[i]);
+    else if (strcmp (argv[i], "-c") == 0
+	     || strcmp (argv[i], "--config-file") == 0) {
+      if (++i < argc) config_path = strdup (argv[i]);
     }
-    else if (strcmp (argv[i], "-s") == 0) {
-			i++;
-			if (i < argc)
-				snapshot_path = strdup(argv[i]);
+    else if (strcmp (argv[i], "-s") == 0
+	     || strcmp (argv[i], "--panel-snapshot") == 0) {
+      if (++i < argc) snapshot_path = strdup (argv[i]);
     }
   }
 	// Set signal handler
