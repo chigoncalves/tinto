@@ -3,12 +3,16 @@
 #include <unistd.h> // For `uid_t' ant `getuid'.
 #include <pwd.h> // For `getpwuid'.
 
-#include <stddef.h> // For `size_t'.
+#include <stddef.h> // For `size_t`.
+#include <stdio.h>
 #include <stdlib.h> // For `realloc'.
 #include <string.h> // For `strlen', `strncat', `strncpy' and `strdup'.
 
+#include "debug.h"
 #include "path-utils.h"
 #include "string-addins.h"
+
+#define BUFFER_SZ 128U
 
 char*
 path_expand_tilde (const char* str) {
@@ -67,4 +71,40 @@ char* path_unexpand_tilde (const char *path) {
   strncat (home, path + home_len, new_len - 1);
 
   return home;
+}
+
+
+/*!
+ * \brief Copy the contents of a file.
+ *
+ * \param pathSrc source file.
+ *
+ * \param pathDest destination file.
+ */
+void
+path_copy_file (const char *pathSrc, const char *pathDest) {
+  FILE* fileSrc = fopen(pathSrc, "rb");
+  if (!fileSrc) return;
+
+  FILE* fileDest = fopen(pathDest, "wb");
+  if (!fileDest) {
+    fclose (fileSrc);
+    return;
+  }
+
+  char buffer[BUFFER_SZ];
+  size_t bytes = 0;
+
+  while (feof (fileSrc) == 0) {
+    bytes = fread (buffer, 1U, BUFFER_SZ, fileSrc);
+
+    if (bytes != fwrite (buffer, 1, bytes, fileDest)) {
+#ifdef TINTO_DEVEL_MODE
+      WARN ("Bytes read mismatched bytes wrote");
+#endif // TINTO_DEVEL_MODE
+    }
+  }
+
+  fclose (fileDest);
+  fclose (fileSrc);
 }

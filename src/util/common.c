@@ -23,8 +23,6 @@
 #include <unistd.h>
 
 #include <ctype.h> // For `tolower`.
-#include <stddef.h> // For `size_t`.
-#include <stdio.h>
 #include <stdlib.h> // For `free`
 #include <string.h>
 #include <math.h>
@@ -35,48 +33,8 @@
 #include <X11/extensions/Xrender.h>
 
 #include "common.h"
-#include "debug.h"
 #include "server.h"
 #include "string-addins.h" // For `strtrim'.
-
-#define BUFFER_SZ 128U
-
-
-/*!
- * \brief Copy the contents of a file.
- *
- * \param pathSrc source file.
- *
- * \param pathDest destination file.
- */
-void
-copy_file(const char *pathSrc, const char *pathDest) {
-  FILE* fileSrc = fopen(pathSrc, "rb");
-	if (!fileSrc) return;
-
-  FILE* fileDest = fopen(pathDest, "wb");
-	if (!fileDest) {
-	  fclose (fileSrc);
-	  return;
-	}
-
-  char buffer[BUFFER_SZ];
-  size_t bytes = 0;
-
-	while (feof (fileSrc) == 0) {
-	 bytes = fread (buffer, 1U, BUFFER_SZ, fileSrc);
-
-	 if (bytes != fwrite (buffer, 1, bytes, fileDest)) {
-#ifdef TINTO_DEVEL_MODE
-  WARN ("Bytes read mismatched bytes wrote");
-#endif // TINTO_DEVEL_MODE
-	 }
-	}
-
-	fclose (fileDest);
-	fclose (fileSrc);
-}
-
 
 int parse_line (char *line, char **key, char **value) {
 	// Skip comments or blank lines.
@@ -97,7 +55,6 @@ int parse_line (char *line, char **key, char **value) {
 
 	return 1;
 }
-
 
 void tint_exec(const char *command)
 {

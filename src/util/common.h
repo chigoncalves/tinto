@@ -14,16 +14,6 @@ enum { NONE=0, CLOSE, TOGGLE, ICONIFY, SHADE, TOGGLE_ICONIFY, MAXIMIZE_RESTORE, 
 
 #define ALLDESKTOP  0xFFFFFFFF
 
-/*!
- * \brief Copy the contents of a file.
- *
- * \param src source file.
- *
- * \param dest destination file.
- */
-void
-copy_file (const char* src, const char* dest);
-
 // extract key = value
 int parse_line (char *line, char **key, char **value);
 

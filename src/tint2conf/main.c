@@ -26,6 +26,7 @@
 #include "theme_view.h"
 #include "properties.h"
 #include "properties_rw.h"
+#include "../util/path-utils.h"
 
 // Default path to the tint2 config file
 char *g_path_config = NULL;
@@ -244,7 +245,7 @@ static void menuAdd()
 		}
 
 		// append theme
-		copy_file(file, path);
+		path_copy_file (file, path);
 		custom_list_append(path);
 		if (name_first == NULL)
 			name_first = g_strdup(path);
@@ -294,7 +295,7 @@ static void menuSaveAs()
 
 	if (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT) {
 		char *filename = gtk_file_chooser_get_filename(chooser);
-		copy_file(file, filename);
+		path_copy_file (file, filename);
 		g_free(filename);
 	}
 	g_free(file);
@@ -512,13 +513,13 @@ static void load_theme(GtkWidget *list)
 			g_free(dir);
 
 			gchar *path1 = g_build_filename (g_get_user_config_dir(), "tint2", "tint2rc", NULL);
-			copy_file(path2, path1);
+			path_copy_file (path2, path1);
 			g_free(path2);
 			g_free(path1);
 		} else {
 			// create empty file
 			gchar *path1 = g_build_filename (g_get_user_config_dir(), "tint2", "tint2rc", NULL);
-			copy_file("/dev/null", path1);
+			path_copy_file ("/dev/null", path1);
 			g_free(path1);
 		}
 		load_theme(list);

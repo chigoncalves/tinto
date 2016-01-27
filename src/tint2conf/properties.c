@@ -23,7 +23,7 @@
 #include "properties_rw.h"
 #include "../launcher/apps-common.h"
 #include "../launcher/icon-theme-common.h"
-#include "../util/common.h"
+#include "../util/path-utils.h"
 
 #define ROW_SPACING 10
 #define COL_SPACING 8
@@ -171,7 +171,7 @@ applyClicked (GtkWidget *widget, gpointer data) {
 	if (file) {
 		if (config_is_manual(file)) {
 			gchar *backup_path = g_strdup_printf("%s.backup.%ld", file, time(NULL));
-			copy_file(file, backup_path);
+			path_copy_file (file, backup_path);
 			g_free(backup_path);
 		}
 

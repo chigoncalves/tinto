@@ -55,7 +55,6 @@
 #include "window.h"
 #include "tooltip.h"
 #include "timer.h"
-
 #include "path-utils.h"
 
 #ifdef ENABLE_BATTERY
@@ -817,7 +816,7 @@ int config_read ()
 		g_free(dir);
 
 		path1 = g_build_filename (g_get_user_config_dir(), "tint2", "tint2rc", NULL);
-		copy_file(path2, path1);
+		path_copy_file (path2, path1);
 		g_free(path2);
 
 		i = config_read_file (path1);
