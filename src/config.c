@@ -56,6 +56,8 @@
 #include "tooltip.h"
 #include "timer.h"
 
+#include "path-utils.h"
+
 #ifdef ENABLE_BATTERY
 #include "battery.h"
 #endif
@@ -647,11 +649,11 @@ void add_entry (char *key, char *value)
 		launcher_max_icon_size = atoi(value);
 	}
 	else if (strcmp(key, "launcher_item_app") == 0) {
-		char *app = expand_tilde(value);
+		char *app = path_expand_tilde (value);
 		panel_config.launcher.list_apps = g_slist_append(panel_config.launcher.list_apps, app);
 	}
 	else if (strcmp(key, "launcher_apps_dir") == 0) {
-		char *path = expand_tilde(value);
+		char *path = path_expand_tilde (value);
 		load_launcher_app_dir(path);
 		free(path);
 	}

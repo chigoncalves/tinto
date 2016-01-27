@@ -33,6 +33,13 @@ ThreadSanitizer or MemorySanitizer, use this options with theses values: asan, m
     src/util/t/test-dimension.c
   )
 
+ add_executable (
+    test-path-utils
+    src/util/path-utils.c
+    src/util/string-addins.c
+    src/util/t/test-path-utils.c
+  )
+
   target_link_libraries (
     test-string-addins
     cunit
@@ -43,19 +50,21 @@ ThreadSanitizer or MemorySanitizer, use this options with theses values: asan, m
     cunit
   )
 
+  target_link_libraries (
+    test-path-utils
+    cunit
+  )
+
   add_custom_target (
     tests
     COMMAND ${CMAKE_BINARY_DIR}/test-string-addins
     COMMAND ${CMAKE_BINARY_DIR}/test-dimension
+    COMMAND ${CMAKE_BINARY_DIR}/test-path-utils
     DEPENDS test-string-addins
     DEPENDS test-dimension
   )
 endif ()
 
-find_package (X11)
-if (NOT X11_Xdamage_FOUND OR NOT X11_Xrandr_FOUND OR NOT X11_Xrender_FOUND OR NOT X11_Xinerama_FOUND OR NOT X11_Xcomposite_FOUND)
-  message (FATAL_ERROR "Could not find all X11 libraries!")
-endif ()
 
 include_directories (
   ${X11_Xrender_INCLUDE_PATH}
@@ -119,6 +128,7 @@ set( SOURCES src/config.c
              src/util/common.c
 	     src/util/debug.c
 	     src/util/misc.c
+	     src/util/path-utils.c
              src/util/strnatcmp.c
              src/util/timer.c
 	     src/util/string-addins.c

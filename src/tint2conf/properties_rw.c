@@ -1,10 +1,13 @@
+#include "conf.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <gtk/gtk.h>
 
 #include "common.h"
+#include "path-utils.h"
 #include "properties.h"
 #include "properties_rw.h"
 
@@ -756,7 +759,7 @@ void add_entry(char *key, char *value)
 		else if (strcmp(value, "6") == 0)
 			gtk_combo_box_set_active(GTK_COMBO_BOX(panel_combo_monitor), 7);
 	}
-	
+
 	/* autohide options */
 	else if (strcmp(key, "autohide") == 0) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(panel_autohide), atoi(value));
@@ -1156,13 +1159,13 @@ void add_entry(char *key, char *value)
 		gtk_spin_button_set_value(GTK_SPIN_BUTTON(launcher_icon_size), atoi(value));
 	}
 	else if (strcmp(key, "launcher_item_app") == 0) {
-		char *path = expand_tilde(value);
+		char *path = path_expand_tilde (value);
 		load_desktop_file(path, TRUE);
 		load_desktop_file(path, FALSE);
 		free(path);
 	}
 	else if (strcmp(key, "launcher_apps_dir") == 0) {
-		char *path = expand_tilde(value);
+		char *path = path_expand_tilde (value);
 
 		if (gtk_entry_get_text_length(GTK_ENTRY(launcher_apps_dirs)) > 0) {
 			gtk_entry_append_text(GTK_ENTRY(launcher_apps_dirs), ",");

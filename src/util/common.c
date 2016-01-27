@@ -116,21 +116,6 @@ void tint_exec(const char *command)
 	}
 }
 
-char *expand_tilde(char *s)
-{
-	const gchar *home = g_get_home_dir();
-	if (home &&
-		(strcmp(s, "~") == 0 ||
-		strstr(s, "~/") == s)) {
-		char *result = calloc(strlen(home) + strlen(s), 1);
-		strcat(result, home);
-		strcat(result, s + 1);
-		return result;
-	} else {
-		return strdup(s);
-	}
-}
-
 char *contract_tilde(char *s)
 {
 	const gchar *home = g_get_home_dir();

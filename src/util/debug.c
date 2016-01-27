@@ -21,7 +21,9 @@ void warn (const char* fname, int linum, const char* fmt, ...) {
 
   va_list rest;
   va_start (rest, fmt);
-  _common (fmt, rest);
+  /* _common (fmt, rest); */
+  fprintf (stderr, fmt, rest);;
+  fputc ('\n', stderr);
   va_end (rest);
 }
 
@@ -46,6 +48,7 @@ void msg (const char* fmt, ...) {
 static void _common (const char* fmt, va_list rest)  {
   fprintf (stderr, fmt, rest);;
   fputc ('\n', stderr);
+  fflush (stderr);
 }
 
 static const char* path_shortify (const char* path) {
