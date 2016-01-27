@@ -19,15 +19,19 @@ include_directories( ../util
                      ${GTK2_INCLUDE_DIRS}
                      ${RSVG_INCLUDE_DIRS} )
 
-set(SOURCES ../util/common.c
-			../config.c
-            ../server.c
-            ../launcher/apps-common.c
-            ../launcher/icon-theme-common.c
-            main.c
-            properties.c
-            properties_rw.c
-            theme_view.c )
+set(SOURCES
+  ../util/common.c
+  ../util/string-addins.c
+  ../util/path-utils.c
+  ../config.c
+  ../server.c
+  ../launcher/apps-common.c
+  ../launcher/icon-theme-common.c
+  main.c
+  properties.c
+  properties_rw.c
+  theme_view.c
+)
 
 add_definitions( -DTINT2CONF )
 

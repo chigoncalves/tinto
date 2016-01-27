@@ -16,6 +16,7 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 **************************************************************************/
+#include "conf.h"
 
 #include "main.h"
 #include "properties.h"
@@ -161,8 +162,11 @@ void panel_remove_item(GtkWidget *widget, gpointer data);
 void panel_move_item_down(GtkWidget *widget, gpointer data);
 void panel_move_item_up(GtkWidget *widget, gpointer data);
 
-void applyClicked(GtkWidget *widget, gpointer data)
-{
+void
+applyClicked (GtkWidget *widget, gpointer data) {
+  UNUSED (widget);
+  UNUSED (data);
+
 	char *file = get_current_theme_file_name();
 	if (file) {
 		if (config_is_manual(file)) {
@@ -181,6 +185,8 @@ void applyClicked(GtkWidget *widget, gpointer data)
 
 void cancelClicked(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+
 	GtkWidget *view = (GtkWidget *)data;
 	gtk_widget_destroy(view);
 }
@@ -522,6 +528,9 @@ void background_create_new()
 
 void background_duplicate(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0) {
 		background_create_new();
@@ -569,6 +578,9 @@ void background_duplicate(GtkWidget *widget, gpointer data)
 
 void background_delete(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0)
 		return;
@@ -672,6 +684,9 @@ void background_force_update()
 
 void background_update(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0)
 		return;
@@ -711,6 +726,9 @@ void background_update(GtkWidget *widget, gpointer data)
 
 void current_background_changed(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0)
 		return;
@@ -1368,6 +1386,9 @@ void set_panel_items(const char *items)
 
 void panel_add_item(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -1393,6 +1414,9 @@ void panel_add_item(GtkWidget *widget, gpointer data)
 
 void panel_remove_item(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -1403,6 +1427,9 @@ void panel_remove_item(GtkWidget *widget, gpointer data)
 
 void panel_move_item_down(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -1416,6 +1443,9 @@ void panel_move_item_down(GtkWidget *widget, gpointer data)
 
 void panel_move_item_up(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	{
 		GtkTreeIter iter;
 		GtkTreeModel *model;
@@ -1438,6 +1468,9 @@ GtkListStore *icon_themes;
 
 void launcher_add_app(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -1469,6 +1502,9 @@ void launcher_add_app(GtkWidget *widget, gpointer data)
 
 void launcher_remove_app(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -1479,6 +1515,9 @@ void launcher_remove_app(GtkWidget *widget, gpointer data)
 
 void launcher_move_app_down(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -1492,6 +1531,9 @@ void launcher_move_app_down(GtkWidget *widget, gpointer data)
 
 void launcher_move_app_up(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	GtkTreeIter iter;
 	GtkTreeModel *model;
 
@@ -1604,6 +1646,9 @@ void icon_theme_changed()
 
 void launcher_icon_theme_changed(GtkWidget *widget, gpointer data)
 {
+  UNUSED (widget);
+  UNUSED (data);
+
 	icon_theme_changed();
 }
 
@@ -1919,7 +1964,7 @@ void create_launcher(GtkWidget *parent)
 	gtk_box_pack_start(GTK_BOX(parent), table, FALSE, FALSE, 0);
 	gtk_table_set_row_spacings(GTK_TABLE(table), ROW_SPACING);
 	gtk_table_set_col_spacings(GTK_TABLE(table), COL_SPACING);
-	
+
 	row = 0, col = 2;
 	label = gtk_label_new(_("Background"));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
@@ -2641,6 +2686,9 @@ void create_task(GtkWidget *parent)
 
 void task_status_toggle_button_callback(GtkWidget *widget, gpointer data)
 {
+
+  UNUSED (data);
+
 	GtkWidget *child1, *child2, *child3;
 	child1 = child2 = child3 = NULL;
 
@@ -3443,7 +3491,7 @@ void create_tooltip(GtkWidget *parent)
 	col++;
 
 	change_paragraph(parent);
-	
+
 	label = gtk_label_new(_("<b>Appearance</b>"));
 	gtk_misc_set_alignment(GTK_MISC(label), 0, 0);
 	gtk_label_set_use_markup(GTK_LABEL(label), TRUE);
