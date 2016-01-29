@@ -3,7 +3,7 @@
 =============
  Tinto Panel
 =============
-Tinto panel is simple ligthweight X11 desktop panel, it is a fork of `tint2 <http://code.google.com/p/tint2/>`_, which
+Tinto panel is simple lightweight X11 desktop panel, it is a fork of `tint2 <http://code.google.com/p/tint2/>`_, which
 is also a fork of `ttm <http://code.google.com/p/ttm/>`_.
 
 Getting the sources
@@ -14,11 +14,10 @@ Just issue the following command:
 
    % git clone https://bitbucket.org/crowseye/tinto
 
-Building & Instalation
-======================
-To build tinto yourself you will need the development version of these libraries, note that some Linux distributions
-called ``libXXX-dev``, ``libXXX-devel``, ``XXX-dev`` or ``XXX-devel``, so you will need you find what your distribution
-call them.
+Building & Installation
+=======================
+To build **tinto** yourself you will need the development version of these libraries, note that some Linux distributions
+called *libXXX-dev*, *libXXX-devel*, *XXX-dev* or *XXX-devel*, so you will need you find what your distribution call them.
 
 * X11/Xlib
 * Xinerama
@@ -36,12 +35,13 @@ call them.
 * Gobject
 * Startup Notification
 
-Once you have insalled the dependencies then issue these commands to build tinto:
+Once you have installed the dependencies then issue these commands to build **tinto**\ :
 
 .. code-block:: shell
 
    % cd tinto
    % cmake . -Bbuild
+   % cd build
    % make install
 
 Running
