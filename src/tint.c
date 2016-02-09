@@ -66,12 +66,12 @@ noreturn void tinto_usage (void) {
   MSG ("  %s [options]\n", PROJECT_NAME);
 
   MSG ("Options");
-  MSG ("  --config-file, -c <filename>\t\t\tStart tinto using"
+  MSG ("  --config-file, -c <filename>%63s", "Start tinto using"
        " \"filename\" as config file.\n");
-  MSG ("  --help, -h\t\t\t\t\tPrint this help message then exit.\n");
-  MSG ("  --panel-snapshot, -s <path-to-a-new-image>    Take a new"
+  MSG ("  --help, -h%71s", "Print this help message then exit.\n");
+  MSG ("  --panel-snapshot, -s%86s", "<path-to-a-new-image>    Take a new"
        " snapshot of the panel an save it as \"new-image\".\n");
-  MSG ("  --version, -v\t\t\t\t\tPrint version information then exit.");
+  MSG ("  --version, -v%69s", "Print version information then exit.");
 
   exit (EXIT_FAILURE);
 }
