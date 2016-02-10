@@ -15,7 +15,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   )
 
   if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -std=c99 -pedantic")
+    set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -std=c11 -pedantic")
 
     if (ENABLE_ASAN)
       string (TOLOWER ${ENABLE_SAN} ENABLE_SAN)

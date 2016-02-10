@@ -15,7 +15,6 @@ option( ENABLE_EXAMPLES "Install additional tin2rc examples" OFF )
 option (ENABLE_RSVG "Enable `rsvg` support for launcher icons." ON )
 option (ENABLE_SN "Enable `startup notification` support." ON)
 
-
 set (tinto_IN_SOURCE_RES_DIR "${CMAKE_HOME_DIRECTORY}/res")
 set (tinto_IN_SOURCE_BIN_DIR "${CMAKE_HOME_DIRECTORY}/res")
 set (tinto_IN_SOURCE_DOC_DIR "${CMAKE_HOME_DIRECTORY}/doc")
