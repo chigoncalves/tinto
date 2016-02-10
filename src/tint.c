@@ -262,7 +262,7 @@ void init_X11_post_config()
 	data_dirs = g_get_system_data_dirs ();
 	int i;
 	for (i = 0; data_dirs[i] != NULL; i++)	{
-		path = g_build_filename(data_dirs[i], "tint2", "default_icon.png", NULL);
+		path = g_build_filename(data_dirs[i], "tint2", "icon.png", NULL);
 		if (g_file_test (path, G_FILE_TEST_EXISTS))
 			default_icon = imlib_load_image(path);
 		g_free(path);

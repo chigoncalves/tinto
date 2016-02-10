@@ -15,6 +15,17 @@ option( ENABLE_EXAMPLES "Install additional tin2rc examples" OFF )
 option (ENABLE_RSVG "Enable `rsvg` support for launcher icons." ON )
 option (ENABLE_SN "Enable `startup notification` support." ON)
 
+
+set (tinto_IN_SOURCE_RES_DIR "${CMAKE_HOME_DIRECTORY}/res")
+set (tinto_IN_SOURCE_BIN_DIR "${CMAKE_HOME_DIRECTORY}/res")
+set (tinto_IN_SOURCE_DOC_DIR "${CMAKE_HOME_DIRECTORY}/doc")
+
+mark_as_advanced (
+  tinto_IN_SOURCE_RES_DIR
+  tinto_IN_SOURCE_BIN_DIR
+  tinto_IN_SOURCE_DOC_DIR
+)
+
 find_package (X11)
 if (NOT X11_Xdamage_FOUND OR NOT X11_Xrandr_FOUND OR NOT X11_Xrender_FOUND OR NOT X11_Xinerama_FOUND OR NOT X11_Xcomposite_FOUND)
   message (FATAL_ERROR "Could not find all X11 libraries!")
@@ -139,11 +150,11 @@ configure_file ("${CMAKE_SOURCE_DIR}/include/conf.h.in" "${CMAKE_BINARY_DIR}/inc
 set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}" )
 set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}" )
 
-install( TARGETS ${PROJECT_NAME} DESTINATION bin )
-install( FILES sample/tint2rc DESTINATION ${SYSCONFDIR}/xdg/${PROJECT_NAME} )
-install( FILES default_icon.png DESTINATION ${DATADIR}/${PROJECT_NAME} )
-install( FILES AUTHORS ChangeLog README DESTINATION ${DOCDIR} )
-install( FILES doc/tint2.1 DESTINATION ${MANDIR}/man1 )
+install (TARGETS ${PROJECT_NAME} DESTINATION bin)
+install (FILES ${tinto_IN_SOURCE_RES_DIR}/config-sample/tinto.conf DESTINATION ${SYSCONFDIR}/xdg/${PROJECT_NAME})
+install (FILES icon.png DESTINATION ${DATADIR}/${PROJECT_NAME})
+install (FILES AUTHORS ChangeLog README DESTINATION ${DOCDIR})
+install (FILES ${tinto_IN_SOURCE_DOC_DIR}/man/tinto.1 DESTINATION ${MANDIR}/man1)
 
 if( ENABLE_EXAMPLES )
   file( GLOB SAMPLEFILES sample/*.tint2rc )
