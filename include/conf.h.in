@@ -12,12 +12,15 @@
 #cmakedefine DEBUG 1
 #cmakedefine TINTO_DEVEL_MODE 1
 
+#cmakedefine TINT2CONF 1
+#cmakedefine INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
+
 #ifndef UNUSED
-#define UNUSED(var) ((void)var)
+  #define UNUSED(var) ((void)var)
 #endif
 
 #ifndef NUL
-#define NUL '\0'
+  #define NUL '\0'
 #endif // NUL
 
 #cmakedefine ENABLE_BATTERY 1
@@ -29,7 +32,7 @@
 
 #define _BSD_SOURCE 1
 #if !defined _POSIX_C_SOURCE || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE < 200809L)
-#define _POSIX_C_SOURCE 200809L
+  #define _POSIX_C_SOURCE 200809L
 #endif // _POSIX_C_SOURCE
 
 #endif // TINTO_INCLUDE_CONF

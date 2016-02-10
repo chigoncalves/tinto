@@ -78,6 +78,7 @@ if (ENABLE_RSVG)
     link_libraries (${RSVG_LIBRARIES})
     link_directories (${RSVG_LIBRARY_DIRS})
     set (HAS_RSVG 1)
+    set (HAVE_RSVG 1) # Update-me in `tint2conf'
   else ()
     message (FATAL_ERROR "SVG support enabled yet dependency not fulfilled: librsvg-2.0" )
   endif ()
@@ -97,6 +98,8 @@ if (ENABLE_SN)
 endif ()
 
 if (ENABLE_TINT2CONF)
+  set (TINT2CONF 1)
+  set (TINTO_CONFIG_BIN tint2conf)
   add_subdirectory (src/tint2conf)
 endif ()
 
@@ -128,6 +131,8 @@ target_link_libraries (${PROJECT_NAME}
   ${IMLIB2_LIBRARIES}
   m
 )
+
+include_directories (src)
 
 configure_file ("${CMAKE_SOURCE_DIR}/include/conf.h.in" "${CMAKE_BINARY_DIR}/include/conf.h")
 
