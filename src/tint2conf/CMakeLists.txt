@@ -1,3 +1,5 @@
+set (CMAKE_INCLUDE_CURRENT_DIR 1)
+
 set (TINTO_CONFIG_SOURCES
   ../util/common.c
   ../util/string-addins.c

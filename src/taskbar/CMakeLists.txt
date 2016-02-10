@@ -1,4 +1,4 @@
-include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+set (CMAKE_INCLUDE_CURRENT_DIR 1)
 
 list (APPEND SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/task.c
