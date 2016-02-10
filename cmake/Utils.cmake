@@ -34,50 +34,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
       message (FATAL_ERROR "Lsan not enabled yet.")
     endif ()
   endif ()
-
-  add_executable (
-    test-string-addins
-    src/util/string-addins.c
-    src/util/t/test-string-addins.c
-  )
-
-  add_executable (
-    test-dimension
-    src/util/misc.c
-    src/util/string-addins.c
-    src/util/t/test-dimension.c
-  )
-
- add_executable (
-    test-path-utils
-    src/util/path-utils.c
-    src/util/string-addins.c
-    src/util/t/test-path-utils.c
-  )
-
-  target_link_libraries (
-    test-string-addins
-    cunit
-  )
-
-  target_link_libraries (
-    test-dimension
-    cunit
-  )
-
-  target_link_libraries (
-    test-path-utils
-    cunit
-  )
-
-  add_custom_target (
-    tests
-    COMMAND ${CMAKE_BINARY_DIR}/test-string-addins
-    COMMAND ${CMAKE_BINARY_DIR}/test-dimension
-    COMMAND ${CMAKE_BINARY_DIR}/test-path-utils
-    DEPENDS test-string-addins
-    DEPENDS test-dimension
-  )
 endif ()
 
 set (SOURCES "")

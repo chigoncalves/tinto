@@ -1,0 +1,20 @@
+include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+
+list (APPEND SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/area.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/common.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/debug.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/misc.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/path-utils.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/strnatcmp.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/timer.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/string-addins.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/window.c
+)
+
+set (SOURCES "${SOURCES}" PARENT_SCOPE)
+
+
+if (TINTO_DEVEL_MODE)
+  add_subdirectory (t)
+endif ()

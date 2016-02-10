@@ -1,0 +1,9 @@
+include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+
+list (APPEND SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/task.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/taskbar.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/taskbarname.c
+)
+
+set (SOURCES "${SOURCES}" PARENT_SCOPE)

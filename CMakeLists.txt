@@ -58,34 +58,16 @@ include_directories (
   ${IMLIB2_INCLUDE_DIRS}
 )
 
-
 add_subdirectory (src)
-
-list (APPEND SOURCES
-  src/clock/clock.c
-  src/systray/systraybar.c
-  src/launcher/launcher.c
-  src/launcher/apps-common.c
-  src/launcher/icon-theme-common.c
-  src/launcher/xsettings-client.c
-  src/launcher/xsettings-common.c
-  src/taskbar/task.c
-  src/taskbar/taskbar.c
-  src/taskbar/taskbarname.c
-  src/tooltip/tooltip.c
-  src/util/area.c
-  src/util/common.c
-  src/util/debug.c
-  src/util/misc.c
-  src/util/path-utils.c
-  src/util/strnatcmp.c
-  src/util/timer.c
-  src/util/string-addins.c
-  src/util/window.c
-)
+add_subdirectory (src/clock)
+add_subdirectory (src/launcher)
+add_subdirectory (src/systray)
+add_subdirectory (src/taskbar)
+add_subdirectory (src/tooltip)
+add_subdirectory (src/util)
 
 if (ENABLE_BATTERY)
-  list (APPEND SOURCES src/battery/battery.c)
+  add_subdirectory (src/battery)
   include_directories (src/battery)
 endif ()
 

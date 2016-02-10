@@ -1,3 +1,5 @@
+include_directories (${CMAKE_CURRENT_SOURCE_DIR})
+
 list (APPEND SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/config.c
   ${CMAKE_CURRENT_SOURCE_DIR}/panel.c
