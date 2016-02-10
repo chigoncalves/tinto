@@ -79,3 +79,5 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     DEPENDS test-dimension
   )
 endif ()
+
+set (SOURCES "")

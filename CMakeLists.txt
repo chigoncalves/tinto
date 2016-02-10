@@ -58,11 +58,10 @@ include_directories (
   ${IMLIB2_INCLUDE_DIRS}
 )
 
-set (SOURCES
-  src/config.c
-  src/panel.c
-  src/server.c
-  src/tint.c
+
+add_subdirectory (src)
+
+list (APPEND SOURCES
   src/clock/clock.c
   src/systray/systraybar.c
   src/launcher/launcher.c
