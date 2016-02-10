@@ -146,15 +146,21 @@ int window_get_monitor (Window win)
 	else return i;
 }
 
-void window_get_coordinates (Window win, int *x, int *y, int *w, int *h)
-{
-	int dummy_int;
-	unsigned ww, wh, bw, bh;
+void window_get_coordinates (Window win, rect_t* rect) {
+  int _unused_a;
+  int _unused_b;
+	/* unsigned ww, wh, bw, bh; */
+  unsigned border_width;
+  unsigned depth;
+  unsigned width;
+  unsigned height;
+
+	/* urect_t urect; */
  	Window src;
- 	XTranslateCoordinates(server.dsp, win, server.root_win, 0, 0, x, y, &src);
-	XGetGeometry(server.dsp, win, &src, &dummy_int, &dummy_int, &ww, &wh, &bw, &bh);
-	*w = ww + bw;
-	*h = wh + bh;
+  XTranslateCoordinates (server.dsp, win, server.root_win, 0, 0, &rect->x, &rect->y, &src);
+  XGetGeometry (server.dsp, win, &src, &_unused_a, &_unused_b, &width, &height, &border_width, &depth);
+  rect->width = width + border_width;
+  rect->height = height + depth; // Why sum the window depth???
 }
 
 int window_is_iconified (Window win)

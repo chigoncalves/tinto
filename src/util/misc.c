@@ -84,3 +84,9 @@ dimension_calculate_height (dimension_t dimen, double reference) {
     return 0.0;
   }
 }
+
+
+inline bool rect_equals (const rect_t* this, rect_t* that) {
+  return this->height == that->height && this->width == that->width
+    && this->x == that->x && this->y == that->y;
+}

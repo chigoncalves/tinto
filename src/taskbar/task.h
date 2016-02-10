@@ -12,7 +12,9 @@
 #include <X11/Xlib.h>
 #include <pango/pangocairo.h>
 #include <Imlib2.h>
+
 #include "common.h"
+#include "misc.h"
 #include "timer.h"
 
 
@@ -64,11 +66,13 @@ typedef struct {
 	unsigned int icon_height;
 	char *title;
 	int urgent_tick;
+
 	// These may not be up-to-date
-	int win_x;
-	int win_y;
-	int win_w;
-	int win_h;
+  rect_t geometry;
+	/* int win_x; */
+	/* int win_y; */
+	/* int win_w; */
+	/* int win_h; */
 } Task;
 
 

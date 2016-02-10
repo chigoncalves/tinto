@@ -12,13 +12,17 @@
 #include <glib.h>
 #include <pango/pangocairo.h>
 
+#include "misc.h"
+
 
 void set_active (Window win);
 void set_desktop (int desktop);
 void set_close (Window win);
 int server_get_current_desktop ();
 GSList *server_get_name_of_desktop ();
-void window_get_coordinates (Window win, int *x, int *y, int *w, int *h);
+
+void window_get_coordinates (Window win, rect_t* rect);
+
 int window_is_iconified (Window win);
 int window_is_urgent (Window win);
 int window_is_hidden (Window win);

@@ -18,6 +18,7 @@
 **************************************************************************/
 
 #include "conf.h"
+#include <stdbool.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -54,6 +55,7 @@ guint win_hash(gconstpointer key) { return (guint)*((Window*)key); }
 gboolean win_compare(gconstpointer a, gconstpointer b) { return (*((Window*)a) == *((Window*)b)); }
 void free_ptr_array(gpointer data) { g_ptr_array_free(data, 1); }
 
+static bool contained_within (Task *a, Task *b);
 
 void default_taskbar()
 {
@@ -435,15 +437,15 @@ gint compare_tasks_trivial(Task *a, Task *b, Taskbar *taskbar)
 	return NONTRIVIAL;
 }
 
-gint contained_within(Task *a, Task *b)
-{
-	if ((a->win_x <= b->win_x) &&
-		(a->win_y <= b->win_y) &&
-		(a->win_x + a->win_w >= b->win_x + b->win_w) &&
-		(a->win_y + a->win_h >= b->win_y + b->win_h)) {
-		return 1;
-	}
-	return 0;
+static bool contained_within (Task *a, Task *b) {
+  if ((a->geometry.x <= b->geometry.x)
+      && (a->geometry.y <= b->geometry.y)
+      && (a->geometry.x + a->geometry.width >= b->geometry.x + b->geometry.width)
+      && (a->geometry.y + a->geometry.height >= b->geometry.y + b->geometry.height)) {
+    return true;
+  }
+
+  return false;
 }
 
 gint compare_task_centers(Task *a, Task *b, Taskbar *taskbar)
@@ -452,28 +454,20 @@ gint compare_task_centers(Task *a, Task *b, Taskbar *taskbar)
 	if (trivial != NONTRIVIAL)
 		return trivial;
 
-	// If a window has the same coordinates and size as the other,
-	// they are considered to be equal in the comparison.
-	if ((a->win_x == b->win_x) &&
-		(a->win_y == b->win_y) &&
-		(a->win_w == b->win_w) &&
-		(a->win_h == b->win_h)) {
-		return 0;
-	}
+  // If a window has the same coordinates and size as the other,
+  // they are considered to be equal in the comparison.
+  if (rect_equals (&a->geometry, &b->geometry)) return 0;
 
-	// If a window is completely contained in another,
-	// then it is considered to come after (to the right/bottom) of the other.
-	if (contained_within(a, b))
-		return -1;
-	if (contained_within(b, a))
-		return 1;
+  // If a window is completely contained in another,
+  // then it is considered to come after (to the right/bottom) of the other.
+  if (contained_within (a, b)) return -1;
+  else if (contained_within (b, a)) return 1;
 
-	// Compare centers
-	int a_horiz_c, a_vert_c, b_horiz_c, b_vert_c;
-	a_horiz_c = a->win_x + a->win_w / 2;
-	b_horiz_c = b->win_x + b->win_w / 2;
-	a_vert_c = a->win_y + a->win_h / 2;
-	b_vert_c = b->win_y + b->win_h / 2;
+  // Compare centers
+  const int a_horiz_c = a->geometry.x + a->geometry.width / 2;
+  const int b_horiz_c = b->geometry.x + b->geometry.width / 2;
+  const int a_vert_c = a->geometry.y + a->geometry.height / 2;
+  const int b_vert_c = b->geometry.y + b->geometry.height / 2;
 	if (panel_horizontal) {
 		if (a_horiz_c != b_horiz_c) {
 			return a_horiz_c - b_horiz_c;
@@ -547,16 +541,13 @@ void sort_taskbar_for_win(Window win)
 	GPtrArray* task_group = task_get_tasks(win);
 	if (task_group) {
 		Task* tsk0 = g_ptr_array_index(task_group, 0);
-		if (tsk0) {
-			window_get_coordinates(win, &tsk0->win_x, &tsk0->win_y, &tsk0->win_w, &tsk0->win_h);
-		}
-		for (size_t i = 0; i < task_group->len; ++i) {
-			Task* tsk = g_ptr_array_index(task_group, i);
-			tsk->win_x = tsk0->win_x;
-			tsk->win_y = tsk0->win_y;
-			tsk->win_w = tsk0->win_w;
-			tsk->win_h = tsk0->win_h;
-			sort_tasks(tsk->area.parent);
-		}
-	}
+
+    if (tsk0) window_get_coordinates (win, &tsk0->geometry);
+    Task* tsk = NULL;
+    for (size_t i = 0; i < task_group->len; ++i) {
+      tsk = g_ptr_array_index(task_group, i);
+      tsk->geometry = tsk0->geometry;
+      sort_tasks(tsk->area.parent);
+    }
+  }
 }
