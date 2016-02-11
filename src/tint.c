@@ -117,6 +117,10 @@ void init (int argc, char *argv[]) {
 	     || strcmp (argv[i], "--panel-snapshot") == 0) {
       if (++i < argc) snapshot_path = strdup (argv[i]);
     }
+    else {
+      MSG ("Invalid argument!");
+      tinto_usage ();
+    }
   }
 	// Set signal handler
 	signal_pending = 0;

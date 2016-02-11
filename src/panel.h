@@ -13,6 +13,8 @@
 
 #include "conf.h" // For system checks.
 
+#include <stdbool.h>
+
 #include <pango/pangocairo.h>
 #include <sys/time.h>
 
