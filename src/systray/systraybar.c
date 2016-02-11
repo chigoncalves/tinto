@@ -19,22 +19,23 @@
 
 #include "conf.h"
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #include <glib.h>
 #include <Imlib2.h>
 #include <X11/extensions/Xdamage.h>
 #include <X11/extensions/Xcomposite.h>
 #include <X11/extensions/Xrender.h>
 
-
-#include "systraybar.h"
-#include "server.h"
+#include "misc.h"
 #include "panel.h"
+#include "server.h"
+#include "systraybar.h"
 
 GSList *icons;
 
@@ -603,7 +604,13 @@ void systray_render_icon_now(void* t)
 		adjust_asb(data, traywin->width, traywin->height, systray.alpha, (float)systray.saturation/100, (float)systray.brightness/100);
 	imlib_image_put_back_data(data);
 	XCopyArea(server.dsp, render_background, systray.area.pix, server.gc, traywin->x-systray.area.posx, traywin->y-systray.area.posy, traywin->width, traywin->height, traywin->x-systray.area.posx, traywin->y-systray.area.posy);
-	render_image(systray.area.pix, traywin->x-systray.area.posx, traywin->y-systray.area.posy, traywin->width, traywin->height);
+	const rect_t rect = {
+	  .x = traywin->x-systray.area.posx,
+	  .y = traywin->x-systray.area.posy,
+	  .width = traywin->width,
+	  .height = traywin->height,
+	};
+	render_image (systray.area.pix, &rect);
 	XCopyArea(server.dsp, systray.area.pix, panel->main_win, server.gc, traywin->x-systray.area.posx, traywin->y-systray.area.posy, traywin->width, traywin->height, traywin->x, traywin->y);
 	imlib_free_image_and_decache();
 	XFreePixmap(server.dsp, tmp_pmap);
