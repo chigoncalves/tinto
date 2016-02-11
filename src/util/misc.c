@@ -1,15 +1,17 @@
+/*!
+ * \file misc.c
+ */
+
 #include "conf.h"
 
-#include <ctype.h>
-#include <stdbool.h>
-#include <stdlib.h> // For `atof' and `free'.
-#include <stdint.h> // For `uint8_t'.
-#include <stdio.h>
-#include <string.h> // For `strchr' and `strlen'.
+#include <errno.h>                 // For `errno' and `EINVAL'.
 
-#include <errno.h>  // For `errno' and `EINVAL'.
+#include <ctype.h>                 // For `tolower'.
+#include <stdbool.h>               // For `bool'.
+#include <stdlib.h>                // For `atof' and `free'.
+#include <stdint.h>                // For `uint8_t'.
+#include <string.h>                // For `strchr', `strdup' and `strlen'.
 
-#include "debug.h"
 #include "misc.h"
 #include "string-addins.h" // For `strtrim' and `strltrim'.
 
@@ -18,6 +20,13 @@ extern int errno;
 static uint8_t
 color_rgba_hex_char_to_int (char chr);
 
+/*!
+ * \brief Create a new dimension_t from a string.
+ *
+ * \param str a string containing a size.
+ *
+ * \retrun a new dimensin_t.
+ */
 dimension_t
 dimension_create_from_str (char* str) {
   dimension_t dimen = {
@@ -68,7 +77,15 @@ dimension_create_from_str (char* str) {
   return dimen;
 }
 
-
+/*!
+ * \brief Calculate the width according to a size reference.
+ *
+ * \param dimen a dimension_t
+ *
+ * \param reference a size to take into account when calculating the size.
+ *
+ * \return a new size according to \reference.
+ */
 double
 dimension_calculate_width (dimension_t dimen, double reference) {
   switch (dimen.width.unit) {
@@ -83,6 +100,15 @@ dimension_calculate_width (dimension_t dimen, double reference) {
   }
 }
 
+/*!
+ * \brief Calculate the height according to a size reference.
+ *
+ * \param dimen a dimension_t
+ *
+ * \param reference a size to take into account when calculating the size.
+ *
+ * \return a new size according to \reference.
+ */
 double
 dimension_calculate_height (dimension_t dimen, double reference) {
   switch (dimen.height.unit) {
@@ -97,12 +123,19 @@ dimension_calculate_height (dimension_t dimen, double reference) {
   }
 }
 
-
+/*!
+ * \brief Compare two rect_t.
+ *
+ * \return true if their components are equal, false otherwise.
+ */
 inline bool rect_equals (const rect_t* this, rect_t* that) {
   return this->height == that->height && this->width == that->width
     && this->x == that->x && this->y == that->y;
 }
 
+/*!
+ * \brief Get the default color, which is a lightgray.
+ */
 inline color_rgba_t color_rgba_default (void) {
   static const color_rgba_t color = {
     .red = 211,
@@ -114,6 +147,16 @@ inline color_rgba_t color_rgba_default (void) {
   return color;
 }
 
+/*!
+ * \brief Create a new color_rgba_t from a string.
+ *
+ *  If \str contains a invalid hexadecimal color a default color is returned
+ *  and errno is set to EINVAL.
+ *
+ * \param str a hexadecimal color.
+ *
+ * \param okay is set to true if an error occurred.
+ */
 color_rgba_t color_rgba_create (const char* str, bool* okay) {
   if (!str || '#' != *str) {;
     *okay = false;
@@ -208,12 +251,27 @@ static uint8_t color_rgba_hex_char_to_int (char chr) {
   return r;
 }
 
-
+/*!
+ * \brief Compare two color_rgba_t.
+ *
+ * \param this a color instance.
+ *
+ * \param that a color instance.
+ *
+ * \return true if both colors components are equal, farne othecwise.
+ */
 inline bool color_rgba_equals (const color_rgba_t* this, const color_rgba_t* that) {
   return this->alpha == that->alpha && this->red == that->red
     && this->green == that->green && this->blue == that->blue;
 }
 
+/*!
+ * \brief Extract color components to a array.
+ *
+ * \param self a color_rgba_t instance.
+ *
+ * \param colors a array.
+ */
 inline void color_rgba_extract (const color_rgba_t* self, double colors[4]) {
   colors[0] = self->red / 255.0;
   colors[1] = self->green / 255.0;
