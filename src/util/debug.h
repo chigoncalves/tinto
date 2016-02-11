@@ -25,12 +25,15 @@
 #define MSG(...) msg (__VA_ARGS__)
 
 /*! Print a message to console. */
-void msg (const char* fmt, ...);
+void
+msg (const char* fmt, ...);
 
 /*! Print a warning message to console.*/
-void warn (const char* fname, int linum, const char* fmt, ...);
+void
+warn (const char* fname, int linum, const char* fmt, ...);
 
 /*! Print a error message to console and terminates the application. */
-void die (const char* fname, int linum, const char* fmt, ...);
+void
+die (const char* fname, int linum, const char* fmt, ...);
 
 #endif // SRC_UTIL_DEBUG

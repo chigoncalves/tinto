@@ -17,7 +17,8 @@
 
 
 /*! Shared code used by warn () and die () */
-static void _common (const char* fmt, va_list rest);
+static void
+_common (const char* fmt, va_list rest);
 
 /*!
  * \brief Prints a warning message to console.
@@ -55,9 +56,11 @@ void warn (const char* fname, int linum, const char* fmt, ...) {
  * which in turn is not thread safe.
  */
 #if defined (__STD_C__) && __STDC_VERSION__ == 201112L
-noreturn void die (const char* fname, int linum, const char* fmt, ...)  {
+noreturn void
+die (const char* fname, int linum, const char* fmt, ...)  {
 #else
-void die (const char* fname, int linum, const char* fmt, ...)  {
+void
+die (const char* fname, int linum, const char* fmt, ...)  {
 #endif //  defined (__STD_C__) && __STDC_VERSION__ == 201112L
   const char* path = path_shortify (fname);
   fprintf (stderr, "[DIE @ %s:%d] - ", path, linum);
@@ -75,7 +78,8 @@ void die (const char* fname, int linum, const char* fmt, ...)  {
  * \param fmt the printf () style format string.
  *
  */
-void msg (const char* fmt, ...) {
+void
+msg (const char* fmt, ...) {
   va_list rest;
   va_start (rest, fmt);
   _common (fmt, rest);
@@ -83,7 +87,8 @@ void msg (const char* fmt, ...) {
 }
 
 /*! Shared code used by warn () and die () */
-static void _common (const char* fmt, va_list rest)  {
+static void
+_common (const char* fmt, va_list rest)  {
   vfprintf (stderr, fmt, rest);;
   fputc ('\n', stderr);
   fflush (stderr);
