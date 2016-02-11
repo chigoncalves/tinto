@@ -1,13 +1,16 @@
+/*! \file path-utils.c
+ * Path handling utility functions.
+ */
 #include "conf.h"
 
-#include <libgen.h> // For `basename` and `dirname`.
-#include <unistd.h> // For `uid_t' ant `getuid'.
-#include <pwd.h> // For `getpwuid'.
+#include <libgen.h>    // For `basename` and `dirname`.
+#include <unistd.h>    // For `uid_t' ant `getuid'.
+#include <pwd.h>       // For `getpwuid'.
 
-#include <stddef.h> // For `size_t`.
-#include <stdio.h>  // For `fread', `feof', `fwrite', `sprintf', `fopen' and `fclose'.
-#include <stdlib.h> // For `realloc'.
-#include <string.h> // For `strlen', `strncat', `strncpy' and `strdup'.
+#include <stddef.h>    // For `size_t`.
+#include <stdio.h>     // For `fread', `feof', `fwrite', `sprintf', `fopen' and `fclose'.
+#include <stdlib.h>    // For `realloc'.
+#include <string.h>    // For `strlen', `strncat', `strncpy' and `strdup'.
 
 #include "debug.h"
 #include "path-utils.h"
@@ -15,6 +18,14 @@
 
 #define BUFFER_SZ 256U
 
+/*!
+ * \brief Expand tilde (~) in a string to the user home directory.
+ *
+ * \param str a string to be expanded.
+ *
+ * \return a string with tilde expanded, the string should be later on
+ * freed by free ().
+ */
 char*
 path_expand_tilde (const char* str) {
 
@@ -40,6 +51,12 @@ path_expand_tilde (const char* str) {
   return strdup (str);
 }
 
+/*!
+ * \brief Get the current user home directory.
+ *
+ * \par
+ * The string returned should be friend later on.
+ */
 char*
 path_current_user_home (void) {
   struct passwd* pwd = getpwuid (getuid ());
@@ -48,8 +65,14 @@ path_current_user_home (void) {
   return strdup (pwd->pw_dir);
 }
 
-
-char* path_unexpand_tilde (const char *path) {
+/*!
+ * \brief Unexpand tilde (~) in a string to the user home directory.
+ *
+ * \param path a file path.
+ *
+ */
+char*
+path_unexpand_tilde (const char *path) {
   char *home = path_current_user_home ();
   if (!home) return NULL;
   else if (!strstartswith (path, home)) return strdup (path);
@@ -100,9 +123,7 @@ path_copy_file (const char *pathSrc, const char *pathDest) {
     bytes = fread (buffer, 1U, BUFFER_SZ, fileSrc);
 
     if (bytes != fwrite (buffer, 1, bytes, fileDest)) {
-#ifdef TINTO_DEVEL_MODE
       WARN ("Bytes read mismatched bytes wrote");
-#endif // TINTO_DEVEL_MODE
     }
   }
 
@@ -110,6 +131,15 @@ path_copy_file (const char *pathSrc, const char *pathDest) {
   fclose (fileSrc);
 }
 
+/*!
+ * \brief Shortify ta a path name.
+ *
+ * \param path a path name.
+ *
+ * \return a short path name.
+ *
+ * \note This function is note thread safe.
+ */
 const char*
 path_shortify (const char* path) {
   if (!path) return NULL;
