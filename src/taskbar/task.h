@@ -45,7 +45,8 @@ typedef struct {
 	double text_posx, text_height;
 
 	PangoFontDescription *font_desc;
-	Color font[TASK_STATE_COUNT];
+	/* Color font[TASK_STATE_COUNT]; */
+  color_rgba_t font_colors[TASK_STATE_COUNT];
 	int config_font_mask;
 	int tooltip_enabled;
 } Global_task;
@@ -67,12 +68,7 @@ typedef struct {
 	char *title;
 	int urgent_tick;
 
-	// These may not be up-to-date
   rect_t geometry;
-	/* int win_x; */
-	/* int win_y; */
-	/* int win_w; */
-	/* int win_h; */
 } Task;
 
 

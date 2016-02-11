@@ -364,7 +364,6 @@ void draw_task (void *obj, cairo_t *c)
 	Task *tsk = obj;
 	tsk->state_pix[tsk->current_state] = tsk->area.pix;
 	PangoLayout *layout;
-	Color *config_text;
 	int width=0, height;
 	Panel *panel = (Panel*)tsk->area.panel;
 	//printf("draw_task %d %d\n", tsk->area.posx, tsk->area.posy);
@@ -388,11 +387,11 @@ void draw_task (void *obj, cairo_t *c)
 
 		pango_layout_get_pixel_size (layout, &width, &height);
 
-		config_text = &panel->g_task.font[tsk->current_state];
+    color_rgba_t text_color = panel->g_task.font_colors[tsk->current_state];
 
 		double text_posy = (panel->g_task.area.height - height) / 2.0;
 
-		draw_text(layout, c, panel->g_task.text_posx, text_posy, config_text, panel->font_shadow);
+    draw_text (layout, c, panel->g_task.text_posx, text_posy, &text_color, panel->font_shadow);
 
 		g_object_unref (layout);
 	}

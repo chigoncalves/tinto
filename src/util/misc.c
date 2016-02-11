@@ -1,10 +1,22 @@
 #include "conf.h"
 
+#include <ctype.h>
+#include <stdbool.h>
 #include <stdlib.h> // For `atof' and `free'.
+#include <stdint.h> // For `uint8_t'.
+#include <stdio.h>
 #include <string.h> // For `strchr' and `strlen'.
 
+#include <errno.h>  // For `errno' and `EINVAL'.
+
+#include "debug.h"
 #include "misc.h"
 #include "string-addins.h" // For `strtrim' and `strltrim'.
+
+extern int errno;
+
+static uint8_t
+color_rgba_hex_char_to_int (char chr);
 
 dimension_t
 dimension_create_from_str (char* str) {
@@ -89,4 +101,122 @@ dimension_calculate_height (dimension_t dimen, double reference) {
 inline bool rect_equals (const rect_t* this, rect_t* that) {
   return this->height == that->height && this->width == that->width
     && this->x == that->x && this->y == that->y;
+}
+
+inline color_rgba_t color_rgba_default (void) {
+  static const color_rgba_t color = {
+    .red = 211,
+    .green = 211,
+    .blue = 211,
+    .alpha = UINT8_MAX,
+  };
+
+  return color;
+}
+
+color_rgba_t color_rgba_create (const char* str, bool* okay) {
+  if (!str || '#' != *str) {;
+    *okay = false;
+    return color_rgba_default ();
+  }
+
+  errno = 0;
+  color_rgba_t color = { .alpha = UINT8_MAX };
+  uint8_t first;
+  uint8_t second;
+
+  *okay = true;
+  switch (strlen (++str)) {
+  case 8:
+    first = color_rgba_hex_char_to_int (str[6]) * 16;
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    second = color_rgba_hex_char_to_int(str[7]);
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    color.alpha = first + second;
+    /* Fall through.*/
+
+  case 6:
+    first = color_rgba_hex_char_to_int (str[4]) * 16;
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    second = color_rgba_hex_char_to_int(str[5]);
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    color.blue = first + second;
+
+    first = color_rgba_hex_char_to_int (str[2]) * 16;
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    second = color_rgba_hex_char_to_int(str[3]);
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    color.green = first + second;
+
+    first = color_rgba_hex_char_to_int (str[1]) * 16;
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    second = color_rgba_hex_char_to_int(str[0]);
+    if (errno == EINVAL) {
+      *okay = false;
+      return color_rgba_default ();
+    }
+
+    color.red = first + second;
+    break;
+
+  default:
+    errno = EINVAL;
+    *okay = false;
+    return color_rgba_default ();
+  }
+
+  return color;
+}
+
+static uint8_t color_rgba_hex_char_to_int (char chr) {
+  chr = tolower (chr);
+
+  errno = 0;
+  uint8_t r = 0;
+  if (chr >= '0' && chr <= '9')  r = chr - '0';
+  else if (chr >= 'a' && chr <= 'f')  r = chr - 'a' + 10;
+  else errno = EINVAL;
+
+  return r;
+}
+
+
+inline bool color_rgba_equals (const color_rgba_t* this, const color_rgba_t* that) {
+  return this->alpha == that->alpha && this->red == that->red
+    && this->green == that->green && this->blue == that->blue;
+}
+
+inline void color_rgba_extract (const color_rgba_t* self, double colors[4]) {
+  colors[0] = self->red / 255.0;
+  colors[1] = self->green / 255.0;
+  colors[2] = self->blue / 255.0;
+  colors[3] = self->alpha / 255.0;
 }

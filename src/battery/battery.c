@@ -486,8 +486,7 @@ int update_battery() {
 }
 
 
-void draw_battery (void *obj, cairo_t *c)
-{
+void draw_battery (void *obj, cairo_t *c) {
 	Battery *battery = obj;
 	PangoLayout *layout;
 
@@ -499,10 +498,12 @@ void draw_battery (void *obj, cairo_t *c)
 	pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
 	pango_layout_set_text(layout, buf_bat_percentage, strlen(buf_bat_percentage));
 
-	cairo_set_source_rgba(c, battery->font.color[0], battery->font.color[1], battery->font.color[2], battery->font.alpha);
+  double color[4];
+  color_rgba_extract (&battery->font_color, color);
+  cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 
 	pango_cairo_update_layout(c, layout);
-	draw_text(layout, c, 0, battery->bat1_posy, &battery->font, ((Panel*)battery->area.panel)->font_shadow);
+	draw_text (layout, c, 0, battery->bat1_posy, &battery->font_color, ((Panel*)battery->area.panel)->font_shadow);
 
 	pango_layout_set_font_description(layout, bat2_font_desc);
 	pango_layout_set_indent(layout, 0);
@@ -510,7 +511,7 @@ void draw_battery (void *obj, cairo_t *c)
 	pango_layout_set_width(layout, battery->area.width * PANGO_SCALE);
 
 	pango_cairo_update_layout(c, layout);
-	draw_text(layout, c, 0, battery->bat2_posy, &battery->font, ((Panel*)battery->area.panel)->font_shadow);
+	draw_text(layout, c, 0, battery->bat2_posy, &battery->font_color, ((Panel*)battery->area.panel)->font_shadow);
 	pango_cairo_show_layout(c, layout);
 
 	g_object_unref(layout);

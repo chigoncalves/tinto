@@ -205,10 +205,12 @@ void draw_clock (void *obj, cairo_t *c)
 	pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
 	pango_layout_set_text (layout, buf_time, strlen(buf_time));
 
-	cairo_set_source_rgba (c, clock->font.color[0], clock->font.color[1], clock->font.color[2], clock->font.alpha);
+  double font_color[4];
+  color_rgba_extract (&clock->font_color, font_color);
+  cairo_set_source_rgba (c, font_color[0], font_color[1], font_color[2], font_color[3]);
 
 	pango_cairo_update_layout (c, layout);
-	draw_text(layout, c, 0, clock->time1_posy, &clock->font, ((Panel*)clock->area.panel)->font_shadow);
+	draw_text(layout, c, 0, clock->time1_posy, &clock->font_color, ((Panel*)clock->area.panel)->font_shadow);
 
 	if (time2_format) {
 		pango_layout_set_font_description (layout, time2_font_desc);
@@ -217,7 +219,7 @@ void draw_clock (void *obj, cairo_t *c)
 		pango_layout_set_width (layout, clock->area.width * PANGO_SCALE);
 
 		pango_cairo_update_layout (c, layout);
-		draw_text(layout, c, 0, clock->time2_posy, &clock->font, ((Panel*)clock->area.panel)->font_shadow);
+		draw_text(layout, c, 0, clock->time2_posy, &clock->font_color, ((Panel*)clock->area.panel)->font_shadow);
 	}
 
 	g_object_unref (layout);

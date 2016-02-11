@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <cairo.h>
@@ -40,15 +41,13 @@ void stop_tooltip_timeout();
 Tooltip g_tooltip;
 
 
-void default_tooltip()
-{
+void default_tooltip (void) {
 	// give the tooltip some reasonable default values
 	memset(&g_tooltip, 0, sizeof(Tooltip));
 
-	g_tooltip.font_color.color[0] = 1;
-	g_tooltip.font_color.color[1] = 1;
-	g_tooltip.font_color.color[2] = 1;
-	g_tooltip.font_color.alpha = 1;
+  bool okay;
+  g_tooltip.font_color = color_rgba_create ("#000000", &okay);
+  UNUSED (okay);
 	just_shown = 0;
 }
 
@@ -219,16 +218,18 @@ void tooltip_update()
 	PangoLayout* layout;
 	cs = cairo_xlib_surface_create(server.dsp, g_tooltip.window, server.visual, width, height);
 	c = cairo_create(cs);
-	Color bc = g_tooltip.bg->back;
+	/* Color bc = g_tooltip.bg->back; */
+  double bg_color[4];
+  color_rgba_extract (&g_tooltip.bg->color, bg_color);
 	Border b = g_tooltip.bg->border;
 	if (server.real_transparency) {
 		clear_pixmap(g_tooltip.window, 0, 0, width, height);
 		draw_rect(c, b.width, b.width, width-2*b.width, height-2*b.width, b.rounded-b.width/1.571);
-		cairo_set_source_rgba(c, bc.color[0], bc.color[1], bc.color[2], bc.alpha);
+  cairo_set_source_rgba (c, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
 	}
 	else {
 		cairo_rectangle(c, 0., 0, width, height);
-		cairo_set_source_rgb(c, bc.color[0], bc.color[1], bc.color[2]);
+  cairo_set_source_rgb (c, bg_color[0], bg_color[1], bg_color[2]);
 	}
 	cairo_fill(c);
 	cairo_set_line_width(c, b.width);
@@ -236,11 +237,15 @@ void tooltip_update()
 		draw_rect(c, b.width/2.0, b.width/2.0, width - b.width, height - b.width, b.rounded);
 	else
 		cairo_rectangle(c, b.width/2.0, b.width/2.0, width-b.width, height-b.width);
-	cairo_set_source_rgba(c, b.color[0], b.color[1], b.color[2], b.alpha);
+
+  double color[4];
+  color_rgba_extract (&b.color, color);
+  cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 	cairo_stroke(c);
 
-	Color fc = g_tooltip.font_color;
-	cairo_set_source_rgba(c, fc.color[0], fc.color[1], fc.color[2], fc.alpha);
+  double fc[4];
+  color_rgba_extract (&g_tooltip.font_color, fc);
+  cairo_set_source_rgba (c, fc[0], fc[1], fc[2], fc[3]);
 	layout = pango_cairo_create_layout(c);
 	pango_layout_set_font_description(layout, g_tooltip.font_desc);
 	pango_layout_set_text(layout, g_tooltip.tooltip_text, -1);

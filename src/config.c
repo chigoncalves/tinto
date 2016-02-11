@@ -27,6 +27,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
+
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> // For `strlen'.
@@ -40,6 +42,7 @@
 
 #include "config.h"
 #include "debug.h"
+#include "misc.h"
 
 #ifndef TINT2CONF
 
@@ -195,16 +198,27 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "background_color") == 0) {
 		Background* bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
 		extract_values(value, &value1, &value2, &value3);
-		get_color (value1, bg->back.color);
-		if (value2) bg->back.alpha = (atoi (value2) / 100.0);
-		else bg->back.alpha = 0.5;
+		/* get_color (value1, bg->back.color); */
+		/* if (value2) bg->back.alpha = (atoi (value2) / 100.0); */
+		/* else bg->back.alpha = 0.5; */
+    bool okay;
+    bg->color = color_rgba_create (value1, &okay);
+    if (!okay) {
+      WARN ("Invalid color <%s>", value1);
+    }
 	}
 	else if (strcmp (key, "border_color") == 0) {
 		Background* bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
 		extract_values(value, &value1, &value2, &value3);
-		get_color (value1, bg->border.color);
-		if (value2) bg->border.alpha = (atoi (value2) / 100.0);
-		else bg->border.alpha = 0.5;
+		/* get_color (value1, bg->border.color); */
+		/* if (value2) bg->border.alpha = (atoi (value2) / 100.0); */
+		/* else bg->border.alpha = 0.5; */
+    bool okay;
+    bg->border.color = color_rgba_create (value1, &okay);
+    if (!okay) {
+      WARN ("Invalid color <%s>", value1);
+    }
+
 	}
 
 	/* Panel */
@@ -349,9 +363,15 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "battery_font_color") == 0) {
 #ifdef ENABLE_BATTERY
 		extract_values(value, &value1, &value2, &value3);
-		get_color (value1, panel_config.battery.font.color);
-		if (value2) panel_config.battery.font.alpha = (atoi (value2) / 100.0);
-		else panel_config.battery.font.alpha = 0.5;
+		/* get_color (value1, panel_config.battery.font.color); */
+		/* if (value2) panel_config.battery.font.alpha = (atoi (value2) / 100.0); */
+		/* else panel_config.battery.font.alpha = 0.5; */
+
+    bool okay;
+    panel_config.battery.font_color = color_rgba_create (value1, &okay);
+    if (!okay) {
+      WARN ("Invalid color <color %s>", value1);
+    }
 #endif
 	}
 	else if (strcmp (key, "battery_padding") == 0) {
@@ -415,9 +435,14 @@ void add_entry (char *key, char *value)
 	}
 	else if (strcmp (key, "clock_font_color") == 0) {
 		extract_values(value, &value1, &value2, &value3);
-		get_color (value1, panel_config.clock.font.color);
-		if (value2) panel_config.clock.font.alpha = (atoi (value2) / 100.0);
-		else panel_config.clock.font.alpha = 0.5;
+		/* get_color (value1, panel_config.clock.font.color); */
+		/* if (value2) panel_config.clock.font.alpha = (atoi (value2) / 100.0); */
+		/* else panel_config.clock.font.alpha = 0.5; */
+    bool okay;
+    panel_config.clock.font_color = color_rgba_create (value, &okay);
+    if (!okay) {
+      WARN ("Invalid <color %s>", value);
+    }
 	}
 	else if (strcmp (key, "clock_padding") == 0) {
 		extract_values(value, &value1, &value2, &value3);
@@ -497,15 +522,26 @@ void add_entry (char *key, char *value)
 	}
 	else if (strcmp (key, "taskbar_name_font_color") == 0) {
 		extract_values(value, &value1, &value2, &value3);
-		get_color (value1, taskbarname_font.color);
-		if (value2) taskbarname_font.alpha = (atoi (value2) / 100.0);
-		else taskbarname_font.alpha = 0.5;
+		/* get_color (value1, taskbarname_font.color); */
+		/* if (value2) taskbarname_font.alpha = (atoi (value2) / 100.0); */
+		/* else taskbarname_font.alpha = 0.5; */
+    bool okay;
+    taskbarname_font = color_rgba_create (value1, &okay);
+    if (!okay) {
+      WARN ("Invalid color <color %s>", value1);
+    }
 	}
 	else if (strcmp (key, "taskbar_name_active_font_color") == 0) {
 		extract_values(value, &value1, &value2, &value3);
-		get_color (value1, taskbarname_active_font.color);
-		if (value2) taskbarname_active_font.alpha = (atoi (value2) / 100.0);
-		else taskbarname_active_font.alpha = 0.5;
+		/* get_color (value1, taskbarname_active_font.color); */
+		/* if (value2) taskbarname_active_font.alpha = (atoi (value2) / 100.0); */
+		/* else taskbarname_active_font.alpha = 0.5; */
+
+    bool okay;
+    taskbarname_active_font = color_rgba_create (value1, &okay);
+    if (!okay) {
+      WARN ("Invalid color <color %s>", value1);
+    }
 	}
 	else if (strcmp (key, "taskbar_hide_inactive_tasks") == 0) {
 		hide_inactive_tasks = atoi (value);
@@ -556,10 +592,16 @@ void add_entry (char *key, char *value)
 		int status = get_task_status(split[1]);
 		g_strfreev(split);
 		extract_values(value, &value1, &value2, &value3);
-		float alpha = 1;
-		if (value2) alpha = (atoi (value2) / 100.0);
-		get_color (value1, panel_config.g_task.font[status].color);
-		panel_config.g_task.font[status].alpha = alpha;
+		/* float alpha = 1; */
+		/* if (value2) alpha = (atoi (value2) / 100.0); */
+		/* get_color (value1, panel_config.g_task.font[status].color); */
+		/* panel_config.g_task.font_colors[status].alpha = alpha; */
+    bool okay;
+    panel_config.g_task.font_colors[status] = color_rgba_create (value1, &okay);
+    if (!okay) {
+      WARN ("Invalid color <color %s>", value1);
+    }
+
 		panel_config.g_task.config_font_mask |= (1<<status);
 	}
 	else if (g_regex_match_simple("task.*_icon_asb", key, 0, 0)) {
@@ -696,9 +738,14 @@ void add_entry (char *key, char *value)
 	}
 	else if (strcmp (key, "tooltip_font_color") == 0) {
 		extract_values(value, &value1, &value2, &value3);
-		get_color(value1, g_tooltip.font_color.color);
-		if (value2) g_tooltip.font_color.alpha = (atoi (value2) / 100.0);
-		else g_tooltip.font_color.alpha = 0.1;
+		/* get_color(value1, g_tooltip.font_color.color); */
+		/* if (value2) g_tooltip.font_color.alpha = (atoi (value2) / 100.0); */
+		/* else g_tooltip.font_color.alpha = 0.1; */
+    bool okay;
+    g_tooltip.font_color = color_rgba_create (value1, &okay);
+    if (okay) {
+      WARN ("Invalid color: <%s>", value1);
+    }
 	}
 	else if (strcmp (key, "tooltip_font") == 0) {
 		g_tooltip.font_desc = pango_font_description_from_string(value);

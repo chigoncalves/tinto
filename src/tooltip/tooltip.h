@@ -18,8 +18,9 @@
 #ifndef TOOLTIP_H
 #define TOOLTIP_H
 
-#include "task.h"
+#include "misc.h"
 #include "panel.h"
+#include "task.h"
 #include "timer.h"
 
 
@@ -34,7 +35,7 @@ typedef struct {
 	int paddingx;
 	int paddingy;
 	PangoFontDescription* font_desc;
-	Color font_color;
+  color_rgba_t font_color;
 	Background* bg;
 	timeout* timeout;
 } Tooltip;
@@ -43,7 +44,7 @@ extern Tooltip g_tooltip;
 
 
 // default global data
-void default_tooltip();
+void default_tooltip (void);
 
 // freed memory
 void cleanup_tooltip();

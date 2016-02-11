@@ -8,6 +8,7 @@
 #include <pango/pangocairo.h>
 
 #include "area.h"
+#include "misc.h"
 
 // mouse actions
 enum { NONE=0, CLOSE, TOGGLE, ICONIFY, SHADE, TOGGLE_ICONIFY, MAXIMIZE_RESTORE, MAXIMIZE, RESTORE, DESKTOP_LEFT, DESKTOP_RIGHT, NEXT_TASK, PREV_TASK };
@@ -34,6 +35,7 @@ void createHeuristicMask(DATA32* data, int w, int h);
 
 void render_image(Drawable d, int x, int y, int w, int h);
 
-void draw_text(PangoLayout *layout, cairo_t *c, int posx, int posy, Color *color, int font_shadow);
+void
+draw_text (PangoLayout *layout, cairo_t *c, int posx, int posy, const color_rgba_t* color, int font_shadow);
 
 #endif

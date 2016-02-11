@@ -10,15 +10,19 @@
 #define CLOCK_H
 
 #include <sys/time.h>
-#include "common.h"
+
 #include "area.h"
+#include "common.h"
+#include "misc.h"
 
 
-typedef struct Clock {
+typedef struct {
 	// always start with area
 	Area area;
 
-	Color font;
+  /* color_rgba_t font; */
+  color_rgba_t font_color;
+
 	int time1_posy;
 	int time2_posy;
 } Clock;

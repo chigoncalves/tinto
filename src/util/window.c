@@ -32,6 +32,7 @@
 #include <cairo-xlib.h>
 
 #include "common.h"
+#include "debug.h"
 #include "window.h"
 #include "server.h"
 #include "panel.h"
@@ -149,16 +150,15 @@ int window_get_monitor (Window win)
 void window_get_coordinates (Window win, rect_t* rect) {
   int _unused_a;
   int _unused_b;
-	/* unsigned ww, wh, bw, bh; */
   unsigned border_width;
   unsigned depth;
   unsigned width;
   unsigned height;
-
-	/* urect_t urect; */
- 	Window src;
-  XTranslateCoordinates (server.dsp, win, server.root_win, 0, 0, &rect->x, &rect->y, &src);
-  XGetGeometry (server.dsp, win, &src, &_unused_a, &_unused_b, &width, &height, &border_width, &depth);
+  Window src;
+  XTranslateCoordinates (server.dsp, win, server.root_win, 0, 0,
+			 &rect->x, &rect->y, &src);
+  XGetGeometry (server.dsp, win, &src, &_unused_a, &_unused_b, &width,
+		&height, &border_width, &depth);
   rect->width = width + border_width;
   rect->height = height + depth; // Why sum the window depth???
 }
@@ -250,7 +250,7 @@ Window window_get_active ()
 
 int window_is_active (Window win)
 {
-  return (win == (unsigned long)get_property32(server.root_win, server.atom._NET_ACTIVE_WINDOW, XA_WINDOW));
+  return (win == (Window)get_property32(server.root_win, server.atom._NET_ACTIVE_WINDOW, XA_WINDOW));
 }
 
 

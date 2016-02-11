@@ -318,8 +318,7 @@ void render_image(Drawable d, int x, int y, int w, int h)
 	XRenderFreePicture(server.dsp, pict_drawable);
 }
 
-void draw_text(PangoLayout *layout, cairo_t *c, int posx, int posy, Color *color, int font_shadow)
-{
+void draw_text (PangoLayout *layout, cairo_t *c, int posx, int posy, const color_rgba_t* font_color, int font_shadow) {
 	if (font_shadow) {
 		const int shadow_size = 3;
 		const double shadow_edge_alpha = 0.0;
@@ -333,7 +332,10 @@ void draw_text(PangoLayout *layout, cairo_t *c, int posx, int posy, Color *color
 			}
 		}
 	}
-	cairo_set_source_rgba (c, color->color[0], color->color[1], color->color[2], color->alpha);
+
+    double color[4];
+    color_rgba_extract (font_color, color);
+    cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 	pango_cairo_update_layout (c, layout);
 	cairo_move_to (c, posx, posy);
 	pango_cairo_show_layout (c, layout);

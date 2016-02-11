@@ -19,6 +19,8 @@
 
 #include "conf.h" // For system checks.
 
+#include <errno.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -29,8 +31,8 @@
 #include <pango/pangocairo.h>
 
 #include "area.h"
-#include "server.h"
 #include "panel.h"
+#include "server.h"
 
 
 /************************************************************
@@ -72,6 +74,8 @@
  * So the tree 'Panel.Area' will have 2 childs (Systray and Clock).
  *
  ************************************************************/
+
+extern int errno;
 
 void init_rendering(void *obj, int pos)
 {
@@ -378,16 +382,16 @@ void draw (Area *a)
 }
 
 
-void draw_background (Area *a, cairo_t *c)
-{
-	if (a->bg->back.alpha > 0.0) {
-		//printf("    draw_background (%d %d) RGBA (%lf, %lf, %lf, %lf)\n", a->posx, a->posy, pix->back.color[0], pix->back.color[1], pix->back.color[2], pix->back.alpha);
+void draw_background (Area *a, cairo_t *c) {
+  if (a->bg->color.alpha > 0.0) {
 		draw_rect(c, a->bg->border.width, a->bg->border.width, a->width-(2.0 * a->bg->border.width), a->height-(2.0*a->bg->border.width), a->bg->border.rounded - a->bg->border.width/1.571);
-		cairo_set_source_rgba(c, a->bg->back.color[0], a->bg->back.color[1], a->bg->back.color[2], a->bg->back.alpha);
+    double bg_color[4];
+    color_rgba_extract (&a->bg->color, bg_color);
+    cairo_set_source_rgba (c, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
 		cairo_fill(c);
-	}
+  }
 
-	if (a->bg->border.width > 0 && a->bg->border.alpha > 0.0) {
+  if (a->bg->border.width > 0 && a->bg->border.alpha > 0.0) {
 		cairo_set_line_width (c, a->bg->border.width);
 
 		// draw border inside (x, y, width, height)
@@ -428,7 +432,10 @@ void draw_background (Area *a, cairo_t *c)
 		cairo_pattern_add_color_stop_rgba (linpat, 1, a->border.color[0], a->border.color[1], a->border.color[2], 0);
 		cairo_set_source (c, linpat);
 		*/
-		cairo_set_source_rgba (c, a->bg->border.color[0], a->bg->border.color[1], a->bg->border.color[2], a->bg->border.alpha);
+    double color[4];
+    color_rgba_extract (&a->bg->border.color, color);
+    cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
+
 
 		cairo_stroke (c);
 		//cairo_pattern_destroy (linpat);

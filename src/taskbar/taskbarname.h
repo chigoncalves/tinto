@@ -10,8 +10,8 @@
 
 extern int taskbarname_enabled;
 extern PangoFontDescription *taskbarname_font_desc;
-extern Color taskbarname_font;
-extern Color taskbarname_active_font;
+color_rgba_t taskbarname_font;
+color_rgba_t taskbarname_active_font;
 
 void default_taskbarname();
 void cleanup_taskbarname();
@@ -24,4 +24,3 @@ int  resize_taskbarname(void *obj);
 
 
 #endif
-

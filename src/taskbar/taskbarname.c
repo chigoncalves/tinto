@@ -26,6 +26,7 @@
 #include <glib.h>
 #include <Imlib2.h>
 
+#include "misc.h"
 #include "window.h"
 #include "panel.h"
 #include "taskbar.h"
@@ -34,9 +35,6 @@
 
 int taskbarname_enabled;
 PangoFontDescription *taskbarname_font_desc;
-Color taskbarname_font;
-Color taskbarname_active_font;
-
 
 void default_taskbarname()
 {
@@ -50,7 +48,7 @@ void init_taskbarname_panel(void *p)
 	Panel *panel =(Panel*)p;
 	Taskbar *tskbar;
 	int j;
-	
+
 	if (!taskbarname_enabled)
 		return;
 
@@ -74,7 +72,7 @@ void init_taskbarname_panel(void *p)
 		}
 		else
 			tskbar->bar_name.name = g_strdup_printf("%d", j+1);
-		
+
 		// append the name at the beginning of taskbar
 		tskbar->area.list = g_slist_append(tskbar->area.list, &tskbar->bar_name);
 	}
@@ -112,16 +110,17 @@ void cleanup_taskbarname()
 }
 
 
-void draw_taskbarname (void *obj, cairo_t *c)
-{
+void draw_taskbarname (void *obj, cairo_t *c) {
 	Taskbarname *taskbar_name = obj;
 	Taskbar *taskbar = taskbar_name->area.parent;
 	PangoLayout *layout;
-	Color *config_text = (taskbar->desktop == server.desktop) ? &taskbarname_active_font : &taskbarname_font;
+  color_rgba_t text_color = (taskbar->desktop == server.desktop) ? taskbarname_active_font : taskbarname_font;
+  double color[4];
+  color_rgba_extract (&text_color, color);
 
 	int state = (taskbar->desktop == server.desktop) ? TASKBAR_ACTIVE : TASKBAR_NORMAL;
 	taskbar_name->state_pix[state] = taskbar_name->area.pix;
-	
+
 	// draw content
 	layout = pango_cairo_create_layout (c);
 	pango_layout_set_font_description (layout, taskbarname_font_desc);
@@ -129,13 +128,12 @@ void draw_taskbarname (void *obj, cairo_t *c)
 	pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
 	pango_layout_set_text (layout, taskbar_name->name, strlen(taskbar_name->name));
 
-	cairo_set_source_rgba (c, config_text->color[0], config_text->color[1], config_text->color[2], config_text->alpha);
+	cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 
 	pango_cairo_update_layout (c, layout);
-	draw_text(layout, c, 0, taskbar_name->posy, config_text, ((Panel*)taskbar_name->area.panel)->font_shadow);
+	draw_text (layout, c, 0, taskbar_name->posy, &text_color, ((Panel*)taskbar_name->area.panel)->font_shadow);
 
 	g_object_unref (layout);
-	//printf("draw_taskbarname %s ******************************\n", taskbar_name->name);
 }
 
 
@@ -167,4 +165,3 @@ int resize_taskbarname(void *obj)
 	}
 	return ret;
 }
-

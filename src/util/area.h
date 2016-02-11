@@ -24,15 +24,18 @@
 #include <cairo.h>
 #include <cairo-xlib.h>
 
+#include "misc.h"
+
 
 typedef struct {
   int x;
   int y;
 } point_t;
 
-typedef struct
-{
-	double color[3];
+
+typedef struct {
+  color_rgba_t color;
+  // double color[3]; //Old Member.
 	double alpha;
 	int width;
 	int rounded;
@@ -45,9 +48,9 @@ typedef struct
 	double alpha;
 } Color;
 
-typedef struct
-{
-	Color back;
+typedef struct {
+  color_rgba_t color;
+  //  Color back; // Old member.
 	Border border;
 } Background;
 
@@ -128,4 +131,7 @@ void draw_rect(cairo_t *c, double x, double y, double w, double h, double r);
 
 // clear pixmap with transparent color
 void clear_pixmap(Pixmap p, int x, int y, int w, int h);
+
+
+
 #endif

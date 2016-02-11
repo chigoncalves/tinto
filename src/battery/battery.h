@@ -14,8 +14,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "common.h"
 #include "area.h"
+#include "common.h"
+#include "misc.h"
 
 
 // battery drawing parameter (per panel)
@@ -23,7 +24,8 @@ typedef struct Battery {
 	// always start with area
 	Area area;
 
-	Color font;
+	/* Color font; */
+  color_rgba_t font_color;
 	int bat1_posy;
 	int bat2_posy;
 } Battery;
