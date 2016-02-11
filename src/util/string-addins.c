@@ -1,3 +1,7 @@
+/*!
+ * \file string-addins.c
+ */
+
 #include "conf.h"
 
 #include <stddef.h>
@@ -6,6 +10,13 @@
 
 #include "string-addins.h"
 
+/*!
+ * \brief Trim a string on the left.
+ *
+ * \param str a string.
+ *
+ * \return a the trimmed string.
+ */
 char*
 strltrim (char* str) {
   if (!str) return NULL;
@@ -27,6 +38,13 @@ strltrim (char* str) {
   return str;
 }
 
+/*!
+ * \brief Trim the string on the right side.
+ *
+ * \param str a string.
+ *
+ * \return the trimmed string.
+ */
 char*
 strrtrim (char* str) {
   if (!str) return NULL;
@@ -40,23 +58,48 @@ strrtrim (char* str) {
   return str;
 }
 
-char*
+/*!
+ * \brief Trim a string on the both sides.
+ *
+ * \param str a string.
+ *
+ * \return a trimmed string.
+ */
+inline char*
 strtrim (char* str) {
   return strltrim (strrtrim (str));
 }
 
+/*!
+ * \brief Check if a string starts with a suffix.
+ *
+ * \param word target string.
+ *
+ * \param suffix the preffix string.
+ *
+ * \return true if \word starts with \preffix, false otherwise.
+ */
 bool
-strendswith (const char* restrict word, const char* restrict suffix) {
-  if (!word || !suffix) return NULL;
+strendswith (const char* restrict word, const char* restrict preffix) {
+  if (!word || !preffix) return NULL;
 
   const size_t word_len = strlen (word);
-  const size_t suff_len = strlen (suffix);
+  const size_t suff_len = strlen (preffix);
 
-  if (word_len == suff_len) return strcmp (word, suffix) == 0;
-  else if (word_len > suff_len) return strcmp (word + (word_len - suff_len), suffix) == 0;
-  else return strcmp (suffix + (suff_len - word_len), word) == 0;
+  if (word_len == suff_len) return strcmp (word, preffix) == 0;
+  else if (word_len > suff_len) return strcmp (word + (word_len - suff_len), preffix) == 0;
+  else return strcmp (preffix + (suff_len - word_len), word) == 0;
 }
 
+/*!
+ * \brief Check if a string ends with a suffix.
+ *
+ * \param word target string.
+ *
+ * \param suffix the suffix string.
+ *
+ * \return true if \word ends with \suffix, false otherwise.
+ */
 bool
 strstartswith (const char* restrict word, const char* restrict prefix){
   if (!word || !prefix) return NULL;
