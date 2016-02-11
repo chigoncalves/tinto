@@ -42,15 +42,14 @@ typedef enum {
   Percentage,    /*!< percentage. */
 } unit_t;
 
+/*! \enum value_t.
+ *
+ * \brief A vlue type.
+ */
 typedef struct {
-  double value;
-  unit_t unit;
-} width_t;
-
-typedef struct {
-  double value;
-  unit_t unit;
-} height_t;
+  double value;                /*!< The value. */
+  unit_t unit;                 /*!< Unit, such as pixels or percentage. */
+} value_t;
 
 /*!
  * \struct dimension_t.
@@ -58,10 +57,9 @@ typedef struct {
  * \brief represents a dimension.
  */
 typedef struct {
-  width_t width;
-  height_t height;
+  value_t width;
+  value_t height;
 } dimension_t;
-
 
 /*!
  * \struct color_rgba_t.
