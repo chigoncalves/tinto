@@ -128,7 +128,8 @@ dimension_calculate_height (dimension_t dimen, double reference) {
  *
  * \return true if their components are equal, false otherwise.
  */
-inline bool rect_equals (const rect_t* this, rect_t* that) {
+inline bool
+rect_equals (const rect_t* this, rect_t* that) {
   return this->height == that->height && this->width == that->width
     && this->x == that->x && this->y == that->y;
 }
@@ -136,7 +137,8 @@ inline bool rect_equals (const rect_t* this, rect_t* that) {
 /*!
  * \brief Get the default color, which is a lightgray.
  */
-inline color_rgba_t color_rgba_default (void) {
+inline
+color_rgba_t color_rgba_default (void) {
   static const color_rgba_t color = {
     .red = 211,
     .green = 211,
@@ -157,7 +159,8 @@ inline color_rgba_t color_rgba_default (void) {
  *
  * \param okay is set to true if an error occurred.
  */
-color_rgba_t color_rgba_create (const char* str, bool* okay) {
+color_rgba_t
+color_rgba_create (const char* str, bool* okay) {
   if (!str || '#' != *str) {;
     *okay = false;
     return color_rgba_default ();
@@ -239,18 +242,6 @@ color_rgba_t color_rgba_create (const char* str, bool* okay) {
   return color;
 }
 
-static uint8_t color_rgba_hex_char_to_int (char chr) {
-  chr = tolower (chr);
-
-  errno = 0;
-  uint8_t r = 0;
-  if (chr >= '0' && chr <= '9')  r = chr - '0';
-  else if (chr >= 'a' && chr <= 'f')  r = chr - 'a' + 10;
-  else errno = EINVAL;
-
-  return r;
-}
-
 /*!
  * \brief Compare two color_rgba_t.
  *
@@ -260,7 +251,8 @@ static uint8_t color_rgba_hex_char_to_int (char chr) {
  *
  * \return true if both colors components are equal, farne othecwise.
  */
-inline bool color_rgba_equals (const color_rgba_t* this, const color_rgba_t* that) {
+inline bool
+color_rgba_equals (const color_rgba_t* this, const color_rgba_t* that) {
   return this->alpha == that->alpha && this->red == that->red
     && this->green == that->green && this->blue == that->blue;
 }
@@ -272,9 +264,24 @@ inline bool color_rgba_equals (const color_rgba_t* this, const color_rgba_t* tha
  *
  * \param colors a array.
  */
-inline void color_rgba_extract (const color_rgba_t* self, double colors[4]) {
-  colors[0] = self->red / 255.0;
-  colors[1] = self->green / 255.0;
-  colors[2] = self->blue / 255.0;
-  colors[3] = self->alpha / 255.0;
+void
+color_rgba_to_array (const color_rgba_t* color, double colors [static 4]) {
+  colors[0] = color->red / 255.0;
+  colors[1] = color->green / 255.0;
+  colors[2] = color->blue / 255.0;
+  colors[3] = color->alpha / 255.0;
+}
+
+/*! Covert a hex character to a integer. */
+static uint8_t
+color_rgba_hex_char_to_int (char chr) {
+  chr = tolower (chr);
+
+  errno = 0;
+  uint8_t r = 0;
+  if (chr >= '0' && chr <= '9')  r = chr - '0';
+  else if (chr >= 'a' && chr <= 'f')  r = chr - 'a' + 10;
+  else errno = EINVAL;
+
+  return r;
 }

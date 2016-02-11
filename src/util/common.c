@@ -334,7 +334,7 @@ void draw_text (PangoLayout *layout, cairo_t *c, int posx, int posy, const color
 	}
 
     double color[4];
-    color_rgba_extract (font_color, color);
+    color_rgba_to_array (font_color, color);
     cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 	pango_cairo_update_layout (c, layout);
 	cairo_move_to (c, posx, posy);

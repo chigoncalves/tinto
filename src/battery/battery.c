@@ -499,7 +499,7 @@ void draw_battery (void *obj, cairo_t *c) {
 	pango_layout_set_text(layout, buf_bat_percentage, strlen(buf_bat_percentage));
 
   double color[4];
-  color_rgba_extract (&battery->font_color, color);
+  color_rgba_to_array (&battery->font_color, color);
   cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 
 	pango_cairo_update_layout(c, layout);

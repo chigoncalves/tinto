@@ -116,7 +116,7 @@ void draw_taskbarname (void *obj, cairo_t *c) {
 	PangoLayout *layout;
   color_rgba_t text_color = (taskbar->desktop == server.desktop) ? taskbarname_active_font : taskbarname_font;
   double color[4];
-  color_rgba_extract (&text_color, color);
+  color_rgba_to_array (&text_color, color);
 
 	int state = (taskbar->desktop == server.desktop) ? TASKBAR_ACTIVE : TASKBAR_NORMAL;
 	taskbar_name->state_pix[state] = taskbar_name->area.pix;

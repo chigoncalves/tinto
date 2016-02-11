@@ -103,8 +103,8 @@ color_rgba_create (const char* str, bool* okay);
 bool
 color_rgba_equals (const color_rgba_t* this, const color_rgba_t* that);
 
-/*! Extract color components to a array. */
+/*! Covert a hex character to a integer. */
 void
-color_rgba_extract (const color_rgba_t* self, double colors[4]);
+color_rgba_to_array (const color_rgba_t* color, double colors [static 4]);
 
 #endif // TINTO_SRC_UTIL_MISC_H

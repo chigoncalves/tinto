@@ -220,7 +220,7 @@ void tooltip_update()
 	c = cairo_create(cs);
 	/* Color bc = g_tooltip.bg->back; */
   double bg_color[4];
-  color_rgba_extract (&g_tooltip.bg->color, bg_color);
+  color_rgba_to_array (&g_tooltip.bg->color, bg_color);
 	Border b = g_tooltip.bg->border;
 	if (server.real_transparency) {
 		clear_pixmap(g_tooltip.window, 0, 0, width, height);
@@ -239,12 +239,12 @@ void tooltip_update()
 		cairo_rectangle(c, b.width/2.0, b.width/2.0, width-b.width, height-b.width);
 
   double color[4];
-  color_rgba_extract (&b.color, color);
+  color_rgba_to_array (&b.color, color);
   cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 	cairo_stroke(c);
 
   double fc[4];
-  color_rgba_extract (&g_tooltip.font_color, fc);
+  color_rgba_to_array (&g_tooltip.font_color, fc);
   cairo_set_source_rgba (c, fc[0], fc[1], fc[2], fc[3]);
 	layout = pango_cairo_create_layout(c);
 	pango_layout_set_font_description(layout, g_tooltip.font_desc);

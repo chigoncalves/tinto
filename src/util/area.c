@@ -386,7 +386,7 @@ void draw_background (Area *a, cairo_t *c) {
   if (a->bg->color.alpha > 0.0) {
 		draw_rect(c, a->bg->border.width, a->bg->border.width, a->width-(2.0 * a->bg->border.width), a->height-(2.0*a->bg->border.width), a->bg->border.rounded - a->bg->border.width/1.571);
     double bg_color[4];
-    color_rgba_extract (&a->bg->color, bg_color);
+    color_rgba_to_array (&a->bg->color, bg_color);
     cairo_set_source_rgba (c, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
 		cairo_fill(c);
   }
@@ -433,7 +433,7 @@ void draw_background (Area *a, cairo_t *c) {
 		cairo_set_source (c, linpat);
 		*/
     double color[4];
-    color_rgba_extract (&a->bg->border.color, color);
+    color_rgba_to_array (&a->bg->border.color, color);
     cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 
 

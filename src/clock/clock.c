@@ -206,7 +206,7 @@ void draw_clock (void *obj, cairo_t *c)
 	pango_layout_set_text (layout, buf_time, strlen(buf_time));
 
   double font_color[4];
-  color_rgba_extract (&clock->font_color, font_color);
+  color_rgba_to_array (&clock->font_color, font_color);
   cairo_set_source_rgba (c, font_color[0], font_color[1], font_color[2], font_color[3]);
 
 	pango_cairo_update_layout (c, layout);
