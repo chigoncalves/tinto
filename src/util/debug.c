@@ -32,7 +32,8 @@ _common (const char* fmt, va_list rest);
  * \note This function is not thread safe, because it uses path_shortify ()
  * which in turn is not thread safe.
  */
-void warn (const char* fname, int linum, const char* fmt, ...) {
+void
+warn (const char* fname, int linum, const char* fmt, ...) {
   const char* path = path_shortify (fname);
   fprintf (stderr, "[WARNING @ %s:%d] - ", path, linum);
 
