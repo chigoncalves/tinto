@@ -272,6 +272,18 @@ color_rgba_to_array (const color_rgba_t* color, double colors [static 4]) {
   colors[3] = color->alpha / 255.0;
 }
 
+colorf_rgba_t
+color_rgba_to_f (const color_rgba_t* self) {
+  colorf_rgba_t color = {
+    .red  = self->red / 255.0,
+    .green = self->green / 255.0,
+    .blue = self->blue / 255.0,
+    .alpha = self->alpha / 255.0,
+  };
+
+  return color;
+}
+
 /*! Covert a hex character to a integer. */
 static uint8_t
 color_rgba_hex_char_to_int (char chr) {

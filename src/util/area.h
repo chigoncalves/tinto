@@ -26,13 +26,6 @@
 
 #include "misc.h"
 
-
-typedef struct {
-  int x;
-  int y;
-} point_t;
-
-
 typedef struct {
   color_rgba_t color;
   // double color[3]; //Old Member.

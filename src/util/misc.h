@@ -9,6 +9,16 @@
 #include <stdint.h>
 
 /*!
+ * \struct point_t.
+ *
+ * \brief A point representation.
+ */
+typedef struct {
+  int x;                /*!<X component. */
+  int y;                /*!<Y component. */
+} point_t;
+
+/*!
  * \struct rectf_t.
  *
  * \brief a rectangle for float.
@@ -42,6 +52,16 @@ typedef enum {
   Percentage,    /*!< percentage. */
 } unit_t;
 
+typedef enum {
+  Italic,
+  Normal,
+} font_style_t;
+
+typedef enum {
+  Bold,
+  Nil,
+} font_weight_t;
+
 /*! \enum value_t.
  *
  * \brief A vlue type.
@@ -72,6 +92,28 @@ typedef struct {
   uint8_t blue;		       /*!< Colors Blue component. */
   uint8_t alpha;	       /*!< Colors Alpha component. */
 } color_rgba_t;
+
+typedef struct {
+  double red;
+  double green;
+  double blue;
+  double alpha;
+} colorf_rgba_t;
+
+typedef struct {
+  const char* name;
+  double size;
+  font_style_t style;
+  font_weight_t weight;
+  color_rgba_t color;
+} font_t;
+
+typedef struct {
+  font_t font;
+  point_t position;
+  char* str;
+  bool shadow;
+} text_t;
 
 /*! Create a new dimension_t from a string. */
 dimension_t
@@ -104,5 +146,8 @@ color_rgba_equals (const color_rgba_t* this, const color_rgba_t* that);
 /*! Covert a hex character to a integer. */
 void
 color_rgba_to_array (const color_rgba_t* color, double colors [static 4]);
+
+colorf_rgba_t
+color_rgba_to_f (const color_rgba_t* self);
 
 #endif // TINTO_SRC_UTIL_MISC_H
