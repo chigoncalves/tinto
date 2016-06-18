@@ -1,0 +1,13 @@
+include (CMakePrintHelpers)
+
+set (tinto_INSTALL_MANIFEST_FILE "@CMAKE_CURRENT_BINARY_DIR@/install_manifest.txt")
+cmake_print_variables (tinto_INSTALL_MANIFEST_FILE tinto_INSTALL_MANIFEST_FILE)
+if (NOT EXISTS tinto_INSTALL_MANIFEST_FILE)
+  message (FATAL_ERROR "Installation manifest file does not exist.")
+endif ()
+
+message (STATUS "Performing deinstallation.")
+# file (READ ${tinto_INSTALL_MANIFEST_FILE} files)
+# foreach (file ${files})
+#   message (STATUS "Removing ${file}")
+# endforeach ()

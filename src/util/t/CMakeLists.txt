@@ -1,10 +1,19 @@
 set (CMAKE_INCLUDE_CURRENT_DIR 1)
 
+include (FindCUNIT QUIET)
+
+if (NOT CUNIT_FOUND)
+  message (FATAL_ERROR "CUnit is required, but it's missing.")
+endif ()
+
+include_directories (CUNIT_INCLUDE_DIRS)
+
 add_executable (
   test-string-addins
   ../string-addins.c
   test-string-addins.c
 )
+set (targets test-string-addins)
 
 add_executable (
   test-dimension
@@ -12,6 +21,7 @@ add_executable (
   ../string-addins.c
   test-dimension.c
 )
+list (APPEND targets test-dimension)
 
 add_executable (
   test-path-utils
@@ -19,6 +29,7 @@ add_executable (
   ../string-addins.c
   test-path-utils.c
 )
+list (APPEND targets test-path-utils)
 
 add_executable (
   test-color32
@@ -28,26 +39,12 @@ add_executable (
   ../path-utils.c
   test-color32.c
 )
+list (APPEND targets test-color32)
 
-target_link_libraries (
-  test-string-addins
-  cunit
-)
+foreach (target ${targets})
+  target_link_libraries (${target} ${CUNIT_LIBRARIES})
+endforeach ()
 
-target_link_libraries (
-  test-dimension
-  cunit
-)
-
-target_link_libraries (
-  test-path-utils
-  cunit
-)
-
-target_link_libraries (
-  test-color32
-  cunit
-)
 
 add_custom_target (
   tests
@@ -60,5 +57,3 @@ add_custom_target (
   DEPENDS test-path-utils
   DEPENDS test-color32
 )
-
-message (STATUS ${CMAKE_BINARY_DIR})

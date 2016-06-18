@@ -5,18 +5,25 @@ endif ()
 cmake_minimum_required (VERSION 3.0)
 project (tinto VERSION 0.0.2.1 LANGUAGES C )
 
-list (APPEND CMAKE_MODULE_PATH ";${CMAKE_SOURCE_DIR}/cmake")
-include_directories ("${CMAKE_BINARY_DIR}/include" "${CMAKE_SOURCE_DIR}/include")
+list (APPEND CMAKE_MODULE_PATH
+  ${CMAKE_SOURCE_DIR}/cmake
+  ${CMAKE_BINARY_DIR}/cmake
+  ${CMAKE_SOURCE_DIR}/cmake/modules
+)
+include_directories (
+  ${CMAKE_BINARY_DIR}/include
+  ${CMAKE_SOURCE_DIR}/include
+)
 include (Utils)
 
 option (ENABLE_BATTERY "Enable battery status plugin." ON)
 option (ENABLE_TINT2CONF "Enable tint2conf build, a Gtk+2 theme configurator for `tinto`." OFF)
-option( ENABLE_EXAMPLES "Install additional tin2rc examples" OFF )
+option (ENABLE_EXAMPLES "Install additional tin2rc examples" OFF )
 option (ENABLE_RSVG "Enable `rsvg` support for launcher icons." ON )
 option (ENABLE_SN "Enable `startup notification` support." ON)
 
 set (tinto_IN_SOURCE_RES_DIR "${CMAKE_HOME_DIRECTORY}/res")
-set (tinto_IN_SOURCE_BIN_DIR "${CMAKE_HOME_DIRECTORY}/res")
+set (tinto_IN_SOURCE_BIN_DIR "${CMAKE_HOME_DIRECTORY}/bin")
 set (tinto_IN_SOURCE_DOC_DIR "${CMAKE_HOME_DIRECTORY}/doc")
 
 mark_as_advanced (
@@ -113,18 +120,10 @@ if (ENABLE_TINT2CONF)
   add_subdirectory (src/tint2conf)
 endif ()
 
-if( ENABLE_ASAN )
-  SET(ASAN_C_FLAGS " -O0 -g3 -gdwarf-2 -fsanitize=address -fno-common -fno-omit-frame-pointer -rdynamic ")
-  SET(ASAN_L_FLAGS " -O0 -g3 -gdwarf-2 -fsanitize=address -fno-common -fno-omit-frame-pointer -rdynamic ")
-else()
-  SET(ASAN_C_FLAGS "")
-  SET(ASAN_L_FLAGS "")
-endif()
-
-set( MANDIR share/man CACHE PATH "Directory for man pages" )
-set( DATADIR share CACHE PATH "Directory for shared data" )
-set( SYSCONFDIR /etc CACHE PATH "Directory for configuration files" )
-set( DOCDIR share/doc/tint2 CACHE PATH "Directory for documentation files" )
+set (MANDIR share/man CACHE PATH "Directory for man pages")
+set (DATADIR share CACHE PATH "Directory for shared data")
+set (SYSCONFDIR etc CACHE PATH "Directory for configuration files")
+set (DOCDIR share/doc/tinto CACHE PATH "Directory for documentation files")
 
 link_directories (${IMLIB2_LIBRARY_DIRS})
 
@@ -144,16 +143,23 @@ target_link_libraries (${PROJECT_NAME}
 
 include_directories (src)
 
-configure_file ("${CMAKE_SOURCE_DIR}/include/conf.h.in" "${CMAKE_BINARY_DIR}/include/conf.h")
+configure_file (${CMAKE_SOURCE_DIR}/include/conf.h.in ${CMAKE_BINARY_DIR}/include/conf.h)
+configure_file (${CMAKE_SOURCE_DIR}/cmake/deinstall.cmake.in ${CMAKE_BINARY_DIR}/cmake/deinstall.cmake)
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}" )
 set_target_properties( ${PROJECT_NAME} PROPERTIES LINK_FLAGS "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}" )
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
-install (FILES ${tinto_IN_SOURCE_RES_DIR}/config-sample/tinto.conf DESTINATION ${SYSCONFDIR}/xdg/${PROJECT_NAME})
-install (FILES icon.png DESTINATION ${DATADIR}/${PROJECT_NAME})
-install (FILES AUTHORS ChangeLog README DESTINATION ${DOCDIR})
+install (FILES ${tinto_IN_SOURCE_RES_DIR}/config-sample/tinto.conf DESTINATION xdg/${PROJECT_NAME})
+install (FILES ${tinto_IN_SOURCE_RES_DIR}/icon.png DESTINATION ${DATADIR}/${PROJECT_NAME})
+install (FILES ChangeLog readme.rst DESTINATION ${DOCDIR})
 install (FILES ${tinto_IN_SOURCE_DOC_DIR}/man/tinto.1 DESTINATION ${MANDIR}/man1)
+
+add_custom_target (deinstall
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake/deinstall.cmake
+)
+
+message (STATUS ${CMAKE_COMMAND})
 
 if( ENABLE_EXAMPLES )
   file( GLOB SAMPLEFILES sample/*.tint2rc )
