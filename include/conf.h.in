@@ -27,8 +27,10 @@
 
 #cmakedefine HAS_RSVG 1
 
-#cmakedefine SN_API_NOT_YET_FROZEN 1
 #cmakedefine HAS_SN 1
+#ifdef HAS_SN
+  #define SN_API_NOT_YET_FROZEN 1
+#endif // HAS_SN
 
 #define _BSD_SOURCE 1
 #if !defined _POSIX_C_SOURCE || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE < 200809L)
