@@ -14,7 +14,9 @@ include_directories (
   ${CMAKE_BINARY_DIR}/include
   ${CMAKE_SOURCE_DIR}/include
 )
+
 include (Utils)
+
 
 option (ENABLE_BATTERY "Enable battery status plugin." ON)
 option (ENABLE_TINT2CONF "Enable tint2conf build, a Gtk+2 theme configurator for `tinto`." OFF)
@@ -156,7 +158,10 @@ add_custom_target (deinstall
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake/deinstall.cmake
 )
 
-message (STATUS ${CMAKE_COMMAND})
+
+add_custom_target (lint COMMAND oclint-json-compilation-database
+  $ENV{OCLINT_EXTRA_OPTIONS})
+
 
 if( ENABLE_EXAMPLES )
   file( GLOB SAMPLEFILES sample/*.tint2rc )
