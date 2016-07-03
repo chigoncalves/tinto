@@ -41,6 +41,9 @@
 
 int pending_signal;
 
+static void
+tinto_init_x11 (void);
+
 noreturn void
 tinto_usage (void) {
   MSG ("Usage\n");
@@ -124,45 +127,28 @@ tinto_init (int argc, char *argv[]) {
   //	sigaddset(&block_mask, SIGHUP);
   //	sigaddset(&block_mask, SIGUSR1);
   //	sigprocmask(SIG_BLOCK, &block_mask, 0);
+
+  tinto_init_x11 ();
 }
-
-
-#if 0
-
-#ifdef HAS_SN
-  #include <glib.h>
-  #include <unistd.h>
-  #include <libsn/sn.h>
-  #include <sys/wait.h>
-
-  #include <string.h>
-
-  #include "debug.h"
-  #include "server.h"
-#endif // HAS_SN
 
 void
-sigchld_handler_async (void) {
-#ifdef HAS_SN
-  if (!startup_notifications) return;
+tinto_init_x11 (void) {
+  server.dsp = XOpenDisplay (getenv ("DISPLAY"));
+  if (!server.dsp)
+    DIE ("%s Failed to open display.", PROJECT_NAME);
 
-  // Wait for all dead processes
-  pid_t pid;
-  while ((pid = waitpid (-1, NULL, WNOHANG)) > 0) {
-    SnLauncherContext *ctx =
-      (SnLauncherContext *)g_tree_lookup (server.pids,
-					  GINT_TO_POINTER (pid));
+  server_init_atoms ();
+  server.screen = DefaultScreen (server.dsp);
+  server.root_win = RootWindow (server.dsp, server.screen);
+  server.desktop = server_get_current_desktop ();
 
+  // config file use '.' as decimal separator
+  setlocale (LC_ALL, "");
+  setlocale (LC_NUMERIC, "POSIX");
 
-    if (ctx) {
-      g_tree_remove (server.pids, GINT_TO_POINTER (pid));
-      sn_launcher_context_complete (ctx);
-      sn_launcher_context_unref (ctx);
-    }
-    else
-      MSG ("Unknown child %d terminated!\n", pid);
-  }
-#endif // HAS_SN
+  // get monitor and desktop config
+  get_monitors ();
+  get_desktops ();
+
+  server.disable_transparency = 0;
 }
-
-#endif //

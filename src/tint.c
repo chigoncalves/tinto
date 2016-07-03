@@ -107,28 +107,6 @@ static gint cmp_ptr(gconstpointer a, gconstpointer b) {
 #endif // HAS_SN
 
 
-
-void init_X11_pre_config (void) {
-  server.dsp = XOpenDisplay (getenv ("DISPLAY"));
-  if (!server.dsp)
-    DIE ("%s Failed to open display.", PROJECT_NAME);
-
-	server_init_atoms ();
-	server.screen = DefaultScreen (server.dsp);
-	server.root_win = RootWindow(server.dsp, server.screen);
-	server.desktop = server_get_current_desktop ();
-
-	setlocale (LC_ALL, "");
-	// config file use '.' as decimal separator
-	setlocale(LC_NUMERIC, "POSIX");
-
-	// get monitor and desktop config
-	get_monitors();
-	get_desktops();
-
-	server.disable_transparency = 0;
-}
-
 void init_X11_post_config()
 {
 	server_init_visual();
@@ -1008,7 +986,7 @@ int main (int argc, char *argv[])
 start:
 	tinto_init (argc, argv);
 
-	init_X11_pre_config();
+
 
 	i = 0;
 	if (config_path)
