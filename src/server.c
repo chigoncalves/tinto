@@ -35,10 +35,8 @@
 
 Server_global server;
 
-void server_catch_error (Display *d, XErrorEvent *ev) {
-  UNUSED (d);
-  UNUSED (ev);
-}
+static void
+server_catch_error (Display *d, XErrorEvent *ev);
 
 void server_init_atoms ()
 {
@@ -397,8 +395,7 @@ void get_desktops()
 }
 
 
-void server_init_visual()
-{
+void server_init_visual (void) {
 	// inspired by freedesktops fdclock ;)
 	XVisualInfo *xvi;
 	XVisualInfo templ = { .screen=server.screen, .depth=32, .class=TrueColor };
@@ -450,4 +447,12 @@ void server_init_visual()
 		server.colormap = DefaultColormap(server.dsp, server.screen);
 		server.visual = DefaultVisual(server.dsp, server.screen);
 	}
+
+  XSetErrorHandler ((XErrorHandler) server_catch_error);
+}
+
+static void
+server_catch_error (Display *d, XErrorEvent *ev) {
+  UNUSED (d);
+  UNUSED (ev);
 }

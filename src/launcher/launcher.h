@@ -46,12 +46,12 @@ extern XSettingsClient *xsettings_client;
 extern int startup_notifications;
 
 // default global data
-void default_launcher();
+void
+default_launcher (void);
 
-// initialize launcher : y position, precision, ...
 void init_launcher();
 void init_launcher_panel(void *panel);
-void cleanup_launcher();
+
 void cleanup_launcher_theme(Launcher *launcher);
 
 int  resize_launcher(void *obj);
@@ -69,5 +69,13 @@ void test_launcher_read_theme_file();
 
 void
 launcher_sigchld_handler_async (void);
+
+// initialize launcher : y position, precision, ...
+
+void
+launcher_init (void);
+
+void
+launcher_deinit (void);
 
 #endif

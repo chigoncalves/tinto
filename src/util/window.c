@@ -40,6 +40,8 @@
 
 
 
+
+
 void set_active (Window win)
 {
 	send_event32 (win, server.atom._NET_ACTIVE_WINDOW, 2, CurrentTime, 0);
@@ -366,4 +368,80 @@ void get_text_size2(PangoFontDescription *font, int *height_ink, int *height, in
 	cairo_destroy (c);
 	cairo_surface_destroy (cs);
 	XFreePixmap (server.dsp, pmap);
+}
+
+
+void
+window_action (Task *tsk, int action) {
+  if (!tsk) return;
+
+  int desk;
+  Task* task = NULL;
+  switch (action) {
+  case CLOSE:
+    set_close (tsk->win);
+    break;
+
+  case TOGGLE:
+    set_active (tsk->win);
+    break;
+
+  case ICONIFY:
+    XIconifyWindow (server.dsp, tsk->win, server.screen);
+    break;
+
+  case TOGGLE_ICONIFY:
+    if (task_active && tsk->win == task_active->win)
+      XIconifyWindow (server.dsp, tsk->win, server.screen);
+    else
+      set_active (tsk->win);
+    break;
+
+  case SHADE:
+    window_toggle_shade (tsk->win);
+    break;
+
+  case MAXIMIZE_RESTORE:
+    window_maximize_restore (tsk->win);
+    break;
+
+  case MAXIMIZE:
+    window_maximize_restore (tsk->win);
+    break;
+
+  case RESTORE:
+    window_maximize_restore (tsk->win);
+    break;
+
+  case DESKTOP_LEFT:
+    if (tsk->desktop == 0) break;
+
+    desk = tsk->desktop - 1;
+    windows_set_desktop (tsk->win, desk);
+    if (desk == server.desktop)
+      set_active(tsk->win);
+    break;
+
+  case DESKTOP_RIGHT:
+    if (tsk->desktop == (uint32_t)server.nb_desktop) break;
+
+    desk = tsk->desktop + 1;
+    windows_set_desktop (tsk->win, desk);
+    if (desk == server.desktop)
+      set_active (tsk->win);
+    break;
+
+  case NEXT_TASK:
+    task = next_task (find_active_task(tsk, task_active));
+    set_active (task->win);
+    break;
+
+  case PREV_TASK:
+    task = prev_task (find_active_task(tsk, task_active));
+    set_active (task->win);
+    break;
+
+  default:
+    break;
+  }
 }

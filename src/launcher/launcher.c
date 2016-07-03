@@ -68,18 +68,61 @@ int startup_notifications;
 Imlib_Image scale_icon(Imlib_Image original, int icon_size);
 void free_icon(Imlib_Image icon);
 
-void default_launcher()
-{
-	launcher_enabled = 0;
-	launcher_max_icon_size = 0;
-	launcher_tooltip_enabled = 0;
-	launcher_alpha = 100;
-	launcher_saturation = 0;
-	launcher_brightness = 0;
-	icon_theme_name_config = NULL;
-	icon_theme_name_xsettings = NULL;
-	xsettings_client = NULL;
-	startup_notifications = 0;
+#ifdef HAS_SN
+int sn_pipe_valid = 0;
+int sn_pipe[2];
+int error_trap_depth = 0;
+
+static void
+launcher_error_trap_push (SnDisplay *display, Display *xdisplay);
+
+static gint
+cmp_ptr (gconstpointer a, gconstpointer b);
+
+static void
+launcher_sigchld_handler (int sig);
+
+static void
+launcher_error_trap_pop (SnDisplay *display, Display *xdisplay);
+#endif // HAS_SN
+
+
+void
+default_launcher (void) {
+  launcher_enabled = 0;
+  launcher_max_icon_size = 0;
+  launcher_tooltip_enabled = 0;
+  launcher_alpha = 100;
+  launcher_saturation = 0;
+  launcher_brightness = 0;
+  icon_theme_name_config = NULL;
+  icon_theme_name_xsettings = NULL;
+  xsettings_client = NULL;
+  startup_notifications = 0;
+
+#ifdef HAS_SN
+  // Initialize startup-notification
+  if (startup_notifications) {
+    server.sn_dsp = sn_display_new (server.dsp,
+				    launcher_error_trap_push,
+				    launcher_error_trap_pop);
+    server.pids = g_tree_new (cmp_ptr);
+    // Setup a handler for child termination
+    if (pipe (sn_pipe) != 0) {
+      WARN ("Creating pipe failed.");
+    }
+    else {
+      sn_pipe_valid = 1;
+      struct sigaction act;
+      memset (&act, 0, sizeof (struct sigaction));
+      act.sa_handler = launcher_sigchld_handler;
+      if (sigaction (SIGCHLD, &act, NULL)) {
+	perror("sigaction");
+      }
+    }
+  }
+#endif // HAS_SN
+
 }
 
 
@@ -119,8 +162,7 @@ void init_launcher_panel(void *p)
 }
 
 
-void cleanup_launcher()
-{
+void launcher_deinit (void) {
 	int i;
 	GSList *l;
 
@@ -147,6 +189,17 @@ void cleanup_launcher()
 	icon_theme_name_xsettings = NULL;
 
 	launcher_enabled = 0;
+
+#ifdef HAS_SN
+  if (startup_notifications) {
+    if (sn_pipe_valid) {
+      sn_pipe_valid = 0;
+      close(sn_pipe[1]);
+      close(sn_pipe[0]);
+    }
+  }
+#endif // HAS_SN
+
 }
 
 
@@ -525,3 +578,44 @@ launcher_sigchld_handler_async (void) {
   }
 #endif // HAS_SN
 }
+
+#ifdef HAS_SN
+static void
+launcher_error_trap_push (SnDisplay *display, Display *xdisplay) {
+  UNUSED (display);
+  UNUSED (xdisplay);
+  ++error_trap_depth;
+}
+
+static void
+launcher_error_trap_pop (SnDisplay *display, Display *xdisplay) {
+  UNUSED (display);
+  if (!error_trap_depth) {
+    WARN ("Error trap underflow!\n");
+    return;
+  }
+
+  XSync (xdisplay, False); /* get all errors out of the queue */
+  --error_trap_depth;
+}
+
+static void
+launcher_sigchld_handler (int sig) {
+  UNUSED (sig);
+  if (!startup_notifications || !sn_pipe_valid)
+    return;
+
+  write (sn_pipe[1], "x", 1);
+  fsync (sn_pipe[1]);
+}
+
+static gint
+cmp_ptr (gconstpointer a, gconstpointer b) {
+  if (a < b)
+    return -1;
+  else if (a == b)
+    return 0;
+  else
+    return 1;
+}
+#endif // HAS_SN

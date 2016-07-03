@@ -151,4 +151,80 @@ tinto_init_x11 (void) {
   get_desktops ();
 
   server.disable_transparency = 0;
+
+  server_init_visual ();
+
+  imlib_context_set_display (server.dsp);
+  imlib_context_set_visual (server.visual);
+  imlib_context_set_colormap (server.colormap);
+
+  /* Catch events */
+  XSelectInput (server.dsp, server.root_win,
+		PropertyChangeMask | StructureNotifyMask);
+
+  gchar *path;
+  const gchar * const *data_dirs = g_get_system_data_dirs ();
+  for (size_t i = 0; data_dirs[i] != NULL; ++i)	{
+    path = g_build_filename (data_dirs[i], "tint2", "icon.png", NULL);
+    if (g_file_test (path, G_FILE_TEST_EXISTS))
+      default_icon = imlib_load_image (path);
+
+    g_free (path);
+  }
+}
+
+void
+tinto_deinit (void) {
+  cleanup_systray ();
+  cleanup_tooltip ();
+  cleanup_clock ();
+  launcher_deinit ();
+
+#ifdef ENABLE_BATTERY
+  cleanup_battery ();
+#endif
+  panel_cleanup ();
+  cleanup_config ();
+
+  if (default_icon) {
+    imlib_context_set_image (default_icon);
+    imlib_free_image ();
+    default_icon = NULL;
+  }
+  imlib_context_disconnect_display ();
+
+  cleanup_server ();
+  cleanup_timeout ();
+  if (server.dsp)
+    XCloseDisplay (server.dsp);
+
+  server.dsp = NULL;
+}
+
+void
+tinto_take_snapshot(const char *path) {
+  Panel* panel = &panel1[0];
+
+  if (panel->area.width > server.monitor[0].width)
+    panel->area.width = server.monitor[0].width;
+
+  panel->temp_pmap = XCreatePixmap (server.dsp, server.root_win,
+				    panel->area.width,
+				    panel->area.height,
+				    server.depth);
+  rendering (panel);
+
+  imlib_context_set_drawable (panel->temp_pmap);
+  Imlib_Image img =
+    imlib_create_image_from_drawable (None, 0, 0,
+				      panel->area.width,
+				      panel->area.height, 0);
+
+  imlib_context_set_image (img);
+  if (!panel_horizontal) {
+    imlib_image_flip_horizontal ();
+    imlib_image_flip_diagonal ();
+  }
+  imlib_save_image (path);
+  imlib_free_image ();
 }

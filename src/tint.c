@@ -64,218 +64,10 @@ char *dnd_launcher_exec;
 extern int pending_signal; // Defined in tinto.o translation unit.
 
 #ifdef HAS_SN
-static int sn_pipe_valid = 0;
-static int sn_pipe[2];
-static int error_trap_depth = 0;
-
-static void error_trap_push(SnDisplay *display, Display *xdisplay) {
-  UNUSED (display);
-  UNUSED (xdisplay);
-	++error_trap_depth;
-}
-
-static void error_trap_pop(SnDisplay *display, Display *xdisplay) {
-  UNUSED (display);
-	if (error_trap_depth == 0) {
-		fprintf(stderr, "Error trap underflow!\n");
-		return;
-	}
-
-	XSync(xdisplay, False); /* get all errors out of the queue */
-	--error_trap_depth;
-}
-
-static void sigchld_handler(int sig) {
-  UNUSED (sig);
-	if (!startup_notifications)
-		return;
-	if (!sn_pipe_valid)
-		return;
-	ssize_t wur = write(sn_pipe[1], "x", 1);
-	(void) wur;
-	fsync(sn_pipe[1]);
-}
-
-static gint cmp_ptr(gconstpointer a, gconstpointer b) {
-	if (a < b)
-		return -1;
-	else if (a == b)
-		return 0;
-	else
-		return 1;
-}
-#endif // HAS_SN
-
-
-void init_X11_post_config()
-{
-	server_init_visual();
-	XSetErrorHandler ((XErrorHandler) server_catch_error);
-
-#ifdef HAS_SN
-	// Initialize startup-notification
-	if (startup_notifications) {
-		server.sn_dsp = sn_display_new (server.dsp, error_trap_push, error_trap_pop);
-		server.pids = g_tree_new (cmp_ptr);
-		// Setup a handler for child termination
-		if (pipe(sn_pipe) != 0) {
-			fprintf(stderr, "Creating pipe failed.\n");
-		} else {
-			sn_pipe_valid = 1;
-			struct sigaction act;
-			memset (&act, 0, sizeof (struct sigaction));
-			act.sa_handler = sigchld_handler;
-			if (sigaction(SIGCHLD, &act, 0)) {
-				perror("sigaction");
-			}
-		}
-	}
-#endif // HAS_SN
-
-	imlib_context_set_display (server.dsp);
-	imlib_context_set_visual (server.visual);
-	imlib_context_set_colormap (server.colormap);
-
-	/* Catch events */
-	XSelectInput (server.dsp, server.root_win, PropertyChangeMask|StructureNotifyMask);
-
-	// load default icon
-	gchar *path;
-	const gchar * const *data_dirs;
-	data_dirs = g_get_system_data_dirs ();
-	int i;
-	for (i = 0; data_dirs[i] != NULL; i++)	{
-		path = g_build_filename(data_dirs[i], "tint2", "icon.png", NULL);
-		if (g_file_test (path, G_FILE_TEST_EXISTS))
-			default_icon = imlib_load_image(path);
-		g_free(path);
-	}
-}
-
-
-void cleanup()
-{
-	cleanup_systray();
-	cleanup_tooltip();
-	cleanup_clock();
-	cleanup_launcher();
-#ifdef ENABLE_BATTERY
-	cleanup_battery();
+extern int sn_pipe_valid;
+extern int sn_pipe[2];
+extern int error_trap_depth;
 #endif
-	panel_cleanup ();
-	cleanup_config();
-
-	if (default_icon) {
-		imlib_context_set_image(default_icon);
-		imlib_free_image();
-		default_icon = NULL;
-	}
-	imlib_context_disconnect_display();
-
-	cleanup_server();
-	cleanup_timeout();
-	if (server.dsp)
-		XCloseDisplay(server.dsp);
-	server.dsp = NULL;
-
-#ifdef HAS_SN
-	if (startup_notifications) {
-		if (sn_pipe_valid) {
-			sn_pipe_valid = 0;
-			close(sn_pipe[1]);
-			close(sn_pipe[0]);
-		}
-	}
-#endif // HAS_SN
-}
-
-
-void get_snapshot(const char *path)
-{
-	Panel *panel = &panel1[0];
-
-	if (panel->area.width > server.monitor[0].width)
-		panel->area.width = server.monitor[0].width;
-
-	panel->temp_pmap = XCreatePixmap(server.dsp, server.root_win, panel->area.width, panel->area.height, server.depth);
-	rendering(panel);
-
-	Imlib_Image img = NULL;
-	imlib_context_set_drawable(panel->temp_pmap);
-	img = imlib_create_image_from_drawable(0, 0, 0, panel->area.width, panel->area.height, 0);
-
-	imlib_context_set_image(img);
-	if (!panel_horizontal) {
-		// rotate 90° vertical panel
-		imlib_image_flip_horizontal();
-		imlib_image_flip_diagonal();
-	}
-	imlib_save_image(path);
-	imlib_free_image();
-}
-
-
-void window_action (Task *tsk, int action)
-{
-	if (!tsk) return;
-	int desk;
-	switch (action) {
-		case CLOSE:
-			set_close (tsk->win);
-			break;
-		case TOGGLE:
-			set_active(tsk->win);
-			break;
-		case ICONIFY:
-			XIconifyWindow (server.dsp, tsk->win, server.screen);
-			break;
-		case TOGGLE_ICONIFY:
-			if (task_active && tsk->win == task_active->win)
-				XIconifyWindow (server.dsp, tsk->win, server.screen);
-			else
-				set_active (tsk->win);
-			break;
-		case SHADE:
-			window_toggle_shade (tsk->win);
-			break;
-		case MAXIMIZE_RESTORE:
-			window_maximize_restore (tsk->win);
-			break;
-		case MAXIMIZE:
-			window_maximize_restore (tsk->win);
-			break;
-		case RESTORE:
-			window_maximize_restore (tsk->win);
-			break;
-		case DESKTOP_LEFT:
-			if ( tsk->desktop == 0 ) break;
-			desk = tsk->desktop - 1;
-			windows_set_desktop(tsk->win, desk);
-			if (desk == server.desktop)
-				set_active(tsk->win);
-			break;
-		case DESKTOP_RIGHT:
-		  if (tsk->desktop == (uint32_t)server.nb_desktop ) break;
-			desk = tsk->desktop + 1;
-			windows_set_desktop(tsk->win, desk);
-			if (desk == server.desktop)
-				set_active(tsk->win);
-			break;
-		case NEXT_TASK:
-			{
-				Task *tsk1;
-				tsk1 = next_task(find_active_task(tsk, task_active));
-				set_active(tsk1->win);
-			}
-			break;
-		case PREV_TASK:
-			{
-				Task *tsk1;
-				tsk1 = prev_task(find_active_task(tsk, task_active));
-				set_active(tsk1->win);
-			}
-	}
-}
 
 
 int tint2_handles_click(Panel* panel, XButtonEvent* e)
@@ -987,24 +779,23 @@ start:
 	tinto_init (argc, argv);
 
 
-
 	i = 0;
 	if (config_path)
 		i = config_read_file (config_path);
 	else
 		i = config_read ();
 	if (!i) {
-	  cleanup();
+	  tinto_deinit ();
 	  tinto_usage ();
 	}
 
-	init_X11_post_config();
+
 
 	panel_init ();
 	if (snapshot_path) {
-		get_snapshot(snapshot_path);
-		cleanup();
-		exit(0);
+		tinto_take_snapshot (snapshot_path);
+		tinto_deinit ();
+		exit (0);
 	}
 
 	int damage_event, damage_error;
@@ -1322,7 +1113,7 @@ start:
 		callback_timeout_expired();
 
 		if (pending_signal) {
-			cleanup();
+			tinto_deinit ();
 			if (pending_signal == SIGUSR1) {
 				// restart tint2
 				// SIGUSR1 used when : user's signal, composite manager stop/start or xrandr
