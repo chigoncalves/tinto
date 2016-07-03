@@ -32,10 +32,8 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-
 #ifdef HAS_RSVG
-#include <librsvg/rsvg.h>
-
+  #include <librsvg/rsvg.h>
 #endif // HAS_RSVG
 
 #include "window.h"
@@ -46,6 +44,15 @@
 #include "launcher.h"
 #include "apps-common.h"
 #include "icon-theme-common.h"
+
+#ifdef HAS_SN
+  #include <unistd.h>
+  #include <libsn/sn.h>
+  #include <sys/wait.h>
+
+  #include "debug.h"
+#endif // HAS_SN
+
 
 int launcher_enabled;
 int launcher_max_icon_size;
@@ -493,4 +500,28 @@ void launcher_load_themes(Launcher *launcher)
 										: icon_theme_name_xsettings
 										  ? icon_theme_name_xsettings
 										  : "hicolor");
+}
+
+void
+launcher_sigchld_handler_async (void) {
+#ifdef HAS_SN
+  if (!startup_notifications) return;
+
+  // Wait for all dead processes
+  pid_t pid;
+  while ((pid = waitpid (-1, NULL, WNOHANG)) > 0) {
+    SnLauncherContext *ctx =
+      (SnLauncherContext *)g_tree_lookup (server.pids,
+					  GINT_TO_POINTER (pid));
+
+
+    if (ctx) {
+      g_tree_remove (server.pids, GINT_TO_POINTER (pid));
+      sn_launcher_context_complete (ctx);
+      sn_launcher_context_unref (ctx);
+    }
+    else
+      MSG ("Unknown child %d terminated!\n", pid);
+  }
+#endif // HAS_SN
 }

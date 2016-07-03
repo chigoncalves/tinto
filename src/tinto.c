@@ -30,8 +30,8 @@
 #include "timer.h"
 #include "tinto.h"
 #include "tooltip.h"
-
 #include "server.h"
+
 #include "window.h"
 #include "config.h"
 #include "task.h"
@@ -125,3 +125,44 @@ tinto_init (int argc, char *argv[]) {
   //	sigaddset(&block_mask, SIGUSR1);
   //	sigprocmask(SIG_BLOCK, &block_mask, 0);
 }
+
+
+#if 0
+
+#ifdef HAS_SN
+  #include <glib.h>
+  #include <unistd.h>
+  #include <libsn/sn.h>
+  #include <sys/wait.h>
+
+  #include <string.h>
+
+  #include "debug.h"
+  #include "server.h"
+#endif // HAS_SN
+
+void
+sigchld_handler_async (void) {
+#ifdef HAS_SN
+  if (!startup_notifications) return;
+
+  // Wait for all dead processes
+  pid_t pid;
+  while ((pid = waitpid (-1, NULL, WNOHANG)) > 0) {
+    SnLauncherContext *ctx =
+      (SnLauncherContext *)g_tree_lookup (server.pids,
+					  GINT_TO_POINTER (pid));
+
+
+    if (ctx) {
+      g_tree_remove (server.pids, GINT_TO_POINTER (pid));
+      sn_launcher_context_complete (ctx);
+      sn_launcher_context_unref (ctx);
+    }
+    else
+      MSG ("Unknown child %d terminated!\n", pid);
+  }
+#endif // HAS_SN
+}
+
+#endif //

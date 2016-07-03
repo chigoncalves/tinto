@@ -66,7 +66,6 @@ extern int pending_signal; // Defined in tinto.o translation unit.
 #ifdef HAS_SN
 static int sn_pipe_valid = 0;
 static int sn_pipe[2];
-
 static int error_trap_depth = 0;
 
 static void error_trap_push(SnDisplay *display, Display *xdisplay) {
@@ -97,24 +96,6 @@ static void sigchld_handler(int sig) {
 	fsync(sn_pipe[1]);
 }
 
-static void sigchld_handler_async() {
-	if (!startup_notifications)
-		return;
-	// Wait for all dead processes
-	pid_t pid;
-	while ((pid = waitpid(-1, NULL, WNOHANG)) > 0) {
-		SnLauncherContext *ctx;
-		ctx = (SnLauncherContext *) g_tree_lookup (server.pids, GINT_TO_POINTER (pid));
-		if (ctx == NULL) {
-			fprintf(stderr, "Unknown child %d terminated!\n", pid);
-		} else {
-			g_tree_remove (server.pids, GINT_TO_POINTER (pid));
-			sn_launcher_context_complete (ctx);
-			sn_launcher_context_unref (ctx);
-		}
-	}
-}
-
 static gint cmp_ptr(gconstpointer a, gconstpointer b) {
 	if (a < b)
 		return -1;
@@ -123,9 +104,9 @@ static gint cmp_ptr(gconstpointer a, gconstpointer b) {
 	else
 		return 1;
 }
-#else
-static void sigchld_handler_async() {}
 #endif // HAS_SN
+
+
 
 void init_X11_pre_config (void) {
   server.dsp = XOpenDisplay (getenv ("DISPLAY"));
@@ -1116,7 +1097,7 @@ start:
 				char buffer[1];
 				ssize_t wur = read(sn_pipe[0], buffer, 1);
 				(void) wur;
-				sigchld_handler_async();
+			  launcher_sigchld_handler_async ();
 			}
 			if (FD_ISSET(x11_fd, &fdset)) {
 				while (XPending (server.dsp)) {

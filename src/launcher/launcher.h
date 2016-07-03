@@ -66,4 +66,8 @@ void launcher_action(LauncherIcon *icon, XEvent* e);
 void test_launcher_read_desktop_file();
 void test_launcher_read_theme_file();
 
+
+void
+launcher_sigchld_handler_async (void);
+
 #endif
