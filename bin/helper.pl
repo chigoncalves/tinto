@@ -10,7 +10,6 @@ use subs qw(
   convert_color_alpha
 );
 
-
 use Cwd q/cwd/;
 use File::Spec::Functions q/catdir/;
 use POSIX q/floor/;
@@ -31,59 +30,51 @@ sub convert_to_lisp_style_identifier ($identifier) {
   return $identifier;
 }
 
-opendir (my $DH, $dir);
-while (my $dirent = readdir $DH) {
-  next if $dirent eq '.' || $dirent eq '..' || $dirent !~ /\.conf$/;
-
-  my $old_path = catdir CWD, $dir, $dirent;
-  my $new_file = sprintf "%s.bkp", $old_path;
-  proc_conf_file $old_path, $new_file;
-
-  rename $new_file, $old_path;
-}
-
-# sub f {
-#   my $old_path = catdir CWD, $dir, $dirent;
-
-#   $dirent =~ s/\.tint2rc/.conf/;
-
-#   my $new_path = convert_to_lisp_style_identifier $dirent;
-
-#   $new_path = catdir CWD, $dir, $new_path;
-#   system "git mv $old_path $new_path";
-# }
-
-sub proc_conf_file ($filename, $new_file) {
-  open (my $IN, '<', $filename);
-  open (my $OUT, '>', $new_file);
-
-  while (my $line = <$IN>) {
-    chomp $line;
-
-    if ($line !~ /^#/ && $line =~ /color/) {
-      if ($line =~ /(?<keyword>\w+)\s+=\s+(?<color>#[abcdef0-9]{6})\s+(?<alpha>[0-9]{2,})/i) {
-	my $color = lc $+{color};
-	my $value = convert_color_alpha $+{alpha};
-	$value = sprintf "%x%x", floor ($value / 16), $value % 16;
-	say {$OUT} "$+{keyword} = $color", ($value eq 'ff' ? '' : $value);
-
-      }
-    }
-    else {
-      say {$OUT} $line;
-    }
-  }
-
-  close $IN;
-  close $OUT;
-}
-
-sub str_trim ($str) {
-  $str =~ s/\s+//g;
+sub trim_2 {
+  my $str = shift;
+  $str =~ s/^\s*|\s*$//g;
+  $str =~ s/;//g;
 
   return $str;
 }
 
-sub convert_color_alpha ($color) {
-  return 255 * $color / 100;
+sub proc_arg ($arg) {
+  $arg = trim_2 $arg;
+  my %arg = (type => '', name => '', ptr => '', array => '');
+  if ($arg =~ /(?<type>\w+)\s*\(?<name>\w+)/) {
+
+  }
 }
+
+while (my $line = <DATA>) {
+  $line = trim_2 $line;
+  # say $line;
+  if ($line =~ /^(?<ret_type>\w+)\s*\**(?<ptr_opr>\*)?\s*(?<name>\w+)\s*\(
+		(?<arg_list>(.*))?
+	       \s*\)/xg) {
+    say sprintf ('%s -> %s', $line, (defined $+{arg_list} ? $+{arg_list} : ''));
+
+  }
+  elsif ($line =~ /^(?<type>\w+)\s*(?<ptr_opr>\*)?\s*(?<name>\w+)
+		(?<is_array>\s*\[\s*(\w|\d)*\s*\]\s*)?$/x) {
+    my ($type, $name) = ($+{type}, $+{name});
+    say sprintf ('%s : %s%s%s', $name, $type,
+		 (defined $+{ptr_opr} ? '*' : ''),
+		 (defined $+{is_array} ? '[]' : ''));
+
+  }
+
+}
+
+
+__DATA__
+void tinto_usage (void)
+int** foo_a ()
+int **foo_b()
+  int *foo_c ()
+  int* foo_d ()
+  void qux (int bar)
+  void free (void *ptr)
+  void* realloc (void *ptr, size_t size, int foo)
+  void* baz (int a, char* c, double a)
+int f (person_t p, int chr, char b, foo f, bar_t bar, foo h)

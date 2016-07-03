@@ -30,8 +30,6 @@
 #include "battery.h"
 #endif
 
-
-extern int signal_pending;
 // --------------------------------------------------
 // mouse events
 extern int mouse_left;

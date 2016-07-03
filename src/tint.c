@@ -37,7 +37,6 @@
 #include <sys/wait.h>
 #endif // HAS_SN
 
-#include <stdnoreturn.h>
 
 #include "debug.h"
 #include "server.h"
@@ -52,6 +51,8 @@
 #include "timer.h"
 #include "xsettings-client.h"
 
+#include "tinto.h"
+
 // Drag and Drop state variables
 Window dnd_source_window;
 Window dnd_target_window;
@@ -61,27 +62,8 @@ Atom dnd_atom;
 int dnd_sent_request;
 char *dnd_launcher_exec;
 
-noreturn void tinto_usage (void) {
-  MSG ("Usage\n");
-  MSG ("  %s [options]\n", PROJECT_NAME);
+extern int pending_signal;
 
-  MSG ("Options");
-  MSG ("  --config-file, -c <filename>%63s", "Start tinto using"
-       " \"filename\" as config file.\n");
-  MSG ("  --help, -h%71s", "Print this help message then exit.\n");
-  MSG ("  --panel-snapshot, -s%86s", "<path-to-a-new-image>    Take a new"
-       " snapshot of the panel an save it as \"new-image\".\n");
-  MSG ("  --version, -v%69s", "Print version information then exit.");
-
-  exit (EXIT_FAILURE);
-}
-
-
-void signal_handler(int sig)
-{
-	// signal handler is light as it should be
-	signal_pending = sig;
-}
 
 
 void init (int argc, char *argv[]) {
@@ -123,8 +105,8 @@ void init (int argc, char *argv[]) {
     }
   }
 	// Set signal handler
-	signal_pending = 0;
-	struct sigaction sa = { .sa_handler = signal_handler };
+	pending_signal = 0;
+	struct sigaction sa = { .sa_handler = tinto_signal_handler };
 	struct sigaction sa_chld = { .sa_handler = SIG_DFL, .sa_flags = SA_NOCLDWAIT };
 	sigaction(SIGUSR1, &sa, 0);
 	sigaction(SIGINT, &sa, 0);
@@ -843,7 +825,7 @@ void event_configure_notify (Window win)
 {
 	// change in root window (xrandr)
 	if (win == server.root_win) {
-		signal_pending = SIGUSR1;
+		pending_signal = SIGUSR1;
 		return;
 	}
 
@@ -1278,7 +1260,7 @@ start:
 					case DestroyNotify:
 						if (e.xany.window == server.composite_manager) {
 							// Stop real_transparency
-							signal_pending = SIGUSR1;
+						  pending_signal = SIGUSR1;
 							break;
 						}
 						if (e.xany.window == g_tooltip.window || !systray_enabled)
@@ -1296,10 +1278,10 @@ start:
 						if (ev->data.l[1] == (long)server.atom._NET_WM_CM_S0) {
 							if (ev->data.l[2] == None)
 								// Stop real_transparency
-								signal_pending = SIGUSR1;
+							  pending_signal = SIGUSR1;
 							else
 								// Start real_transparency
-								signal_pending = SIGUSR1;
+							  pending_signal = SIGUSR1;
 						}
 						if (systray_enabled && e.xclient.message_type == server.atom._NET_SYSTEM_TRAY_OPCODE && e.xclient.format == 32 && e.xclient.window == net_sel_win) {
 							net_message(&e.xclient);
@@ -1442,9 +1424,9 @@ start:
 
 		callback_timeout_expired();
 
-		if (signal_pending) {
+		if (pending_signal) {
 			cleanup();
-			if (signal_pending == SIGUSR1) {
+			if (pending_signal == SIGUSR1) {
 				// restart tint2
 				// SIGUSR1 used when : user's signal, composite manager stop/start or xrandr
 				FD_CLR (x11_fd, &fdset); // not sure if needed

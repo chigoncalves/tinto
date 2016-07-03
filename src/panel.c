@@ -37,7 +37,6 @@
 #include "tooltip.h"
 
 
-int signal_pending;
 // --------------------------------------------------
 // mouse events
 int mouse_left;
