@@ -61,74 +61,12 @@ Atom dnd_selection;
 Atom dnd_atom;
 int dnd_sent_request;
 char *dnd_launcher_exec;
-
-extern int pending_signal;
-
-
-
-void init (int argc, char *argv[]) {
-	// set global data
-	default_config();
-	default_timeout();
-	default_systray();
-	memset(&server, 0, sizeof(Server_global));
-#ifdef ENABLE_BATTERY
-	default_battery();
-#endif // ENABLE_BATTERY
-	default_clock();
-	default_launcher();
-	default_taskbar();
-	default_tooltip();
-	panel_default ();
-
-	// read options
-  for (int i = 1; i < argc; ++i) {
-    if (strcmp (argv[i], "-h") == 0 || strcmp (argv[i], "--help") == 0) {
-      tinto_usage ();
-    }
-
-    else if (strcmp (argv[i], "-v") == 0 || strcmp (argv[i], "--version") == 0) {
-      MSG ("%s version %s\n", PROJECT_NAME, PROJECT_VERSION);
-      exit (EXIT_SUCCESS);
-    }
-    else if (strcmp (argv[i], "-c") == 0
-	     || strcmp (argv[i], "--config-file") == 0) {
-      if (++i < argc) config_path = strdup (argv[i]);
-    }
-    else if (strcmp (argv[i], "-s") == 0
-	     || strcmp (argv[i], "--panel-snapshot") == 0) {
-      if (++i < argc) snapshot_path = strdup (argv[i]);
-    }
-    else {
-      MSG ("Invalid argument!");
-      tinto_usage ();
-    }
-  }
-	// Set signal handler
-	pending_signal = 0;
-	struct sigaction sa = { .sa_handler = tinto_signal_handler };
-	struct sigaction sa_chld = { .sa_handler = SIG_DFL, .sa_flags = SA_NOCLDWAIT };
-	sigaction(SIGUSR1, &sa, 0);
-	sigaction(SIGINT, &sa, 0);
-	sigaction(SIGTERM, &sa, 0);
-	sigaction(SIGHUP, &sa, 0);
-	sigaction(SIGCHLD, &sa_chld, 0);
-
-	// BSD does not support pselect(), therefore we have to use select and hope that we do not
-	// end up in a race condition there (see 'man select()' on a linux machine for more information)
-	// block all signals, such that no race conditions occur before pselect in our main loop
-//	sigset_t block_mask;
-//	sigaddset(&block_mask, SIGINT);
-//	sigaddset(&block_mask, SIGTERM);
-//	sigaddset(&block_mask, SIGHUP);
-//	sigaddset(&block_mask, SIGUSR1);
-//	sigprocmask(SIG_BLOCK, &block_mask, 0);
-}
-
- static int sn_pipe_valid = 0;
-static int sn_pipe[2];
+extern int pending_signal; // Defined in tinto.o translation unit.
 
 #ifdef HAS_SN
+static int sn_pipe_valid = 0;
+static int sn_pipe[2];
+
 static int error_trap_depth = 0;
 
 static void error_trap_push(SnDisplay *display, Display *xdisplay) {
@@ -1087,7 +1025,7 @@ int main (int argc, char *argv[])
 	int hidden_dnd = 0;
 
 start:
-	init (argc, argv);
+	tinto_init (argc, argv);
 
 	init_X11_pre_config();
 
