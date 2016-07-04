@@ -178,8 +178,7 @@ main (int argc, char *argv[]) {
     if (select (maxfd+1, &fdset, 0, 0, timeout) > 0) {
       if (FD_ISSET (sn_pipe[0], &fdset)) {
 	char buffer[1];
-	ssize_t wur = read (sn_pipe[0], buffer, 1);
-	(void) wur;
+	read (sn_pipe[0], buffer, 1);
 	launcher_sigchld_handler_async ();
       }
       if (FD_ISSET (x11_fd, &fdset)) {
