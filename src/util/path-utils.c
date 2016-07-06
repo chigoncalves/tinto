@@ -29,7 +29,7 @@
 char*
 path_expand_tilde (const char* str) {
 
-  if (strstartswith (str, "~") || strstartswith (str, "~/")) {
+  if (strcmp (str, "~") == 0 || strstartswith (str, "~/")) {
     char* home_dir = path_current_user_home ();
     if (!home_dir) return NULL;
 
@@ -75,10 +75,13 @@ char*
 path_unexpand_tilde (const char *path) {
   char *home = path_current_user_home ();
   if (!home) return NULL;
-  else if (!strstartswith (path, home)) return strdup (path);
+  else if (!strstartswith (path, home)) {
+    free (home);
+    return strdup (path);
+  }
 
   const size_t home_len = strlen (home);
-  const size_t new_len = strlen (path + home_len) + 1; // For 1+ "~".
+  const size_t new_len = strlen (path + home_len) + 2; // +2 for '~' and '\0'.
 
   if (home_len != new_len) {
     char* aux = realloc (home, new_len);

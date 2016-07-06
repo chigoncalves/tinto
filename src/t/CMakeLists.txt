@@ -28,4 +28,5 @@ add_executable (tinto-tests "${tinto_tests_SOURCES}")
 add_custom_target (
   run-tests
   COMMAND ${CMAKE_BINARY_DIR}/src/t/tinto-tests
+  DEPENDS ${CMAKE_BINARY_DIR}/src/t/tinto-tests
 )
