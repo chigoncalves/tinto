@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "apps-common.h"
+#include "desktop-entry.h"
 
 #define ICON_DIR_TYPE_SCALABLE 0
 #define ICON_DIR_TYPE_FIXED 1

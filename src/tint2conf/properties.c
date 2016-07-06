@@ -21,9 +21,9 @@
 #include "main.h"
 #include "properties.h"
 #include "properties_rw.h"
-#include "../launcher/apps-common.h"
-#include "../launcher/icon-theme-common.h"
-#include "../util/path-utils.h"
+#include "desktop-entry.h"
+#include "icon-theme-common.h"
+#include "path-utils.h"
 
 #define ROW_SPACING 10
 #define COL_SPACING 8

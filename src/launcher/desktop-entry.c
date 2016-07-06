@@ -20,8 +20,8 @@
 
 #include "conf.h"
 
-#include "apps-common.h"
 #include "debug.h"
+#include "desktop-entry.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,7 +38,8 @@ desktop_entry_parse_desktop_line (char *line, char **key,
   *value = strchr (line, '=');
   if (!*value) return false;
 
-  char* aux = *value++;
+  char* aux = *value;
+  ++*value;
   *aux = '\0';
   *key = line;
 
@@ -62,7 +63,6 @@ desktop_entry_create (const char *path) {
   entry->name = entry->icon = entry->exec = NULL;
   FILE* fp = fopen(path, "rt");
   if (!fp) {
-    WARN ("Could not open file %s.", path);
     desktop_entry_destroy(entry);
     return NULL;
   }
@@ -83,16 +83,17 @@ desktop_entry_create (const char *path) {
 
 	int inside_desktop_entry = 0;
 	while (getline(&line, &line_size, fp) >= 0) {
-		int len = strlen(line);
-		if (len == 0)
-			continue;
+	  int len = strlen(line);
+	  if (len == 0 || *line == '#')
+	    continue;
 		line[len - 1] = '\0';
-		if (line[0] == '[') {
-			inside_desktop_entry = (strcmp(line, "[Desktop Entry]") == 0);
-		}
+	  if (*line == '[')
+	    inside_desktop_entry = strcmp(line, "[Desktop Entry]")
+				    == 0;
+
     if (inside_desktop_entry &&
 	desktop_entry_parse_desktop_line (line, &key, &value)) {
-			if (strstr(key, "Name") == key) {
+			if (strstr (key, "Name") == key) {
 				if (strcmp(key, "Name") == 0 && lang_index > lang_index_default) {
 					entry->name = strdup(value);
 					lang_index = lang_index_default;
@@ -133,6 +134,7 @@ desktop_entry_destroy (desktop_entry_t entry[static 1]) {
   if (entry->exec) free (entry->exec);
 
   entry->name = entry->icon = entry->exec = NULL;
+  free (entry);
 }
 
 static void

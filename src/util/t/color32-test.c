@@ -15,7 +15,8 @@ struct params {
   color_rgba_t expected;
 } red, green, blue, cyan, orange, black, white, yellow, pink;
 
-int test_suite_setup (void) {
+int
+color32_setup_suite (void) {
   red.hex = "#ff0000";
   red.expected.red = 255;
   red.expected.blue = red.expected.green = 0;
@@ -70,7 +71,8 @@ int test_suite_setup (void) {
   return 0;
 }
 
-void test_color_rgba_create (void) {
+void
+test_color_rgba_create (void) {
   bool okay;
 
   red.actual = color_rgba_create (red.hex, &okay);
@@ -114,27 +116,17 @@ void test_color_rgba_create (void) {
   CU_ASSERT_TRUE(okay);
 }
 
-int main (void) {
-
-  if (CU_initialize_registry () != CUE_SUCCESS) return CU_get_error ();
-
-  CU_pSuite suite = CU_add_suite ("src/util/color_rgba", test_suite_setup,
-				  NULL);
+void
+test_color32 (void) {
+  CU_pSuite suite = CU_add_suite ("color32",
+				  color32_setup_suite, NULL);
 
   if (!suite) {
     CU_cleanup_registry ();
-    return CU_get_error ();
+    return;
   }
 
-  if (!CU_add_test (suite, "Test color_rgba_create ().",
-		    test_color_rgba_create)) {
-
-    CU_cleanup_registry ();
-    return CU_get_error ();
-  }
-
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  CU_cleanup_registry();
-  return CU_get_error();
+  if (!CU_add_test (suite, "color32/creation",
+		    test_color_rgba_create))
+    return;
 }

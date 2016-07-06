@@ -14,7 +14,12 @@ list (APPEND SOURCES
 
 set (SOURCES "${SOURCES}" PARENT_SCOPE)
 
-
-if (TINTO_DEVEL_MODE)
+if (DEBUG)
   add_subdirectory (t)
+  list (APPEND tinto_tests_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/debug.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/path-utils.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/string-addins.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/misc.c")
+  set (tinto_tests_SOURCES "${tinto_tests_SOURCES}" PARENT_SCOPE)
 endif ()

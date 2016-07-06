@@ -6,7 +6,7 @@ set (TINTO_CONFIG_SOURCES
   ../util/path-utils.c
   ../config.c
   ../server.c
-  ../launcher/apps-common.c
+  ../launcher/desktop-entry.c
   ../launcher/icon-theme-common.c
   main.c
   properties.c

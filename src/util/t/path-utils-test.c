@@ -38,7 +38,7 @@ char* unexpand_path_h = NULL;
 char* home = NULL;
 
 int
- test_suite_setup (void)  {
+path_utils_setup_suite (void)  {
   home = path_current_user_home ();
 
   unexpand_path_e = path_unexpand_tilde (TEST_PATH_E);
@@ -50,7 +50,7 @@ int
 }
 
 int
-test_suite_teardown (void) {
+path_utils_teardown_suite (void) {
   free (path_a);
   free (path_b);
   free (path_c);
@@ -109,30 +109,19 @@ test_path_unexpand_tilde (void) {
   CU_ASSERT (strcmp (TEST_PATH_H_EXPECTED, unexpand_path_h) == 0);
 }
 
-int main (void) {
+void
+test_path_utils (void) {
+  CU_pSuite suite = CU_add_suite ("path-utils",
+				  path_utils_setup_suite,
+				  path_utils_teardown_suite);
 
-  if (CU_initialize_registry () != CUE_SUCCESS) return CU_get_error ();
+  if (!suite) return;
 
-  CU_pSuite suite = CU_add_suite ("src/util/path-utils", test_suite_setup, test_suite_teardown);
-
-  if (!suite) {
-    CU_cleanup_registry ();
-    return CU_get_error ();
-  }
-
-  if (!CU_add_test (suite, "Test path_exapand_tilde ().",
+  if (!CU_add_test (suite, "path-utils/path-exapand-tilde",
 		    test_path_expand_file_tilde)
-      || !CU_add_test (suite, "Test path_current_user_home ().",
+      || !CU_add_test (suite, "path-utils/path-current-user-home.",
 		       test_path_current_user_home)
-      || !CU_add_test (suite, "Test path_unexpand_tilde ()",
-		       test_path_unexpand_tilde)) {
-
-    CU_cleanup_registry ();
-    return CU_get_error ();
-  }
-
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  CU_cleanup_registry();
-  return CU_get_error();
+      || !CU_add_test (suite, "path-utils/path-unexpand-tilde",
+		       test_path_unexpand_tilde))
+    return;
 }

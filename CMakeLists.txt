@@ -17,6 +17,10 @@ include_directories (
 
 include (Utils)
 
+set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIE") #-Wall -Wextra -Werror -std=c99 -pedantic -fPIE")
+set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -pie")
+set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
+
 
 option (ENABLE_BATTERY "Enable battery status plugin." ON)
 option (ENABLE_TINT2CONF "Enable tint2conf build, a Gtk+2 theme configurator for `tinto`." OFF)
@@ -67,23 +71,22 @@ if( NOT IMLIB_BUILD_WITH_X )
 endif( NOT IMLIB_BUILD_WITH_X )
 
 include_directories (
-  src
   src/clock
   src/systray
   src/taskbar
   src/launcher
+  src/launcher/t
+  src/util/t
   src/tooltip
   src/util
   ${IMLIB2_INCLUDE_DIRS}
 )
 
+if (DEBUG)
+  set (tinto_tests_SOURCES)
+endif ()
+
 add_subdirectory (src)
-add_subdirectory (src/clock)
-add_subdirectory (src/launcher)
-add_subdirectory (src/systray)
-add_subdirectory (src/taskbar)
-add_subdirectory (src/tooltip)
-add_subdirectory (src/util)
 
 if (ENABLE_BATTERY)
   add_subdirectory (src/battery)
@@ -142,6 +145,7 @@ target_link_libraries (${PROJECT_NAME}
 
 include_directories (src)
 
+set (USER_HOME_DIR "$ENV{HOME}")
 configure_file (${CMAKE_SOURCE_DIR}/include/conf.h.in ${CMAKE_BINARY_DIR}/include/conf.h)
 configure_file (${CMAKE_SOURCE_DIR}/cmake/deinstall.cmake.in ${CMAKE_BINARY_DIR}/cmake/deinstall.cmake)
 
@@ -158,10 +162,8 @@ add_custom_target (deinstall
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake/deinstall.cmake
 )
 
-
 add_custom_target (lint COMMAND oclint-json-compilation-database
   $ENV{OCLINT_EXTRA_OPTIONS})
-
 
 if( ENABLE_EXAMPLES )
   file( GLOB SAMPLEFILES sample/*.tint2rc )

@@ -19,7 +19,8 @@ dimension_t dimen_a;
 dimension_t dimen_b;
 dimension_t dimen_c;
 
-int setup (void) {
+int
+dimension_setup_suite (void) {
   str_a = strdup (STR_A);
   str_b = strdup (STR_B);
   str_c = strdup (STR_C);
@@ -27,7 +28,8 @@ int setup (void) {
   return 0;
 }
 
-int teardown (void) {
+int
+dimension_teardown_suite (void) {
   free (str_a);
   free (str_b);
   free (str_c);
@@ -57,25 +59,16 @@ void test_dimension_create_from_str (void) {
   CU_ASSERT (dimen_c.height.value != 0.0);
 }
 
-int main (void) {
+void
+test_dimension (void) {
 
-  if (CU_initialize_registry () != CUE_SUCCESS) return CU_get_error ();
+  CU_pSuite suite = CU_add_suite ("dimension",
+				  dimension_setup_suite,
+				  dimension_teardown_suite);
 
-  CU_pSuite suite = CU_add_suite ("dimension", setup, teardown);
+  if (!suite) return;
 
-  if (!suite) {
-    CU_cleanup_registry ();
-    return CU_get_error ();
-  }
-
-  if (!CU_add_test (suite, "Test dimension_create_from_str ().",
-		    test_dimension_create_from_str)) {
-    CU_cleanup_registry ();
-    return CU_get_error ();
-  }
-
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  CU_cleanup_registry();
-  return CU_get_error();
+  if (!CU_add_test (suite, "dimension/create-from-str",
+		    test_dimension_create_from_str))
+    return;
 }

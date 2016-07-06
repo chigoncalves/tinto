@@ -70,7 +70,8 @@ char* str_a, *str_b, *str_c, *str_d;
 char * str_e, *str_f, *str_g, *str_h;
 char * str_i, *str_j, *str_k, *str_l;
 
-int setup (void) {
+int
+string_addins_setup_suite (void) {
   str_a = strdup (STR_A_VALUE);
   str_b = strdup (STR_B_VALUE);
   str_c = strdup (STR_C_VALUE);
@@ -89,7 +90,8 @@ int setup (void) {
   return 0;
 }
 
-int teardown (void) {
+int
+string_addins_teardown_suite (void) {
   free (str_a);
   free (str_b);
   free (str_c);
@@ -154,28 +156,18 @@ void test_strstartswith (void) {
   CU_ASSERT (strstartswith (WORD_B, WORD_B_BAD_SUFFIX_A) == false);
 }
 
-int main (void) {
-  if (CUE_SUCCESS != CU_initialize_registry ())
-    return CU_get_error ();
+void
+test_string_addins (void) {
+  CU_pSuite suite = CU_add_suite ("string-addins",
+				  string_addins_setup_suite,
+				  string_addins_teardown_suite);
+  if (!suite) return;
 
-  CU_pSuite suite = CU_add_suite ("string-addins", setup, teardown);
-  if (!suite) {
-    CU_cleanup_registry ();
-    return CU_get_error ();
-  }
-
-  if (!CU_add_test(suite, "Test strltrim ()", test_left_side_trim)
-      || !CU_add_test(suite, "Test strtrim ()", test_both_sides_trim)
-      || !CU_add_test(suite, "Test strrtrim ()", test_right_side_trim)
-      || !CU_add_test (suite, "Test strendswith()", test_strendswith)
-      || !CU_add_test (suite, "Test strstartswith()", test_strstartswith)) {
-
-    CU_cleanup_registry();
-    return CU_get_error();
-  }
-
-  CU_basic_set_mode(CU_BRM_VERBOSE);
-  CU_basic_run_tests();
-  CU_cleanup_registry();
-  return CU_get_error();
+  if (!CU_add_test(suite, "string-addins/strltrim", test_left_side_trim)
+      || !CU_add_test(suite, "string-addins/strtrim", test_both_sides_trim)
+      || !CU_add_test(suite, "string-addins/strrtrim", test_right_side_trim)
+      || !CU_add_test (suite, "string-addins/strendswith", test_strendswith)
+      || !CU_add_test (suite, "string-addins/strstartswith",
+		       test_strstartswith))
+    return;
 }

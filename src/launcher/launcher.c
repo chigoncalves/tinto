@@ -42,7 +42,7 @@
 #include "panel.h"
 #include "taskbar.h"
 #include "launcher.h"
-#include "apps-common.h"
+#include "desktop-entry.h"
 #include "icon-theme-common.h"
 
 #ifdef HAS_SN

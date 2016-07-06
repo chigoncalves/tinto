@@ -45,28 +45,10 @@ find_path (CUNIT_INCLUDE_DIR
 
   PATH_SUFFIXES CUnit CUnit-2.0 cunit cunit-2.0)
 
-if (NOT CUNIT_INCLUDE_DIR)
-  message (FATAL_ERROR "FindCUNIT: Failed to find CUnit.")
-else ()
-  if (NOT CUNIT_FIND_QUIETLY)
-    message (STATUS "FindCUNIT: Found CUnit header in `${CUNIT_INCLUDE_DIR}'.")
-  endif ()
-endif ()
-
 find_library (CUNIT_LIBRARY_RELEASE
   cunit
   PATHS /usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}
 )
-
-if (NOT CUNIT_LIBRARY_RELEASE)
-  message (FATAL_ERROR "Failed to find CUnit.")
-else ()
-  if (NOT CUNIT_FIND_QUIETLY)
-    get_filename_component (library_path ${CUNIT_LIBRARY_RELEASE} DIRECTORY)
-    message (STATUS "FindCUNIT: Found CUnit library in `${library_path}'.")
-    unset (library_path)
-  endif ()
-endif ()
 
 select_library_configurations (CUNIT)
 
@@ -81,7 +63,7 @@ unset (version_macro)
 
 if (CUNIT_FIND_VERSION AND CUNIT_FIND_VERSION_EXACT)
   if (NOT CUNIT_VERSION VERSION_EQUAL CUNIT_FIND_VERSION)
-    message (FATAL_ERROR "FindCUNIT failed! Requested version `v${CUNIT_FIND_VERSION}', but found `v${CUNIT_VERSION}'.")
+
   endif ()
 endif ()
 
