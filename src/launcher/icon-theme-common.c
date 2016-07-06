@@ -43,7 +43,7 @@ typedef struct IconThemeDir {
 
 int parse_theme_line(char *line, char **key, char **value)
 {
-	return parse_dektop_line(line, key, value);
+	return desktop_entry_parse_desktop_line (line, key, value);
 }
 
 GSList *icon_locations = NULL;

@@ -1689,25 +1689,27 @@ void load_icons(GtkListStore *apps)
 	}
 }
 
-void load_desktop_file(const char *file, gboolean selected)
-{
-	DesktopEntry entry;
-	if (read_desktop_file(file, &entry)) {
-		GdkPixbuf *pixbuf = load_icon(entry.icon);
+void
+load_desktop_file(const char *file, gboolean selected) {
+  desktop_entry_t* entry = desktop_entry_create (file);
+  if (!entry) return;
+
+  GdkPixbuf *pixbuf = load_icon (entry->icon);
 		GtkTreeIter iter;
 		gtk_list_store_append(selected ? launcher_apps : all_apps, &iter);
-		gtk_list_store_set(selected ? launcher_apps :all_apps, &iter,
-						   appsColIcon, pixbuf,
-						   appsColText, g_strdup(entry.name),
-						   appsColPath, g_strdup(file),
-						   appsColIconName, g_strdup(entry.icon),
-						   -1);
+  gtk_list_store_set(selected ? launcher_apps :all_apps, &iter,
+		     appsColIcon, pixbuf,
+		     appsColText, g_strdup (entry->name),
+		     appsColPath, g_strdup (file),
+		     appsColIconName, g_strdup (entry->icon),
+		     -1);
+
 		if (pixbuf)
 			g_object_unref(pixbuf);
 	} else {
 		printf("Could not load %s\n", file);
-	}
-	free_desktop_entry(&entry);
+
+  desktop_entry_destroy (entry);
 }
 
 void load_desktop_files(const gchar *path)

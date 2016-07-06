@@ -7,23 +7,31 @@
 #ifndef APPS_COMMON_H
 #define APPS_COMMON_H
 
-typedef struct DesktopEntry {
-	char *name;
-	char *exec;
-	char *icon;
-} DesktopEntry;
+// For `bool', `true' and `false'.
+#include <stdbool.h>
+
+typedef struct {
+  char *name;
+  char *exec;
+  char *icon;
+} desktop_entry_t;
 
 // Parses a line of the form "key = value". Modifies the line.
 // Returns 1 if successful, and parts are not empty.
 // Key and value point to the parts.
-int parse_dektop_line(char *line, char **key, char **value);
+bool
+desktop_entry_parse_desktop_line (char *line, char **key,
+				  char **value);
 
 // Reads the .desktop file from the given path into the DesktopEntry entry.
 // The DesktopEntry object must be initially empty.
 // Returns 1 if successful.
-int read_desktop_file(const char *path, DesktopEntry *entry);
+
+desktop_entry_t*
+desktop_entry_create (const char* path);
 
 // Empties DesktopEntry: releases the memory of the *members* of entry.
-void free_desktop_entry(DesktopEntry *entry);
+void
+desktop_entry_destroy (desktop_entry_t entry[static 1]);
 
 #endif

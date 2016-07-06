@@ -19,35 +19,124 @@
 /* http://standards.freedesktop.org/desktop-entry-spec/ */
 
 #include "conf.h"
-#include "apps-common.h"
 
-#include <glib.h>
+#include "apps-common.h"
+#include "debug.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int parse_dektop_line(char *line, char **key, char **value)
-{
-	char *p;
-	int found = 0;
-	*key = line;
-	for (p = line; *p; p++) {
-		if (*p == '=') {
-			*value = p + 1;
-			*p = 0;
-			found = 1;
-			break;
-		}
-	}
-	if (!found)
-		return 0;
-	if (found && (strlen(*key) == 0 || strlen(*value) == 0))
-		return 0;
-	return 1;
+#include <glib.h>
+
+static void
+desktop_entry_expand_exec (desktop_entry_t* entry, const char *path);
+
+bool
+desktop_entry_parse_desktop_line (char *line, char **key,
+				  char **value) {
+  *value = strchr (line, '=');
+  if (!*value) return false;
+
+  char* aux = *value++;
+  *aux = '\0';
+  *key = line;
+
+  // Not the best way to validate DesktopEntry.
+  if (strlen (*key) == 0 || strlen (*value) == 0)
+    return false;
+
+  return true;
 }
 
-void expand_exec(DesktopEntry *entry, const char *path)
-{
+
+desktop_entry_t*
+desktop_entry_create (const char *path) {
+	char *line = NULL;
+	size_t line_size;
+	char *key, *value;
+	int i;
+  desktop_entry_t* entry = malloc (sizeof (desktop_entry_t));
+  if (!entry) return NULL;
+
+  entry->name = entry->icon = entry->exec = NULL;
+  FILE* fp = fopen(path, "rt");
+  if (!fp) {
+    WARN ("Could not open file %s.", path);
+    desktop_entry_destroy(entry);
+    return NULL;
+  }
+
+	gchar **languages = (gchar **)g_get_language_names();
+	// lang_index is the index of the language for the best Name key in the language vector
+	// lang_index_default is a constant that encodes the Name key without a language
+	int lang_index, lang_index_default;
+#define LANG_DBG 0
+	if (LANG_DBG) printf("Languages:");
+	for (i = 0; languages[i]; i++) {
+		if (LANG_DBG) printf(" %s", languages[i]);
+	}
+	if (LANG_DBG) printf("\n");
+	lang_index_default = i;
+	// we currently do not know about any Name key at all, so use an invalid index
+	lang_index = lang_index_default + 1;
+
+	int inside_desktop_entry = 0;
+	while (getline(&line, &line_size, fp) >= 0) {
+		int len = strlen(line);
+		if (len == 0)
+			continue;
+		line[len - 1] = '\0';
+		if (line[0] == '[') {
+			inside_desktop_entry = (strcmp(line, "[Desktop Entry]") == 0);
+		}
+    if (inside_desktop_entry &&
+	desktop_entry_parse_desktop_line (line, &key, &value)) {
+			if (strstr(key, "Name") == key) {
+				if (strcmp(key, "Name") == 0 && lang_index > lang_index_default) {
+					entry->name = strdup(value);
+					lang_index = lang_index_default;
+				} else {
+					for (i = 0; languages[i] && i < lang_index; i++) {
+						gchar *localized_key = g_strdup_printf("Name[%s]", languages[i]);
+						if (strcmp(key, localized_key) == 0) {
+							if (entry->name)
+								free(entry->name);
+							entry->name = strdup(value);
+							lang_index = i;
+						}
+						g_free(localized_key);
+					}
+				}
+			} else if (!entry->exec && strcmp(key, "Exec") == 0) {
+				entry->exec = strdup(value);
+			} else if (!entry->icon && strcmp(key, "Icon") == 0) {
+				entry->icon = strdup(value);
+			}
+		}
+	}
+	fclose (fp);
+	// From this point:
+	// entry->name, entry->icon, entry->exec will never be empty strings (can be NULL though)
+
+  desktop_entry_expand_exec (entry, path);
+
+	free(line);
+
+  return entry;
+}
+
+void
+desktop_entry_destroy (desktop_entry_t entry[static 1]) {
+  if (entry->name) free (entry->name);
+  if (entry->icon) free (entry->icon);
+  if (entry->exec) free (entry->exec);
+
+  entry->name = entry->icon = entry->exec = NULL;
+}
+
+static void
+desktop_entry_expand_exec (desktop_entry_t* entry, const char *path) {
 	// Expand % in exec
 	// %i -> --icon Icon
 	// %c -> Name
@@ -96,93 +185,4 @@ void expand_exec(DesktopEntry *entry, const char *path)
 		free(entry->exec);
 		entry->exec = exec2;
 	}
-}
-
-int read_desktop_file(const char *path, DesktopEntry *entry)
-{
-	FILE *fp;
-	char *line = NULL;
-	size_t line_size;
-	char *key, *value;
-	int i;
-
-	entry->name = entry->icon = entry->exec = NULL;
-
-	if ((fp = fopen(path, "rt")) == NULL) {
-		fprintf(stderr, "Could not open file %s\n", path);
-		return 0;
-	}
-
-	gchar **languages = (gchar **)g_get_language_names();
-	// lang_index is the index of the language for the best Name key in the language vector
-	// lang_index_default is a constant that encodes the Name key without a language
-	int lang_index, lang_index_default;
-#define LANG_DBG 0
-	if (LANG_DBG) printf("Languages:");
-	for (i = 0; languages[i]; i++) {
-		if (LANG_DBG) printf(" %s", languages[i]);
-	}
-	if (LANG_DBG) printf("\n");
-	lang_index_default = i;
-	// we currently do not know about any Name key at all, so use an invalid index
-	lang_index = lang_index_default + 1;
-
-	int inside_desktop_entry = 0;
-	while (getline(&line, &line_size, fp) >= 0) {
-		int len = strlen(line);
-		if (len == 0)
-			continue;
-		line[len - 1] = '\0';
-		if (line[0] == '[') {
-			inside_desktop_entry = (strcmp(line, "[Desktop Entry]") == 0);
-		}
-		if (inside_desktop_entry && parse_dektop_line(line, &key, &value)) {
-			if (strstr(key, "Name") == key) {
-				if (strcmp(key, "Name") == 0 && lang_index > lang_index_default) {
-					entry->name = strdup(value);
-					lang_index = lang_index_default;
-				} else {
-					for (i = 0; languages[i] && i < lang_index; i++) {
-						gchar *localized_key = g_strdup_printf("Name[%s]", languages[i]);
-						if (strcmp(key, localized_key) == 0) {
-							if (entry->name)
-								free(entry->name);
-							entry->name = strdup(value);
-							lang_index = i;
-						}
-						g_free(localized_key);
-					}
-				}
-			} else if (!entry->exec && strcmp(key, "Exec") == 0) {
-				entry->exec = strdup(value);
-			} else if (!entry->icon && strcmp(key, "Icon") == 0) {
-				entry->icon = strdup(value);
-			}
-		}
-	}
-	fclose (fp);
-	// From this point:
-	// entry->name, entry->icon, entry->exec will never be empty strings (can be NULL though)
-
-	expand_exec(entry, path);
-
-	free(line);
-	return 1;
-}
-
-void free_desktop_entry(DesktopEntry *entry)
-{
-	free(entry->name);
-	free(entry->icon);
-	free(entry->exec);
-	entry->name = entry->icon = entry->exec = NULL;
-}
-
-void test_read_desktop_file()
-{
-	fprintf(stdout, "\033[1;33m");
-	DesktopEntry entry;
-	read_desktop_file("/usr/share/applications/firefox.desktop", &entry);
-	printf("Name:%s Icon:%s Exec:%s\n", entry.name, entry.icon, entry.exec);
-	fprintf(stdout, "\033[0m");
 }

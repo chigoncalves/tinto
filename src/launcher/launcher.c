@@ -507,14 +507,13 @@ void launcher_action(LauncherIcon *icon, XEvent* evt)
 }
 
 // Populates the list_icons list from the list_apps list
-void launcher_load_icons(Launcher *launcher)
-{
+void
+launcher_load_icons(Launcher* launcher) {
 	// Load apps (.desktop style launcher items)
 	GSList* app = launcher->list_apps;
 	while (app != NULL) {
-		DesktopEntry entry;
-		read_desktop_file(app->data, &entry);
-		if (entry.exec) {
+    desktop_entry_t* entry = desktop_entry_create (app->data);
+    if (entry->exec) {
 			LauncherIcon *launcherIcon = calloc(1, sizeof(LauncherIcon));
 			launcherIcon->area.parent = launcher;
 			launcherIcon->area.panel = launcher->area.panel;
@@ -532,11 +531,13 @@ void launcher_load_icons(Launcher *launcher)
 				launcherIcon->area._get_tooltip_text = NULL;
 			}
 			launcherIcon->is_app_desktop = 1;
-			launcherIcon->cmd = strdup(entry.exec);
-			launcherIcon->icon_name = entry.icon ? strdup(entry.icon) : strdup(DEFAULT_ICON);
+      launcherIcon->cmd = strdup (entry->exec);
+      launcherIcon->icon_name = entry->icon ? strdup (entry->icon) :
+	strdup (DEFAULT_ICON);
 			launcherIcon->icon_size = 1;
-			launcherIcon->icon_tooltip = entry.name ? strdup(entry.name) : strdup(entry.exec);
-			free_desktop_entry(&entry);
+      launcherIcon->icon_tooltip = entry->name ? strdup (entry->name) :
+	strdup (entry->exec);
+      desktop_entry_destroy (entry);
 			launcher->list_icons = g_slist_append(launcher->list_icons, launcherIcon);
 			add_area(&launcherIcon->area);
 		}
