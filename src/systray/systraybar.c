@@ -123,8 +123,7 @@ void init_systray_panel(void *p)
 
 
 void draw_systray(void *obj, cairo_t *c) {
-  UNUSED (obj);
-  UNUSED (c);
+  UNUSED (obj, c);
 	if (FORCE_COMPOSITED_RENDERING || server.real_transparency || systray.alpha != 100 || systray.brightness != 0 || systray.saturation != 0) {
 		if (render_background) XFreePixmap(server.dsp, render_background);
 		render_background = XCreatePixmap(server.dsp, server.root_win, systray.area.width, systray.area.height, server.depth);

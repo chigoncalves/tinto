@@ -583,8 +583,7 @@ launcher_sigchld_handler_async (void) {
 #ifdef HAS_SN
 static void
 launcher_error_trap_push (SnDisplay *display, Display *xdisplay) {
-  UNUSED (display);
-  UNUSED (xdisplay);
+  UNUSED (display, xdisplay);
   ++error_trap_depth;
 }
 

@@ -164,8 +164,7 @@ void panel_move_item_up(GtkWidget *widget, gpointer data);
 
 void
 applyClicked (GtkWidget *widget, gpointer data) {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	char *file = get_current_theme_file_name();
 	if (file) {
@@ -528,8 +527,7 @@ void background_create_new()
 
 void background_duplicate(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0) {
@@ -578,8 +576,7 @@ void background_duplicate(GtkWidget *widget, gpointer data)
 
 void background_delete(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0)
@@ -684,8 +681,7 @@ void background_force_update()
 
 void background_update(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0)
@@ -726,8 +722,7 @@ void background_update(GtkWidget *widget, gpointer data)
 
 void current_background_changed(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	int index = gtk_combo_box_get_active(GTK_COMBO_BOX(current_background));
 	if (index < 0)
@@ -1386,8 +1381,7 @@ void set_panel_items(const char *items)
 
 void panel_add_item(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -1414,8 +1408,7 @@ void panel_add_item(GtkWidget *widget, gpointer data)
 
 void panel_remove_item(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -1427,8 +1420,7 @@ void panel_remove_item(GtkWidget *widget, gpointer data)
 
 void panel_move_item_down(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -1443,8 +1435,7 @@ void panel_move_item_down(GtkWidget *widget, gpointer data)
 
 void panel_move_item_up(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	{
 		GtkTreeIter iter;
@@ -1468,8 +1459,7 @@ GtkListStore *icon_themes;
 
 void launcher_add_app(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -1502,8 +1492,7 @@ void launcher_add_app(GtkWidget *widget, gpointer data)
 
 void launcher_remove_app(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -1515,8 +1504,7 @@ void launcher_remove_app(GtkWidget *widget, gpointer data)
 
 void launcher_move_app_down(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -1531,8 +1519,7 @@ void launcher_move_app_down(GtkWidget *widget, gpointer data)
 
 void launcher_move_app_up(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	GtkTreeIter iter;
 	GtkTreeModel *model;
@@ -1646,8 +1633,7 @@ void icon_theme_changed()
 
 void launcher_icon_theme_changed(GtkWidget *widget, gpointer data)
 {
-  UNUSED (widget);
-  UNUSED (data);
+  UNUSED (widget, data);
 
 	icon_theme_changed();
 }

@@ -269,8 +269,7 @@ void init_taskbar_panel(void *p)
 
 
 void taskbar_remove_task(gpointer key, gpointer value, gpointer user_data) {
-  UNUSED (value);
-  UNUSED (user_data);
+  UNUSED (value, user_data);
 
 	remove_task(task_get_task(*(Window*)key));
 }

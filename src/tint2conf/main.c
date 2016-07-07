@@ -404,8 +404,7 @@ static void menuRefreshAll()
 
 static void view_popup_menu(GtkWidget *treeview, GdkEventButton *event, gpointer userdata)
 {
-  UNUSED (treeview);
-  UNUSED (userdata);
+  UNUSED (treeview, userdata);
 	GtkWidget *w = gtk_ui_manager_get_widget(globalUIManager, "/ThemePopup");
 
 	gtk_menu_popup(GTK_MENU(w), NULL, NULL, NULL, NULL, (event != NULL) ? event->button : 0, gdk_event_get_time((GdkEvent*)event));
@@ -445,10 +444,7 @@ static gboolean view_onPopupMenu(GtkWidget *treeview, gpointer userdata)
 static void viewRowActivated (GtkTreeView *tree_view, GtkTreePath *path,
 			      GtkTreeViewColumn *column, gpointer user_data) {
 
-  UNUSED (tree_view);
-  UNUSED (path);
-  UNUSED (column);
-  UNUSED (user_data);
+  UNUSED (tree_view, path, column, user_data);
 }
 
 static void windowSizeAllocated()

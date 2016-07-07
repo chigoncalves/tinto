@@ -112,8 +112,7 @@ static void notify_changes (XSettingsClient *client, XSettingsList *old_list)
 
 
 static int ignore_errors (Display *display, XErrorEvent *event) {
-  UNUSED (display);
-  UNUSED (event);
+  UNUSED (display, event);
 
   return True;
 }

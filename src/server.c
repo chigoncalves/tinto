@@ -453,6 +453,5 @@ void server_init_visual (void) {
 
 static void
 server_catch_error (Display *d, XErrorEvent *ev) {
-  UNUSED (d);
-  UNUSED (ev);
+  UNUSED (d, ev);
 }
