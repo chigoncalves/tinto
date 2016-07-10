@@ -44,7 +44,6 @@ _UNUSED_LEVEL_3, _UNUSED_LEVEL_2, _UNUSED_LEVEL_1, 0
 
 #define _UNUSED_CALL(level, ... ) level (__VA_ARGS__)
 
-
 #ifndef NUL
   #define NUL '\0'
 #endif // NUL
@@ -58,8 +57,8 @@ _UNUSED_LEVEL_3, _UNUSED_LEVEL_2, _UNUSED_LEVEL_1, 0
   #define SN_API_NOT_YET_FROZEN 1
 #endif // HAS_SN
 
-#define _BSD_SOURCE 1
-#if !defined _POSIX_C_SOURCE || (defined _POSIX_C_SOURCE && _POSIX_C_SOURCE < 200809L)
+#if !defined _POSIX_C_SOURCE || _POSIX_C_SOURCE < 200809L
+  #undef _POSIX_C_SOURCE
   #define _POSIX_C_SOURCE 200809L
 #endif // _POSIX_C_SOURCE
 
