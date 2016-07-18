@@ -28,22 +28,14 @@
 
 typedef struct {
   color_rgba_t color;
-  // double color[3]; //Old Member.
+
 	double alpha;
 	int width;
 	int rounded;
 } Border;
 
-
-typedef struct
-{
-	double color[3];
-	double alpha;
-} Color;
-
 typedef struct {
   color_rgba_t color;
-  //  Color back; // Old member.
 	Border border;
 } Background;
 
