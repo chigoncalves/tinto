@@ -31,6 +31,7 @@
 #include <pango/pangocairo.h>
 
 #include "area.h"
+#include "debug.h"
 #include "panel.h"
 #include "server.h"
 
@@ -391,7 +392,7 @@ void draw_background (Area *a, cairo_t *c) {
 		cairo_fill(c);
   }
 
-  if (a->bg->border.width > 0 && a->bg->border.alpha > 0.0) {
+  if (a->bg->border.width > 0 && a->bg->border.color.alpha > 0) {
 		cairo_set_line_width (c, a->bg->border.width);
 
 		// draw border inside (x, y, width, height)

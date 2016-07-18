@@ -28,8 +28,6 @@
 
 typedef struct {
   color_rgba_t color;
-
-	double alpha;
 	int width;
 	int rounded;
 } Border;
