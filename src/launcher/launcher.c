@@ -205,7 +205,7 @@ void launcher_deinit (void) {
 
 void cleanup_launcher_theme(Launcher *launcher)
 {
-	free_area(&launcher->area);
+	area_destroy (&launcher->area);
 	GSList *l;
 	for (l = launcher->list_icons; l ; l = l->next) {
 		LauncherIcon *launcherIcon = (LauncherIcon*)l->data;

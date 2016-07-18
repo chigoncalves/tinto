@@ -498,26 +498,26 @@ void add_area (Area *a)
 
 }
 
+void
+area_destroy (Area *self) {
+  if (!self)
+    return;
 
-void free_area (Area *a)
-{
-	if (!a)
-		return;
+  GSList* children = self->list;
+  while (children) {
+    area_destroy (children->data);
+    children = children->next;
+  }
 
-	GSList *l0;
-	for (l0 = a->list; l0 ; l0 = l0->next)
-		free_area (l0->data);
-
-	if (a->list) {
-		g_slist_free(a->list);
-		a->list = 0;
-	}
-	if (a->pix) {
-		XFreePixmap (server.dsp, a->pix);
-		a->pix = 0;
-	}
+  if (self->list) {
+    g_slist_free (self->list);
+    self->list = NULL;
+  }
+  if (self->pix) {
+    XFreePixmap (server.dsp, self->pix);
+    self->pix = None;
+  }
 }
-
 
 void
 area_draw_rect (cairo_t *c, rectf_t rect, double r) {

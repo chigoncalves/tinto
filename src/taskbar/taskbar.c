@@ -103,7 +103,7 @@ void cleanup_taskbar()
 					XFreePixmap(server.dsp, tskbar->state_pix[k]);
 				tskbar->state_pix[k] = 0;
 			}
-			free_area(&tskbar->area);
+			area_destroy (&tskbar->area);
 			// remove taskbar from the panel
 			panel->area.list = g_slist_remove(panel->area.list, tskbar);
 		}

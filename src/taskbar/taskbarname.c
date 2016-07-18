@@ -95,7 +95,7 @@ void cleanup_taskbarname()
 			tskbar = &panel->taskbar[j];
 			g_free(tskbar->bar_name.name);
 			tskbar->bar_name.name = NULL;
-			free_area(&tskbar->bar_name.area);
+			area_destroy (&tskbar->bar_name.area);
 			for (k = 0; k < TASKBAR_STATE_COUNT; ++k) {
 				if (tskbar->bar_name.state_pix[k])
 					XFreePixmap(server.dsp, tskbar->bar_name.state_pix[k]);

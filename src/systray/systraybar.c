@@ -79,7 +79,7 @@ void cleanup_systray()
 	systray_max_icon_size = 0;
 	systray_monitor = 0;
 	systray.area.on_screen = 0;
-	free_area(&systray.area);
+	area_destroy (&systray.area);
 	if (render_background) {
 		XFreePixmap(server.dsp, render_background);
 		render_background = 0;

@@ -103,8 +103,11 @@ void draw (Area *a);
 void draw_background (Area *a, cairo_t *c);
 
 void remove_area (Area *a);
+
 void add_area (Area *a);
-void free_area (Area *a);
+
+void
+area_destroy (Area *self);
 
 void
 area_draw_rect (cairo_t *c, rectf_t rect, double r);

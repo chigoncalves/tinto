@@ -121,7 +121,7 @@ void panel_cleanup (void) {
 	for (i = 0; i < nb_panel; i++) {
 		p = &panel1[i];
 
-		free_area(&p->area);
+		area_destroy (&p->area);
 		if (p->temp_pmap)
 			XFreePixmap(server.dsp, p->temp_pmap);
 		p->temp_pmap = 0;
