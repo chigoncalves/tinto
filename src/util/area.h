@@ -106,8 +106,9 @@ void remove_area (Area *a);
 void add_area (Area *a);
 void free_area (Area *a);
 
-// draw rounded rectangle
-void draw_rect(cairo_t *c, double x, double y, double w, double h, double r);
+void
+area_draw_rect (cairo_t *c, rectf_t rect, double r);
+
 
 // clear pixmap with transparent color
 void clear_pixmap(Pixmap p, int x, int y, int w, int h);

@@ -394,10 +394,19 @@ void draw (Area *a)
 
 void draw_background (Area *a, cairo_t *c) {
   if (a->bg->color.alpha > 0) {
-    draw_rect (c, a->bg->border.width, a->bg->border.width, a->bounds.width
-	       - (2.0 * a->bg->border.width), a->bounds.height
-	       - (2.0 * a->bg->border.width), a->bg->border.radius
-	       - a->bg->border.width/1.571);
+
+    progn {
+      rectf_t rect = {
+	.x = a->bg->border.width,
+	.y = a->bg->border.width,
+	.width = a->bounds.width - (2 * a->bg->border.width),
+	.height = a->bounds.height - (2 * a->bg->border.width),
+
+      };
+      area_draw_rect (c, rect, a->bg->border.radius -
+		      a->bg->border.width / 1.571);
+    }
+
     double bg_color[4];
     color_rgba_to_array (&a->bg->color, bg_color);
     cairo_set_source_rgba (c, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
@@ -408,9 +417,17 @@ void draw_background (Area *a, cairo_t *c) {
 		cairo_set_line_width (c, a->bg->border.width);
 
 		// draw border inside (x, y, width, height)
-    draw_rect (c, a->bg->border.width / 2.0, a->bg->border.width / 2.0,
-	       a->bounds.width - a->bg->border.width, a->bounds.height
-	       - a->bg->border.width, a->bg->border.radius);
+
+    progn {
+      rectf_t rect = {
+	.x = a->bg->border.width / 2.0,
+	.y = a->bg->border.width / 2.0,
+	.width = a->bounds.width - a->bg->border.width,
+	.height = a->bounds.height - a->bg->border.width,
+      };
+      area_draw_rect (c, rect, a->bg->border.radius);
+
+    }
 		/*
 		// convert : radian = degre * M_PI/180
 		// definir le degrade dans un carre de (0,0) (100,100)
@@ -498,23 +515,25 @@ void free_area (Area *a)
 }
 
 
-void draw_rect(cairo_t *c, double x, double y, double w, double h, double r)
-{
-	if (r > 0.0) {
-		double c1 = 0.55228475 * r;
+void
+area_draw_rect (cairo_t *c, rectf_t rect, double r) {
+/* area_draw_rect(cairo_t *c, double x, double y, double w, double h, */
+/* 	       double r) { */
+  if (r > 0.0) {
+    double c1 = 0.55228475 * r;
 
-		cairo_move_to(c, x+r, y);
-		cairo_rel_line_to(c, w-2*r, 0);
-		cairo_rel_curve_to(c, c1, 0.0, r, c1, r, r);
-		cairo_rel_line_to(c, 0, h-2*r);
-		cairo_rel_curve_to(c, 0.0, c1, c1-r, r, -r, r);
-		cairo_rel_line_to (c, -w +2*r, 0);
-		cairo_rel_curve_to (c, -c1, 0, -r, -c1, -r, -r);
-		cairo_rel_line_to (c, 0, -h + 2 * r);
-		cairo_rel_curve_to (c, 0, -c1, r - c1, -r, r, -r);
-	}
-	else
-		cairo_rectangle(c, x, y, w, h);
+    cairo_move_to (c, rect.x + r, rect.y);
+    cairo_rel_line_to(c, rect.width-2*r, 0);
+    cairo_rel_curve_to(c, c1, 0.0, r, c1, r, r);
+    cairo_rel_line_to(c, 0, rect.height-2*r);
+    cairo_rel_curve_to(c, 0.0, c1, c1-r, r, -r, r);
+    cairo_rel_line_to (c, -rect.width +2*r, 0);
+    cairo_rel_curve_to (c, -c1, 0, -r, -c1, -r, -r);
+    cairo_rel_line_to (c, 0, -rect.height + 2 * r);
+    cairo_rel_curve_to (c, 0, -c1, r - c1, -r, r, -r);
+  }
+  else
+    cairo_rectangle (c, rect.x, rect.y, rect.width, rect.height);
 }
 
 

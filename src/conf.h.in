@@ -46,6 +46,10 @@ _UNUSED_LEVEL_3, _UNUSED_LEVEL_2, _UNUSED_LEVEL_1, 0
   #define NUL '\0'
 #endif // NUL
 
+#define block
+
+#define progn
+
 #cmakedefine ENABLE_BATTERY 1
 
 #cmakedefine HAS_RSVG 1
