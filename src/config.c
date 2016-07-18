@@ -233,10 +233,10 @@ void add_entry (char *key, char *value)
 			b[0] = '\0';
 			panel_config.pourcentx = 1;
 		}
-		panel_config.area.width = atoi(value1);
-		if (panel_config.area.width == 0) {
+		panel_config.area.bounds.width = atoi(value1);
+		if (panel_config.area.bounds.width == 0) {
 			// full width mode
-			panel_config.area.width = 100;
+			panel_config.area.bounds.width = 100;
 			panel_config.pourcentx = 1;
 		}
 		if (value2) {
@@ -244,7 +244,7 @@ void add_entry (char *key, char *value)
 				b[0] = '\0';
 				panel_config.pourcenty = 1;
 			}
-			panel_config.area.height = atoi(value2);
+			panel_config.area.bounds.height = atoi(value2);
 		}
 	}
 	else if (strcmp (key, "panel_items") == 0) {

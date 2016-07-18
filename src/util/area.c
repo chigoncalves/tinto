@@ -87,18 +87,25 @@ void init_rendering(void *obj, int pos)
 	for (l = a->list; l ; l = l->next) {
 		Area *child = ((Area*)l->data);
 		if (panel_horizontal) {
-			child->posy = pos + a->bg->border.width + a->paddingy;
-			child->height = a->height - (2 * (a->bg->border.width + a->paddingy));
+		  child->bounds.y = pos + a->bg->border.width +
+		    a->paddingy;
+		  child->bounds.height = a->bounds.height -
+		    (2 * (a->bg->border.width + a->paddingy));
 			if (child->_on_change_layout)
 				child->_on_change_layout(child);
-			init_rendering(child, child->posy);
+			init_rendering(child, child->bounds.y);
 		}
 		else {
-			child->posx = pos + a->bg->border.width + a->paddingy;
-			child->width = a->width - (2 * (a->bg->border.width + a->paddingy));
+			/* #+nil child->posx = pos + a->bg->border.width + a->paddingy; */
+			/* #+nil child->width = a->width - (2 * (a->bg->border.width + a->paddingy)); */
+		  child->bounds.x = pos + a->bg->border.width
+		    + a->paddingy;
+		  child->bounds.width = a->bounds.width -
+		    (2 * (a->bg->border.width + a->paddingy));
+
 			if (child->_on_change_layout)
 				child->_on_change_layout(child);
-			init_rendering(child, child->posx);
+			init_rendering (child, child->bounds.x);
 		}
 	}
 }
@@ -172,16 +179,16 @@ void size_by_layout (Area *a, int pos, int level)
 		i++;
 
 		if (panel_horizontal) {
-			if (pos != child->posx) {
+			if (pos != child->bounds.x) {
 				// pos changed => redraw
-				child->posx = pos;
+				child->bounds.x = pos;
 				child->on_changed = 1;
 			}
 		}
 		else {
-			if (pos != child->posy) {
+			if (pos != child->bounds.y) {
 				// pos changed => redraw
-				child->posy = pos;
+				child->bounds.y = pos;
 				child->on_changed = 1;
 			}
 		}
@@ -193,9 +200,9 @@ void size_by_layout (Area *a, int pos, int level)
 		size_by_layout(child, pos, level+1);
 
 		if (panel_horizontal)
-			pos += child->width + a->paddingx;
+			pos += child->bounds.width + a->paddingx;
 		else
-			pos += child->height + a->paddingx;
+			pos += child->bounds.height + a->paddingx;
 	}
 
 	if (a->on_changed) {
@@ -225,8 +232,10 @@ void refresh (Area *a)
 	}
 
 	// draw current Area
-	if (a->pix == 0) printf("empty area posx %d, width %d\n", a->posx, a->width);
-	XCopyArea (server.dsp, a->pix, ((Panel *)a->panel)->temp_pmap, server.gc, 0, 0, a->width, a->height, a->posx, a->posy);
+	/* #+nil if (a->pix == 0) printf("empty area posx %d, width %d\n", a->posx, a->width); */
+	XCopyArea (server.dsp, a->pix, ((Panel *)a->panel)->temp_pmap,
+		   server.gc, 0, 0, a->bounds.width, a->bounds.height,
+		   a->bounds.x, a->bounds.y);
 
 	// and then refresh child object
 	GSList *l;
@@ -242,12 +251,12 @@ int resize_by_layout(void *obj, int maximum_size)
 
 	if (panel_horizontal) {
 		// detect free size for SIZE_BY_LAYOUT's Area
-		size = a->width - (2 * (a->paddingxlr + a->bg->border.width));
+		size = a->bounds.width - (2 * (a->paddingxlr + a->bg->border.width));
 		GSList *l;
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->on_screen && child->size_mode == SIZE_BY_CONTENT) {
-				size -= child->width;
+				size -= child->bounds.width;
 				nb_by_content++;
 			}
 			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT)
@@ -271,25 +280,25 @@ int resize_by_layout(void *obj, int maximum_size)
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT) {
-				old_width = child->width;
-				child->width = width;
+				old_width = child->bounds.width;
+				child->bounds.width = width;
 				if (modulo) {
-					child->width++;
+					child->bounds.width++;
 					modulo--;
 				}
-				if (child->width != old_width)
+				if (child->bounds.width != old_width)
 					child->on_changed = 1;
 			}
 		}
 	}
 	else {
 		// detect free size for SIZE_BY_LAYOUT's Area
-		size = a->height - (2 * (a->paddingxlr + a->bg->border.width));
+		size = a->bounds.height - (2 * (a->paddingxlr + a->bg->border.width));
 		GSList *l;
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->on_screen && child->size_mode == SIZE_BY_CONTENT) {
-				size -= child->height;
+				size -= child->bounds.height;
 				nb_by_content++;
 			}
 			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT)
@@ -312,13 +321,13 @@ int resize_by_layout(void *obj, int maximum_size)
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT) {
-				old_height = child->height;
-				child->height = height;
+				old_height = child->bounds.height;
+				child->bounds.height = height;
 				if (modulo) {
-					child->height++;
+					child->bounds.height++;
 					modulo--;
 				}
-				if (child->height != old_height)
+				if (child->bounds.height != old_height)
 					child->on_changed = 1;
 			}
 		}
@@ -343,9 +352,9 @@ void hide(Area *a)
 	a->on_screen = 0;
 	parent->resize = 1;
 	if (panel_horizontal)
-		a->width = 0;
+		a->bounds.width = 0;
 	else
-		a->height = 0;
+		a->bounds.height = 0;
 }
 
 void show(Area *a)
@@ -360,17 +369,17 @@ void show(Area *a)
 void draw (Area *a)
 {
 	if (a->pix) XFreePixmap (server.dsp, a->pix);
-	a->pix = XCreatePixmap (server.dsp, server.root_win, a->width, a->height, server.depth);
+	a->pix = XCreatePixmap (server.dsp, server.root_win, a->bounds.width, a->bounds.height, server.depth);
 
 	// add layer of root pixmap (or clear pixmap if real_transparency==true)
 	if (server.real_transparency)
-		clear_pixmap(a->pix, 0 ,0, a->width, a->height);
-	XCopyArea (server.dsp, ((Panel *)a->panel)->temp_pmap, a->pix, server.gc, a->posx, a->posy, a->width, a->height, 0, 0);
+		clear_pixmap(a->pix, 0 ,0, a->bounds.width, a->bounds.height);
+	XCopyArea (server.dsp, ((Panel *)a->panel)->temp_pmap, a->pix, server.gc, a->bounds.x, a->bounds.y, a->bounds.width, a->bounds.height, 0, 0);
 
 	cairo_surface_t *cs;
 	cairo_t *c;
 
-	cs = cairo_xlib_surface_create (server.dsp, a->pix, server.visual, a->width, a->height);
+	cs = cairo_xlib_surface_create (server.dsp, a->pix, server.visual, a->bounds.width, a->bounds.height);
 	c = cairo_create (cs);
 
 	draw_background (a, c);
@@ -385,8 +394,8 @@ void draw (Area *a)
 
 void draw_background (Area *a, cairo_t *c) {
   if (a->bg->color.alpha > 0) {
-    draw_rect (c, a->bg->border.width, a->bg->border.width, a->width
-	       - (2.0 * a->bg->border.width), a->height
+    draw_rect (c, a->bg->border.width, a->bg->border.width, a->bounds.width
+	       - (2.0 * a->bg->border.width), a->bounds.height
 	       - (2.0 * a->bg->border.width), a->bg->border.radius
 	       - a->bg->border.width/1.571);
     double bg_color[4];
@@ -400,7 +409,7 @@ void draw_background (Area *a, cairo_t *c) {
 
 		// draw border inside (x, y, width, height)
     draw_rect (c, a->bg->border.width / 2.0, a->bg->border.width / 2.0,
-	       a->width - a->bg->border.width, a->height
+	       a->bounds.width - a->bg->border.width, a->bounds.height
 	       - a->bg->border.width, a->bg->border.radius);
 		/*
 		// convert : radian = degre * M_PI/180

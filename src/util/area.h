@@ -28,8 +28,7 @@
 
 typedef struct {
   color_rgba_t color;
-	int width;
-	/* int rounded; */
+  int width;
   int radius;
 } Border;
 
@@ -45,10 +44,7 @@ typedef struct {
 enum { SIZE_BY_LAYOUT, SIZE_BY_CONTENT };
 
 typedef struct {
-	// coordinate relative to panel window
-	int posx, posy;
-	// width and height including border
-	int width, height;
+  rect_t bounds; /*!< Coordinates on screen. */
 	Pixmap pix;
 	Background *bg;
 

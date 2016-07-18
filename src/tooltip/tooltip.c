@@ -87,8 +87,8 @@ void init_tooltip()
 void tooltip_trigger_show(Area* area, Panel* p, XEvent *e)
 {
 	// Position the tooltip in the center of the area
-	x = area->posx + MIN(area->width / 3, 22) + e->xmotion.x_root - e->xmotion.x;
-	y = area->posy + area->height / 2 + e->xmotion.y_root - e->xmotion.y;
+	x = area->bounds.x + MIN(area->bounds.width / 3, 22) + e->xmotion.x_root - e->xmotion.x;
+	y = area->bounds.y + area->bounds.height / 2 + e->xmotion.y_root - e->xmotion.y;
 	just_shown = 1;
 	g_tooltip.panel = p;
 	if (g_tooltip.mapped && g_tooltip.area != area) {
@@ -138,9 +138,9 @@ void tooltip_update_geometry()
 	if (panel_horizontal && panel_position & BOTTOM)
 		y = panel->posy-height;
 	else if (panel_horizontal && panel_position & TOP)
-		y = panel->posy + panel->area.height;
+		y = panel->posy + panel->area.bounds.height;
 	else if (panel_position & LEFT)
-		x = panel->posx + panel->area.width;
+		x = panel->posx + panel->area.bounds.width;
 	else
 		x = panel->posx - width;
 
@@ -165,18 +165,18 @@ void tooltip_adjust_geometry()
 	if (panel_horizontal) {
 		min_x=0;
 		max_width=server.monitor[panel->monitor].width;
-		max_height=server.monitor[panel->monitor].height-panel->area.height;
+		max_height=server.monitor[panel->monitor].height-panel->area.bounds.height;
 		if (panel_position & BOTTOM)
 			min_y=0;
 		else
-			min_y=panel->area.height;
+			min_y=panel->area.bounds.height;
 	}
 	else {
-		max_width=server.monitor[panel->monitor].width-panel->area.width;
+		max_width=server.monitor[panel->monitor].width-panel->area.bounds.width;
 		min_y=0;
 		max_height=server.monitor[panel->monitor].height;
 		if (panel_position & LEFT)
-			min_x=panel->area.width;
+			min_x=panel->area.bounds.width;
 		else
 			min_x=0;
 	}

@@ -126,8 +126,8 @@ void draw_systray(void *obj, cairo_t *c) {
   UNUSED (obj, c);
 	if (FORCE_COMPOSITED_RENDERING || server.real_transparency || systray.alpha != 100 || systray.brightness != 0 || systray.saturation != 0) {
 		if (render_background) XFreePixmap(server.dsp, render_background);
-		render_background = XCreatePixmap(server.dsp, server.root_win, systray.area.width, systray.area.height, server.depth);
-		XCopyArea(server.dsp, systray.area.pix, render_background, server.gc, 0, 0, systray.area.width, systray.area.height, 0, 0);
+		render_background = XCreatePixmap(server.dsp, server.root_win, systray.area.bounds.width, systray.area.bounds.height, server.depth);
+		XCopyArea(server.dsp, systray.area.pix, render_background, server.gc, 0, 0, systray.area.bounds.width, systray.area.bounds.height, 0, 0);
 	}
 
 	refresh_systray = 1;
@@ -141,9 +141,9 @@ int resize_systray(void *obj)
 	int count;
 
 	if (panel_horizontal)
-		sysbar->icon_size = sysbar->area.height;
+		sysbar->icon_size = sysbar->area.bounds.height;
 	else
-		sysbar->icon_size = sysbar->area.width;
+		sysbar->icon_size = sysbar->area.bounds.width;
 	sysbar->icon_size = sysbar->icon_size - (2 * sysbar->area.bg->border.width) - (2 * sysbar->area.paddingy);
 	if (systray_max_icon_size > 0 && sysbar->icon_size > systray_max_icon_size)
 		sysbar->icon_size = systray_max_icon_size;
@@ -155,20 +155,20 @@ int resize_systray(void *obj)
 	//printf("count %d\n", count);
 
 	if (panel_horizontal) {
-		int height = sysbar->area.height - 2*sysbar->area.bg->border.width - 2*sysbar->area.paddingy;
+		int height = sysbar->area.bounds.height - 2*sysbar->area.bg->border.width - 2*sysbar->area.paddingy;
 		// here icons_per_column always higher than 0
 		sysbar->icons_per_column = (height+sysbar->area.paddingx) / (sysbar->icon_size+sysbar->area.paddingx);
 		sysbar->marging = height - (sysbar->icons_per_column-1)*(sysbar->icon_size+sysbar->area.paddingx) - sysbar->icon_size;
 		sysbar->icons_per_row = count / sysbar->icons_per_column + (count%sysbar->icons_per_column != 0);
-		systray.area.width = (2 * systray.area.bg->border.width) + (2 * systray.area.paddingxlr) + (sysbar->icon_size * sysbar->icons_per_row) + ((sysbar->icons_per_row-1) * systray.area.paddingx);
+		systray.area.bounds.width = (2 * systray.area.bg->border.width) + (2 * systray.area.paddingxlr) + (sysbar->icon_size * sysbar->icons_per_row) + ((sysbar->icons_per_row-1) * systray.area.paddingx);
 	}
 	else {
-		int width = sysbar->area.width - 2*sysbar->area.bg->border.width - 2*sysbar->area.paddingy;
+		int width = sysbar->area.bounds.width - 2*sysbar->area.bg->border.width - 2*sysbar->area.paddingy;
 		// here icons_per_row always higher than 0
 		sysbar->icons_per_row = (width+sysbar->area.paddingx) / (sysbar->icon_size+sysbar->area.paddingx);
 		sysbar->marging = width - (sysbar->icons_per_row-1)*(sysbar->icon_size+sysbar->area.paddingx) - sysbar->icon_size;
 		sysbar->icons_per_column = count / sysbar->icons_per_row+ (count%sysbar->icons_per_row != 0);
-		systray.area.height = (2 * systray.area.bg->border.width) + (2 * systray.area.paddingxlr) + (sysbar->icon_size * sysbar->icons_per_column) + ((sysbar->icons_per_column-1) * systray.area.paddingx);
+		systray.area.bounds.height = (2 * systray.area.bg->border.width) + (2 * systray.area.paddingxlr) + (sysbar->icon_size * sysbar->icons_per_column) + ((sysbar->icons_per_column-1) * systray.area.paddingx);
 	}
 	return 1;
 }
@@ -186,11 +186,11 @@ void on_change_systray (void *obj)
 	int start = panel->area.bg->border.width + panel->area.paddingy + systray.area.bg->border.width + systray.area.paddingy + sysbar->marging/2;
 	if (panel_horizontal) {
 		posy = start;
-		posx = systray.area.posx + systray.area.bg->border.width + systray.area.paddingxlr;
+		posx = systray.area.bounds.x + systray.area.bg->border.width + systray.area.paddingxlr;
 	}
 	else {
 		posx = start;
-		posy = systray.area.posy + systray.area.bg->border.width + systray.area.paddingxlr;
+		posy = systray.area.bounds.y + systray.area.bg->border.width + systray.area.paddingxlr;
 	}
 
 	TrayWindow *traywin;
@@ -602,15 +602,15 @@ void systray_render_icon_now(void* t)
 	if (systray.alpha != 100 || systray.brightness != 0 || systray.saturation != 0)
 		adjust_asb(data, traywin->width, traywin->height, systray.alpha, (float)systray.saturation/100, (float)systray.brightness/100);
 	imlib_image_put_back_data(data);
-	XCopyArea(server.dsp, render_background, systray.area.pix, server.gc, traywin->x-systray.area.posx, traywin->y-systray.area.posy, traywin->width, traywin->height, traywin->x-systray.area.posx, traywin->y-systray.area.posy);
+	XCopyArea(server.dsp, render_background, systray.area.pix, server.gc, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y, traywin->width, traywin->height, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y);
 	const rect_t rect = {
-	  .x = traywin->x-systray.area.posx,
-	  .y = traywin->x-systray.area.posy,
+	  .x = traywin->x-systray.area.bounds.x,
+	  .y = traywin->x-systray.area.bounds.y,
 	  .width = traywin->width,
 	  .height = traywin->height,
 	};
 	render_image (systray.area.pix, &rect);
-	XCopyArea(server.dsp, systray.area.pix, panel->main_win, server.gc, traywin->x-systray.area.posx, traywin->y-systray.area.posy, traywin->width, traywin->height, traywin->x, traywin->y);
+	XCopyArea(server.dsp, systray.area.pix, panel->main_win, server.gc, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y, traywin->width, traywin->height, traywin->x, traywin->y);
 	imlib_free_image_and_decache();
 	XFreePixmap(server.dsp, tmp_pmap);
 	imlib_context_set_visual(server.visual);

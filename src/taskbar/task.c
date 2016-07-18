@@ -345,9 +345,9 @@ void draw_task_icon (Task *tsk, int text_width)
 	Panel *panel = (Panel*)tsk->area.panel;
 	if (panel->g_task.centered) {
 		if (panel->g_task.text)
-			pos_x = (tsk->area.width - text_width - panel->g_task.icon_size1) / 2;
+			pos_x = (tsk->area.bounds.width - text_width - panel->g_task.icon_size1) / 2;
 		else
-			pos_x = (tsk->area.width - panel->g_task.icon_size1) / 2;
+			pos_x = (tsk->area.bounds.width - panel->g_task.icon_size1) / 2;
 	}
 	else pos_x = panel->g_task.area.paddingxlr + tsk->area.bg->border.width;
 
@@ -389,7 +389,7 @@ void draw_task (void *obj, cairo_t *c)
 
     color_rgba_t text_color = panel->g_task.font_colors[tsk->current_state];
 
-		double text_posy = (panel->g_task.area.height - height) / 2.0;
+    double text_posy = (panel->g_task.area.bounds.height - height) / 2.0;
 
     draw_text (layout, c, panel->g_task.text_posx, text_posy, &text_color, panel->font_shadow);
 
@@ -407,7 +407,7 @@ void on_change_task (void *obj)
 	Task *tsk = obj;
 	Panel *panel = (Panel*)tsk->area.panel;
 
-	long value[] = { panel->posx+tsk->area.posx, panel->posy+tsk->area.posy, tsk->area.width, tsk->area.height };
+	long value[] = { panel->posx+tsk->area.bounds.x, panel->posy+tsk->area.bounds.y, tsk->area.bounds.width, tsk->area.bounds.height };
 	XChangeProperty (server.dsp, tsk->win, server.atom._NET_WM_ICON_GEOMETRY, XA_CARDINAL, 32, PropModeReplace, (unsigned char*)value, 4);
 
 	// reset Pixmap when position/size changed
