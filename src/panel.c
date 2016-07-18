@@ -598,7 +598,9 @@ void panel_set_background (Panel *p)
 		xoff = p->area.bounds.width-p->hidden_width;
 
 	if (server.real_transparency) {
-		clear_pixmap(p->area.pix, 0, 0, p->area.bounds.width, p->area.bounds.height);
+	  area_clear_pixmap (p->area.pix,
+			    rect_with_size (p->area.bounds.width,
+					    p->area.bounds.height));
 	}
 	else {
 		get_root_pixmap();

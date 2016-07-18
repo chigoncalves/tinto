@@ -222,8 +222,10 @@ void tooltip_update()
   double bg_color[4];
   color_rgba_to_array (&g_tooltip.bg->color, bg_color);
 	Border b = g_tooltip.bg->border;
-	if (server.real_transparency) {
-		clear_pixmap(g_tooltip.window, 0, 0, width, height);
+  if (server.real_transparency) {
+    area_clear_pixmap (g_tooltip.window, rect_with_size (width,
+							 height));
+
     progn {
       rectf_t rect = {
 	.x = b.width,

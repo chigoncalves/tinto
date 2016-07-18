@@ -109,10 +109,8 @@ void free_area (Area *a);
 void
 area_draw_rect (cairo_t *c, rectf_t rect, double r);
 
-
 // clear pixmap with transparent color
-void clear_pixmap(Pixmap p, int x, int y, int w, int h);
-
-
+void
+area_clear_pixmap (Pixmap p, rect_t rect);
 
 #endif

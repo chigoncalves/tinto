@@ -134,6 +134,18 @@ rect_equals (const rect_t* this, rect_t* that) {
     && this->x == that->x && this->y == that->y;
 }
 
+inline rect_t
+rect_with_size (const int width, const int height) {
+  rect_t rect = {
+    .x = 0,
+    .y = 0,
+    .width = width,
+    .height = height,
+  };
+
+  return rect;
+}
+
 /*!
  * \brief Get the default color, which is a lightgray.
  */

@@ -372,8 +372,12 @@ void draw (Area *a)
 	a->pix = XCreatePixmap (server.dsp, server.root_win, a->bounds.width, a->bounds.height, server.depth);
 
 	// add layer of root pixmap (or clear pixmap if real_transparency==true)
-	if (server.real_transparency)
-		clear_pixmap(a->pix, 0 ,0, a->bounds.width, a->bounds.height);
+	if (server.real_transparency) {
+	  area_clear_pixmap (a->pix,
+			     rect_with_size (a->bounds.width,
+					     a->bounds.height));
+	}
+
 	XCopyArea (server.dsp, ((Panel *)a->panel)->temp_pmap, a->pix, server.gc, a->bounds.x, a->bounds.y, a->bounds.width, a->bounds.height, 0, 0);
 
 	cairo_surface_t *cs;
@@ -517,8 +521,6 @@ void free_area (Area *a)
 
 void
 area_draw_rect (cairo_t *c, rectf_t rect, double r) {
-/* area_draw_rect(cairo_t *c, double x, double y, double w, double h, */
-/* 	       double r) { */
   if (r > 0.0) {
     double c1 = 0.55228475 * r;
 
@@ -536,11 +538,16 @@ area_draw_rect (cairo_t *c, rectf_t rect, double r) {
     cairo_rectangle (c, rect.x, rect.y, rect.width, rect.height);
 }
 
+void
+area_clear_pixmap (Pixmap p, rect_t rect) {
+  Picture pict =
+    XRenderCreatePicture (server.dsp, p,
+			  XRenderFindVisualFormat (server.dsp,
+						   server.visual),
+			  0, 0);
 
-void clear_pixmap(Pixmap p, int x, int y, int w, int h)
-{
-	Picture pict = XRenderCreatePicture(server.dsp, p, XRenderFindVisualFormat(server.dsp, server.visual), 0, 0);
-	XRenderColor col = { .red=0, .green=0, .blue=0, .alpha=0 };
-	XRenderFillRectangle(server.dsp, PictOpSrc, pict, &col, x, y, w, h);
-	XRenderFreePicture(server.dsp, pict);
+  XRenderColor col = { .red = 0, .green = 0, .blue = 0, .alpha = 0 };
+  XRenderFillRectangle (server.dsp, PictOpSrc, pict, &col,
+			rect.x, rect.y, rect.width, rect.height);
+  XRenderFreePicture (server.dsp, pict);
 }
