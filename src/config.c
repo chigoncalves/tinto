@@ -185,11 +185,11 @@ void add_entry (char *key, char *value)
 	char *value1=0, *value2=0, *value3=0;
 
 	/* Background and border */
-	if (strcmp (key, "rounded") == 0) {
+	if (strcmp (key, "radius") == 0) {
 		// 'rounded' is the first parameter => alloc a new background
 		Background bg;
 		memset(&bg, 0, sizeof(bg));
-		bg.border.rounded = atoi(value);
+    bg.border.radius = atoi(value);
 		g_array_append_val(backgrounds, bg);
 	}
 	else if (strcmp (key, "border_width") == 0) {

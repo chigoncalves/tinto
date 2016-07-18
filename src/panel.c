@@ -245,7 +245,8 @@ void panel_init (void) {
 }
 
 
-static void panel_init_size_and_position (Panel *panel) {
+static void
+panel_init_size_and_position (Panel *panel) {
 	// detect panel size
 	if (panel_horizontal) {
 		if (panel->pourcentx)
@@ -254,12 +255,11 @@ static void panel_init_size_and_position (Panel *panel) {
 			panel->area.height = (float)server.monitor[panel->monitor].height * panel->area.height / 100;
 		if (panel->area.width + panel->marginx > server.monitor[panel->monitor].width)
 			panel->area.width = server.monitor[panel->monitor].width - panel->marginx;
-		if (panel->area.bg->border.rounded > panel->area.height/2) {
-			printf("panel_background_id rounded is too big... please fix your tint2rc\n");
+      if (panel->area.bg->border.radius > panel->area.height / 2) {
 			g_array_append_val(backgrounds, *panel->area.bg);
 			panel->area.bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
-			panel->area.bg->border.rounded = panel->area.height/2;
-		}
+        panel->area.bg->border.radius = panel->area.height / 2;
+      }
 	}
 	else {
 		int old_panel_height = panel->area.height;
@@ -273,11 +273,10 @@ static void panel_init_size_and_position (Panel *panel) {
 			panel->area.width = old_panel_height;
 		if (panel->area.height + panel->marginy > server.monitor[panel->monitor].height)
 			panel->area.height = server.monitor[panel->monitor].height - panel->marginy;
-		if (panel->area.bg->border.rounded > panel->area.width/2) {
-			printf("panel_background_id rounded is too big... please fix your tint2rc\n");
+      if (panel->area.bg->border.radius > panel->area.width / 2) {
 			g_array_append_val(backgrounds, *panel->area.bg);
 			panel->area.bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
-			panel->area.bg->border.rounded = panel->area.width/2;
+        panel->area.bg->border.radius = panel->area.width / 2;
 		}
 	}
 

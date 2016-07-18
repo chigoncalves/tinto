@@ -384,8 +384,11 @@ void draw (Area *a)
 
 
 void draw_background (Area *a, cairo_t *c) {
-  if (a->bg->color.alpha > 0.0) {
-		draw_rect(c, a->bg->border.width, a->bg->border.width, a->width-(2.0 * a->bg->border.width), a->height-(2.0*a->bg->border.width), a->bg->border.rounded - a->bg->border.width/1.571);
+  if (a->bg->color.alpha > 0) {
+    draw_rect (c, a->bg->border.width, a->bg->border.width, a->width
+	       - (2.0 * a->bg->border.width), a->height
+	       - (2.0 * a->bg->border.width), a->bg->border.radius
+	       - a->bg->border.width/1.571);
     double bg_color[4];
     color_rgba_to_array (&a->bg->color, bg_color);
     cairo_set_source_rgba (c, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
@@ -396,7 +399,9 @@ void draw_background (Area *a, cairo_t *c) {
 		cairo_set_line_width (c, a->bg->border.width);
 
 		// draw border inside (x, y, width, height)
-		draw_rect(c, a->bg->border.width/2.0, a->bg->border.width/2.0, a->width - a->bg->border.width, a->height - a->bg->border.width, a->bg->border.rounded);
+    draw_rect (c, a->bg->border.width / 2.0, a->bg->border.width / 2.0,
+	       a->width - a->bg->border.width, a->height
+	       - a->bg->border.width, a->bg->border.radius);
 		/*
 		// convert : radian = degre * M_PI/180
 		// definir le degrade dans un carre de (0,0) (100,100)
