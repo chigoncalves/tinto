@@ -142,7 +142,7 @@ void init_launcher_panel(void *p)
 
 	launcher->area.parent = p;
 	launcher->area.panel = p;
-	launcher->area._draw_foreground = NULL;
+	launcher->area.area_draw_foreground = NULL;
 	launcher->area.size_mode = SIZE_BY_CONTENT;
 	launcher->area._resize = resize_launcher;
 	launcher->area.resize = 1;
@@ -517,7 +517,7 @@ launcher_load_icons(Launcher* launcher) {
 			LauncherIcon *launcherIcon = calloc(1, sizeof(LauncherIcon));
 			launcherIcon->area.parent = launcher;
 			launcherIcon->area.panel = launcher->area.panel;
-			launcherIcon->area._draw_foreground = draw_launcher_icon;
+			launcherIcon->area.area_draw_foreground = draw_launcher_icon;
 			launcherIcon->area.size_mode = SIZE_BY_CONTENT;
 			launcherIcon->area._resize = NULL;
 			launcherIcon->area.resize = 0;

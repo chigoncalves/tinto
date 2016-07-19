@@ -175,7 +175,7 @@ void init_clock_panel(void *p)
 		clock->area.background = &g_array_index(backgrounds, background_t, 0);
 	clock->area.parent = p;
 	clock->area.panel = p;
-	clock->area._draw_foreground = draw_clock;
+	clock->area.area_draw_foreground = draw_clock;
 	clock->area.size_mode = SIZE_BY_CONTENT;
 	clock->area._resize = resize_clock;
 	// check consistency

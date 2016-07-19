@@ -152,7 +152,7 @@ void init_taskbar_panel(void *p)
 	panel->g_taskbar.area_name.panel = panel;
 	panel->g_taskbar.area_name.size_mode = SIZE_BY_CONTENT;
 	panel->g_taskbar.area_name._resize = resize_taskbarname;
-	panel->g_taskbar.area_name._draw_foreground = draw_taskbarname;
+	panel->g_taskbar.area_name.area_draw_foreground = draw_taskbarname;
 	panel->g_taskbar.area_name._on_change_layout = 0;
 	panel->g_taskbar.area_name.resize = 1;
 	panel->g_taskbar.area_name.visible = 1;
@@ -162,7 +162,7 @@ void init_taskbar_panel(void *p)
 	panel->g_taskbar.area.panel = panel;
 	panel->g_taskbar.area.size_mode = SIZE_BY_LAYOUT;
 	panel->g_taskbar.area._resize = resize_taskbar;
-	panel->g_taskbar.area._draw_foreground = draw_taskbar;
+	panel->g_taskbar.area.area_draw_foreground = draw_taskbar;
 	panel->g_taskbar.area._on_change_layout = on_change_taskbar;
 	panel->g_taskbar.area.resize = 1;
 	panel->g_taskbar.area.visible = 1;
@@ -182,7 +182,7 @@ void init_taskbar_panel(void *p)
 	// task
 	panel->g_task.area.panel = panel;
 	panel->g_task.area.size_mode = SIZE_BY_LAYOUT;
-	panel->g_task.area._draw_foreground = draw_task;
+	panel->g_task.area.area_draw_foreground = draw_task;
 	panel->g_task.area._on_change_layout = on_change_task;
 	panel->g_task.area.resize = 1;
 	panel->g_task.area.visible = 1;

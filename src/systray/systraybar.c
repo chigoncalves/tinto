@@ -66,7 +66,7 @@ void default_systray()
 	render_background = 0;
 	systray.alpha = 100;
 	systray.sort = 3;
-	systray.area._draw_foreground = draw_systray;
+	systray.area.area_draw_foreground = draw_systray;
 	systray.area._on_change_layout = on_change_systray;
 	systray.area.size_mode = SIZE_BY_CONTENT;
 	systray.area._resize = resize_systray;

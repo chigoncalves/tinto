@@ -388,8 +388,8 @@ void draw (Area *a)
 
 	draw_background (a, c);
 
-	if (a->_draw_foreground)
-		a->_draw_foreground(a, c);
+	if (a->area_draw_foreground)
+		a->area_draw_foreground(a, c);
 
 	cairo_destroy (c);
 	cairo_surface_destroy (cs);

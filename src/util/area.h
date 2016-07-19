@@ -39,11 +39,23 @@ typedef struct {
   border_t border;
 } background_t;
 
+typedef void (*area_draw_fn) (void* self, cairo_t* context);
+typedef bool (*area_resize_fn) (void* self);
 
 // way to calculate the size
 // SIZE_BY_LAYOUT objects : taskbar and task
 // SIZE_BY_CONTENT objects : clock, battery, launcher, systray
-enum { SIZE_BY_LAYOUT, SIZE_BY_CONTENT };
+typedef enum {
+  SIZE_BY_LAYOUT,
+  SIZE_BY_CONTENT,
+} size_mode_t;
+
+typedef struct {
+  int top;
+  int right;
+  int bottom;
+  int left;
+} padding_t;
 
 typedef struct {
   rect_t bounds; /*!< Coordinates on screen. */
@@ -52,11 +64,11 @@ typedef struct {
   GSList* children; /* !< A list of children of given Area object. */
   bool visible; /*!< Whether the Area is visible or not. */
 	// way to calculate the size (SIZE_BY_CONTENT or SIZE_BY_LAYOUT)
-	int size_mode;
-	// need to calculate position and width
-	int resize;
-	// need redraw Pixmap
-	int redraw;
+  size_mode_t size_mode;
+  // need to calculate position and width
+  bool resize;
+  // need redraw Pixmap
+  bool redraw;
 	// paddingxlr = horizontal padding left/right
 	// paddingx = horizontal padding between childs
 	int paddingxlr, paddingx, paddingy;
@@ -64,14 +76,12 @@ typedef struct {
 	void *parent;
 	// panel
 	void *panel;
-
-	// each object can overwrite following function
-	void (*_draw_foreground)(void *obj, cairo_t *c);
+  area_draw_fn area_draw_foreground;
 	// update area's content and update size (width/heith).
 	// return '1' if size changed, '0' otherwise.
 	int (*_resize)(void *obj);
-	// after pos/size changed, the rendering engine will call _on_change_layout(Area*)
-	int on_changed;
+  // after pos/size changed, the rendering engine will call _on_change_layout(Area*)
+  bool on_changed;
 	void (*_on_change_layout)(void *obj);
 	const char* (*_get_tooltip_text)(void *obj);
 } Area;
