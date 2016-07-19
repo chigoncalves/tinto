@@ -47,7 +47,8 @@ enum { SIZE_BY_LAYOUT, SIZE_BY_CONTENT };
 
 typedef struct {
   rect_t bounds; /*!< Coordinates on screen. */
-	Pixmap pix;
+  Pixmap pixmap;
+	/* Pixmap pix; */
   background_t *bg;
   GSList* children; /* !< A list of children of given Area object. */
   bool visible; /*!< Whether the Area is visible or not. */

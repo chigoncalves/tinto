@@ -127,7 +127,7 @@ void draw_systray(void *obj, cairo_t *c) {
 	if (FORCE_COMPOSITED_RENDERING || server.real_transparency || systray.alpha != 100 || systray.brightness != 0 || systray.saturation != 0) {
 		if (render_background) XFreePixmap(server.dsp, render_background);
 		render_background = XCreatePixmap(server.dsp, server.root_win, systray.area.bounds.width, systray.area.bounds.height, server.depth);
-		XCopyArea(server.dsp, systray.area.pix, render_background, server.gc, 0, 0, systray.area.bounds.width, systray.area.bounds.height, 0, 0);
+		XCopyArea(server.dsp, systray.area.pixmap, render_background, server.gc, 0, 0, systray.area.bounds.width, systray.area.bounds.height, 0, 0);
 	}
 
 	refresh_systray = 1;
@@ -602,15 +602,15 @@ void systray_render_icon_now(void* t)
 	if (systray.alpha != 100 || systray.brightness != 0 || systray.saturation != 0)
 		adjust_asb(data, traywin->width, traywin->height, systray.alpha, (float)systray.saturation/100, (float)systray.brightness/100);
 	imlib_image_put_back_data(data);
-	XCopyArea(server.dsp, render_background, systray.area.pix, server.gc, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y, traywin->width, traywin->height, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y);
+	XCopyArea(server.dsp, render_background, systray.area.pixmap, server.gc, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y, traywin->width, traywin->height, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y);
 	const rect_t rect = {
 	  .x = traywin->x-systray.area.bounds.x,
 	  .y = traywin->x-systray.area.bounds.y,
 	  .width = traywin->width,
 	  .height = traywin->height,
 	};
-	render_image (systray.area.pix, &rect);
-	XCopyArea(server.dsp, systray.area.pix, panel->main_win, server.gc, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y, traywin->width, traywin->height, traywin->x, traywin->y);
+	render_image (systray.area.pixmap, &rect);
+	XCopyArea(server.dsp, systray.area.pixmap, panel->main_win, server.gc, traywin->x-systray.area.bounds.x, traywin->y-systray.area.bounds.y, traywin->width, traywin->height, traywin->x, traywin->y);
 	imlib_free_image_and_decache();
 	XFreePixmap(server.dsp, tmp_pmap);
 	imlib_context_set_visual(server.visual);

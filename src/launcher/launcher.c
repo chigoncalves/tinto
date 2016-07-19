@@ -418,7 +418,7 @@ void draw_launcher_icon(void *obj, cairo_t *c) {
 	// Render
 	imlib_context_set_image (icon_scaled);
 	imlib_context_set_blend(1);
-	imlib_context_set_drawable(launcherIcon->area.pix);
+	imlib_context_set_drawable(launcherIcon->area.pixmap);
 	imlib_render_image_on_drawable(0, 0);
 }
 

@@ -354,7 +354,7 @@ void draw_task_icon (Task *tsk, int text_width)
 	// Render
 	imlib_context_set_image (tsk->icon[tsk->current_state]);
 	imlib_context_set_blend(1);
-	imlib_context_set_drawable(tsk->area.pix);
+	imlib_context_set_drawable(tsk->area.pixmap);
 	imlib_render_image_on_drawable(pos_x, panel->g_task.icon_posy);
 }
 
@@ -362,7 +362,7 @@ void draw_task_icon (Task *tsk, int text_width)
 void draw_task (void *obj, cairo_t *c)
 {
 	Task *tsk = obj;
-	tsk->state_pix[tsk->current_state] = tsk->area.pix;
+	tsk->state_pix[tsk->current_state] = tsk->area.pixmap;
 	PangoLayout *layout;
 	int width=0, height;
 	Panel *panel = (Panel*)tsk->area.panel;
@@ -524,7 +524,7 @@ void set_task_state(Task *tsk, int state)
 				Task* tsk1 = g_ptr_array_index(task_group, i);
 				tsk1->current_state = state;
 				tsk1->area.bg = panel1[0].g_task.background[state];
-				tsk1->area.pix = tsk1->state_pix[state];
+				tsk1->area.pixmap = tsk1->state_pix[state];
 				if (tsk1->state_pix[state] == 0)
 					tsk1->area.redraw = 1;
 				if (state == TASK_ACTIVE && g_slist_find(urgent_list, tsk1))
@@ -562,7 +562,7 @@ void set_task_redraw(Task* tsk)
 		if (tsk->state_pix[k]) XFreePixmap(server.dsp, tsk->state_pix[k]);
 		tsk->state_pix[k] = 0;
 	}
-	tsk->area.pix = 0;
+	tsk->area.pixmap = 0;
 	tsk->area.redraw = 1;
 }
 

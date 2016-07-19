@@ -588,8 +588,8 @@ static void panel_set_properties (Panel *p) {
 
 void panel_set_background (Panel *p)
 {
-	if (p->area.pix) XFreePixmap (server.dsp, p->area.pix);
-	p->area.pix = XCreatePixmap (server.dsp, server.root_win, p->area.bounds.width, p->area.bounds.height, server.depth);
+	if (p->area.pixmap) XFreePixmap (server.dsp, p->area.pixmap);
+	p->area.pixmap = XCreatePixmap (server.dsp, server.root_win, p->area.bounds.width, p->area.bounds.height, server.depth);
 
 	int xoff=0, yoff=0;
 	if (panel_horizontal && panel_position & BOTTOM)
@@ -598,13 +598,13 @@ void panel_set_background (Panel *p)
 		xoff = p->area.bounds.width-p->hidden_width;
 
 	if (server.real_transparency) {
-	  area_clear_pixmap (p->area.pix,
+	  area_clear_pixmap (p->area.pixmap,
 			    rect_with_size (p->area.bounds.width,
 					    p->area.bounds.height));
 	}
 	else {
 		get_root_pixmap();
-		// copy background (server.root_pmap) in panel.area.pix
+		// copy background (server.root_pmap) in panel.area.pixmap
 		Window dummy;
 		int  x, y;
 		XTranslateCoordinates(server.dsp, p->main_win, server.root_win, 0, 0, &x, &y, &dummy);
@@ -613,11 +613,11 @@ void panel_set_background (Panel *p)
 			y -= yoff;
 		}
 		XSetTSOrigin(server.dsp, server.gc, -x, -y);
-		XFillRectangle(server.dsp, p->area.pix, server.gc, 0, 0, p->area.bounds.width, p->area.bounds.height);
+		XFillRectangle(server.dsp, p->area.pixmap, server.gc, 0, 0, p->area.bounds.width, p->area.bounds.height);
 	}
 
 	// draw background panel
-	cairo_surface_t *cs = cairo_xlib_surface_create (server.dsp, p->area.pix, server.visual, p->area.bounds.width, p->area.bounds.height);;
+	cairo_surface_t *cs = cairo_xlib_surface_create (server.dsp, p->area.pixmap, server.visual, p->area.bounds.width, p->area.bounds.height);;
 	cairo_t *c  = cairo_create (cs);;
 
 	draw_background(&p->area, c);
@@ -627,7 +627,7 @@ void panel_set_background (Panel *p)
 	if (panel_autohide) {
 		if (p->hidden_pixmap) XFreePixmap(server.dsp, p->hidden_pixmap);
 		p->hidden_pixmap = XCreatePixmap(server.dsp, server.root_win, p->hidden_width, p->hidden_height, server.depth);
-		XCopyArea(server.dsp, p->area.pix, p->hidden_pixmap, server.gc, xoff, yoff, p->hidden_width, p->hidden_height, 0, 0);
+		XCopyArea(server.dsp, p->area.pixmap, p->hidden_pixmap, server.gc, xoff, yoff, p->hidden_width, p->hidden_height, 0, 0);
 	}
 
 	// redraw panel's object
@@ -649,8 +649,8 @@ void panel_set_background (Panel *p)
 			if (tskbar->bar_name.state_pix[k]) XFreePixmap(server.dsp, tskbar->bar_name.state_pix[k]);
 			tskbar->bar_name.state_pix[k] = 0;
 		}
-		tskbar->area.pix = 0;
-		tskbar->bar_name.area.pix = 0;
+		tskbar->area.pixmap = 0;
+		tskbar->bar_name.area.pixmap = 0;
 		l0 = tskbar->area.children;
 		if (taskbarname_enabled) l0 = l0->next;
 		for (; l0 ; l0 = l0->next) {

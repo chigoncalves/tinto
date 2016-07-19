@@ -232,8 +232,8 @@ void refresh (Area *a)
 	}
 
 	// draw current Area
-	/* #+nil if (a->pix == 0) printf("empty area posx %d, width %d\n", a->posx, a->width); */
-	XCopyArea (server.dsp, a->pix, ((Panel *)a->panel)->temp_pmap,
+	/* #+nil if (a->pixmap == 0) printf("empty area posx %d, width %d\n", a->posx, a->width); */
+	XCopyArea (server.dsp, a->pixmap, ((Panel *)a->panel)->temp_pmap,
 		   server.gc, 0, 0, a->bounds.width, a->bounds.height,
 		   a->bounds.x, a->bounds.y);
 
@@ -368,22 +368,22 @@ void show(Area *a)
 
 void draw (Area *a)
 {
-	if (a->pix) XFreePixmap (server.dsp, a->pix);
-	a->pix = XCreatePixmap (server.dsp, server.root_win, a->bounds.width, a->bounds.height, server.depth);
+	if (a->pixmap) XFreePixmap (server.dsp, a->pixmap);
+	a->pixmap = XCreatePixmap (server.dsp, server.root_win, a->bounds.width, a->bounds.height, server.depth);
 
 	// add layer of root pixmap (or clear pixmap if real_transparency==true)
 	if (server.real_transparency) {
-	  area_clear_pixmap (a->pix,
+	  area_clear_pixmap (a->pixmap,
 			     rect_with_size (a->bounds.width,
 					     a->bounds.height));
 	}
 
-	XCopyArea (server.dsp, ((Panel *)a->panel)->temp_pmap, a->pix, server.gc, a->bounds.x, a->bounds.y, a->bounds.width, a->bounds.height, 0, 0);
+	XCopyArea (server.dsp, ((Panel *)a->panel)->temp_pmap, a->pixmap, server.gc, a->bounds.x, a->bounds.y, a->bounds.width, a->bounds.height, 0, 0);
 
 	cairo_surface_t *cs;
 	cairo_t *c;
 
-	cs = cairo_xlib_surface_create (server.dsp, a->pix, server.visual, a->bounds.width, a->bounds.height);
+	cs = cairo_xlib_surface_create (server.dsp, a->pixmap, server.visual, a->bounds.width, a->bounds.height);
 	c = cairo_create (cs);
 
 	draw_background (a, c);
@@ -513,9 +513,9 @@ area_destroy (Area *self) {
     g_slist_free (self->children);
     self->children = NULL;
   }
-  if (self->pix) {
-    XFreePixmap (server.dsp, self->pix);
-    self->pix = None;
+  if (self->pixmap) {
+    XFreePixmap (server.dsp, self->pixmap);
+    self->pixmap = None;
   }
 }
 

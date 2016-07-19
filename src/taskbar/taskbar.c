@@ -329,7 +329,7 @@ void draw_taskbar (void *obj, cairo_t *c) {
 	Taskbar *taskbar = obj;
 	int state = (taskbar->desktop == server.desktop) ? TASKBAR_ACTIVE : TASKBAR_NORMAL;
 
-	taskbar->state_pix[state] = taskbar->area.pix;
+	taskbar->state_pix[state] = taskbar->area.pixmap;
 }
 
 
@@ -373,7 +373,7 @@ void on_change_taskbar (void *obj)
 		if (tskbar->state_pix[k]) XFreePixmap(server.dsp, tskbar->state_pix[k]);
 		tskbar->state_pix[k] = 0;
 	}
-	tskbar->area.pix = 0;
+	tskbar->area.pixmap = 0;
 	tskbar->area.redraw = 1;
 }
 
@@ -381,10 +381,10 @@ void on_change_taskbar (void *obj)
 void set_taskbar_state(Taskbar *tskbar, int state)
 {
 	tskbar->area.bg = panel1[0].g_taskbar.background[state];
-	tskbar->area.pix = tskbar->state_pix[state];
+	tskbar->area.pixmap = tskbar->state_pix[state];
 	if (taskbarname_enabled) {
 		tskbar->bar_name.area.bg = panel1[0].g_taskbar.background_name[state];
-		tskbar->bar_name.area.pix = tskbar->bar_name.state_pix[state];
+		tskbar->bar_name.area.pixmap = tskbar->bar_name.state_pix[state];
 	}
 	if (panel_mode != MULTI_DESKTOP) {
 		if (state == TASKBAR_NORMAL)

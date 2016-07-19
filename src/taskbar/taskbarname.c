@@ -119,7 +119,7 @@ void draw_taskbarname (void *obj, cairo_t *c) {
   color_rgba_to_array (&text_color, color);
 
 	int state = (taskbar->desktop == server.desktop) ? TASKBAR_ACTIVE : TASKBAR_NORMAL;
-	taskbar_name->state_pix[state] = taskbar_name->area.pix;
+	taskbar_name->state_pix[state] = taskbar_name->area.pixmap;
 
 	// draw content
 	layout = pango_cairo_create_layout (c);
