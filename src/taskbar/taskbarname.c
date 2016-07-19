@@ -74,7 +74,7 @@ void init_taskbarname_panel(void *p)
 			tskbar->bar_name.name = g_strdup_printf("%d", j+1);
 
 		// append the name at the beginning of taskbar
-		tskbar->area.list = g_slist_append(tskbar->area.list, &tskbar->bar_name);
+		tskbar->area.children = g_slist_append(tskbar->area.children, &tskbar->bar_name);
 	}
 
 	for (l=list ; l ; l = l->next)
@@ -101,7 +101,7 @@ void cleanup_taskbarname()
 					XFreePixmap(server.dsp, tskbar->bar_name.state_pix[k]);
 				tskbar->bar_name.state_pix[k] = 0;
 			}
-			tskbar->area.list = g_slist_remove(tskbar->area.list, &tskbar->bar_name);
+			tskbar->area.children = g_slist_remove(tskbar->area.children, &tskbar->bar_name);
 		}
 	}
 

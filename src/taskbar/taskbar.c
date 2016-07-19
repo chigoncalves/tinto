@@ -105,7 +105,7 @@ void cleanup_taskbar()
 			}
 			area_destroy (&tskbar->area);
 			// remove taskbar from the panel
-			panel->area.list = g_slist_remove(panel->area.list, tskbar);
+			panel->area.children = g_slist_remove(panel->area.children, tskbar);
 		}
 		if (panel->taskbar) {
 			free(panel->taskbar);
@@ -344,7 +344,7 @@ int resize_taskbar(void *obj)
 		resize_by_layout(obj, panel->g_task.maximum_width);
 
 		text_width = panel->g_task.maximum_width;
-		GSList *l = taskbar->area.list;
+		GSList *l = taskbar->area.children;
 		if (taskbarname_enabled) l = l->next;
 		for (; l != NULL; l = l->next) {
 			if (((Task *)l->data)->area.visible) {
@@ -398,7 +398,7 @@ void set_taskbar_state(Taskbar *tskbar, int state)
 		if (taskbarname_enabled && tskbar->bar_name.state_pix[state] == 0)
 			tskbar->bar_name.area.redraw = 1;
 		if (panel_mode == MULTI_DESKTOP && panel1[0].g_taskbar.background[TASKBAR_NORMAL] != panel1[0].g_taskbar.background[TASKBAR_ACTIVE]) {
-			GSList *l = tskbar->area.list;
+			GSList *l = tskbar->area.children;
 			if (taskbarname_enabled) l = l->next;
 			for ( ; l ; l = l->next)
 				set_task_redraw(l->data);
@@ -433,9 +433,9 @@ gint compare_tasks_trivial(Task *a, Task *b, Taskbar *taskbar)
 	if (a == b)
 		return 0;
 	if (taskbarname_enabled) {
-		if (a == taskbar->area.list->data)
+		if (a == taskbar->area.children->data)
 			return -1;
-		if (b == taskbar->area.list->data)
+		if (b == taskbar->area.children->data)
 			return 1;
 	}
 	return NONTRIVIAL;
@@ -514,7 +514,7 @@ int taskbar_needs_sort(Taskbar *taskbar)
 		return 0;
 
 	GSList *i, *j;
-	for (i = taskbar->area.list, j = i ? i->next : NULL; i && j; i = i->next, j = j->next) {
+	for (i = taskbar->area.children, j = i ? i->next : NULL; i && j; i = i->next, j = j->next) {
 		if (compare_tasks(i->data, j->data, taskbar) > 0) {
 			return 1;
 		}
@@ -530,7 +530,7 @@ void sort_tasks(Taskbar *taskbar)
 	if (!taskbar_needs_sort(taskbar)) {
 		return;
 	}
-	taskbar->area.list = g_slist_sort_with_data(taskbar->area.list, (GCompareDataFunc)compare_tasks, taskbar);
+	taskbar->area.children = g_slist_sort_with_data(taskbar->area.children, (GCompareDataFunc)compare_tasks, taskbar);
 	taskbar->area.resize = 1;
 	panel_refresh = 1;
 	((Panel*)taskbar->area.panel)->area.resize = 1;

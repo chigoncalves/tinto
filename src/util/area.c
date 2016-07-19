@@ -84,7 +84,7 @@ void init_rendering(void *obj, int pos)
 
 	// initialize fixed position/size
 	GSList *l;
-	for (l = a->list; l ; l = l->next) {
+	for (l = a->children; l ; l = l->next) {
 		Area *child = ((Area*)l->data);
 		if (panel_horizontal) {
 		  child->bounds.y = pos + a->bg->border.width +
@@ -129,7 +129,7 @@ void size_by_content (Area *a)
 
 	// children node are resized before its parent
 	GSList *l;
-	for (l = a->list; l ; l = l->next)
+	for (l = a->children; l ; l = l->next)
 		size_by_content(l->data);
 
 	// calculate area's size
@@ -162,9 +162,9 @@ void size_by_layout (Area *a, int pos, int level)
 		if (a->_resize) {
 			a->_resize(a);
 			// resize childs with SIZE_BY_LAYOUT
-			for (l = a->list; l ; l = l->next) {
+			for (l = a->children; l ; l = l->next) {
 				Area *child = ((Area*)l->data);
-				if (child->size_mode == SIZE_BY_LAYOUT && child->list)
+				if (child->size_mode == SIZE_BY_LAYOUT && child->children)
 					child->resize = 1;
 			}
 		}
@@ -173,7 +173,7 @@ void size_by_layout (Area *a, int pos, int level)
 	// update position of childs
 	pos += a->paddingxlr + a->bg->border.width;
 	int i=0;
-	for (l = a->list; l ; l = l->next) {
+	for (l = a->children; l ; l = l->next) {
 		Area *child = ((Area*)l->data);
 		if (!child->visible) continue;
 		i++;
@@ -224,7 +224,7 @@ void refresh (Area *a)
 		a->redraw = 0;
 		// force redraw of child
 		//GSList *l;
-		//for (l = a->list ; l ; l = l->next)
+		//for (l = a->children ; l ; l = l->next)
 			//((Area*)l->data)->redraw = 1;
 
 		//printf("draw area posx %d, width %d\n", a->posx, a->width);
@@ -239,7 +239,7 @@ void refresh (Area *a)
 
 	// and then refresh child object
 	GSList *l;
-	for (l = a->list; l ; l = l->next)
+	for (l = a->children; l ; l = l->next)
 		refresh(l->data);
 }
 
@@ -253,7 +253,7 @@ int resize_by_layout(void *obj, int maximum_size)
 		// detect free size for SIZE_BY_LAYOUT's Area
 		size = a->bounds.width - (2 * (a->paddingxlr + a->bg->border.width));
 		GSList *l;
-		for (l = a->list ; l ; l = l->next) {
+		for (l = a->children ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->visible && child->size_mode == SIZE_BY_CONTENT) {
 				size -= child->bounds.width;
@@ -277,7 +277,7 @@ int resize_by_layout(void *obj, int maximum_size)
 		}
 
 		// resize SIZE_BY_LAYOUT objects
-		for (l = a->list ; l ; l = l->next) {
+		for (l = a->children ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->visible && child->size_mode == SIZE_BY_LAYOUT) {
 				old_width = child->bounds.width;
@@ -295,7 +295,7 @@ int resize_by_layout(void *obj, int maximum_size)
 		// detect free size for SIZE_BY_LAYOUT's Area
 		size = a->bounds.height - (2 * (a->paddingxlr + a->bg->border.width));
 		GSList *l;
-		for (l = a->list ; l ; l = l->next) {
+		for (l = a->children ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->visible && child->size_mode == SIZE_BY_CONTENT) {
 				size -= child->bounds.height;
@@ -318,7 +318,7 @@ int resize_by_layout(void *obj, int maximum_size)
 		}
 
 		// resize SIZE_BY_LAYOUT objects
-		for (l = a->list ; l ; l = l->next) {
+		for (l = a->children ; l ; l = l->next) {
 			child = (Area*)l->data;
 			if (child->visible && child->size_mode == SIZE_BY_LAYOUT) {
 				old_height = child->bounds.height;
@@ -341,7 +341,7 @@ void set_redraw (Area *a)
 	a->redraw = 1;
 
 	GSList *l;
-	for (l = a->list ; l ; l = l->next)
+	for (l = a->children ; l ; l = l->next)
 		set_redraw(l->data);
 }
 
@@ -483,7 +483,7 @@ void remove_area (Area *a)
 {
 	Area *parent = (Area*)a->parent;
 
-	parent->list = g_slist_remove(parent->list, a);
+	parent->children = g_slist_remove(parent->children, a);
 	set_redraw (parent);
 
 }
@@ -493,7 +493,7 @@ void add_area (Area *a)
 {
 	Area *parent = (Area*)a->parent;
 
-	parent->list = g_slist_append(parent->list, a);
+	parent->children = g_slist_append(parent->children, a);
 	set_redraw (parent);
 
 }
@@ -503,15 +503,15 @@ area_destroy (Area *self) {
   if (!self)
     return;
 
-  GSList* children = self->list;
+  GSList* children = self->children;
   while (children) {
     area_destroy (children->data);
     children = children->next;
   }
 
-  if (self->list) {
-    g_slist_free (self->list);
-    self->list = NULL;
+  if (self->children) {
+    g_slist_free (self->children);
+    self->children = NULL;
   }
   if (self->pix) {
     XFreePixmap (server.dsp, self->pix);
