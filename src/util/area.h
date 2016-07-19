@@ -32,12 +32,12 @@ typedef struct {
   color_rgba_t color;
   int width;
   int radius;
-} Border;
+} border_t;
 
 typedef struct {
   color_rgba_t color;
-	Border border;
-} Background;
+  border_t border;
+} background_t;
 
 
 // way to calculate the size
@@ -48,12 +48,9 @@ enum { SIZE_BY_LAYOUT, SIZE_BY_CONTENT };
 typedef struct {
   rect_t bounds; /*!< Coordinates on screen. */
 	Pixmap pix;
-	Background *bg;
-
-	// list of child : Area object
-  /* GSList *list; */
-  GSList* children;
-  bool visible; /*<! Whether the Area is visible or not. */
+  background_t *bg;
+  GSList* children; /* !< A list of children of given Area object. */
+  bool visible; /*!< Whether the Area is visible or not. */
 	// way to calculate the size (SIZE_BY_CONTENT or SIZE_BY_LAYOUT)
 	int size_mode;
 	// need to calculate position and width

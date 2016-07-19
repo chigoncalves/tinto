@@ -136,17 +136,17 @@ void init_taskbar_panel(void *p)
 	int j;
 
 	if (panel->g_taskbar.background[TASKBAR_NORMAL] == 0) {
-		panel->g_taskbar.background[TASKBAR_NORMAL] = &g_array_index(backgrounds, Background, 0);
-		panel->g_taskbar.background[TASKBAR_ACTIVE] = &g_array_index(backgrounds, Background, 0);
+		panel->g_taskbar.background[TASKBAR_NORMAL] = &g_array_index(backgrounds, background_t, 0);
+		panel->g_taskbar.background[TASKBAR_ACTIVE] = &g_array_index(backgrounds, background_t, 0);
 	}
 	if (panel->g_taskbar.background_name[TASKBAR_NORMAL] == 0) {
-		panel->g_taskbar.background_name[TASKBAR_NORMAL] = &g_array_index(backgrounds, Background, 0);
-		panel->g_taskbar.background_name[TASKBAR_ACTIVE] = &g_array_index(backgrounds, Background, 0);
+		panel->g_taskbar.background_name[TASKBAR_NORMAL] = &g_array_index(backgrounds, background_t, 0);
+		panel->g_taskbar.background_name[TASKBAR_ACTIVE] = &g_array_index(backgrounds, background_t, 0);
 	}
 	if (!panel->g_task.font_desc)
 		panel->g_task.font_desc = pango_font_description_from_string(DEFAULT_FONT);
 	if (panel->g_task.area.bg == 0)
-		panel->g_task.area.bg = &g_array_index(backgrounds, Background, 0);
+		panel->g_task.area.bg = &g_array_index(backgrounds, background_t, 0);
 
 	// taskbar name
 	panel->g_taskbar.area_name.panel = panel;
@@ -210,7 +210,7 @@ void init_taskbar_panel(void *p)
 	if ((panel->g_task.config_font_mask & (1<<TASK_ACTIVE)) == 0) panel->g_task.font_colors[TASK_ACTIVE] = panel->g_task.font_colors[TASK_NORMAL];
 	if ((panel->g_task.config_font_mask & (1<<TASK_ICONIFIED)) == 0) panel->g_task.font_colors[TASK_ICONIFIED] = panel->g_task.font_colors[TASK_NORMAL];
 	if ((panel->g_task.config_font_mask & (1<<TASK_URGENT)) == 0) panel->g_task.font_colors[TASK_URGENT] = panel->g_task.font_colors[TASK_ACTIVE];
-	if ((panel->g_task.config_background_mask & (1<<TASK_NORMAL)) == 0) panel->g_task.background[TASK_NORMAL] = &g_array_index(backgrounds, Background, 0);
+	if ((panel->g_task.config_background_mask & (1<<TASK_NORMAL)) == 0) panel->g_task.background[TASK_NORMAL] = &g_array_index(backgrounds, background_t, 0);
 	if ((panel->g_task.config_background_mask & (1<<TASK_ACTIVE)) == 0) panel->g_task.background[TASK_ACTIVE] = panel->g_task.background[TASK_NORMAL];
 	if ((panel->g_task.config_background_mask & (1<<TASK_ICONIFIED)) == 0) panel->g_task.background[TASK_ICONIFIED] = panel->g_task.background[TASK_NORMAL];
 	if ((panel->g_task.config_background_mask & (1<<TASK_URGENT)) == 0) panel->g_task.background[TASK_URGENT] = panel->g_task.background[TASK_ACTIVE];
@@ -227,11 +227,11 @@ void init_taskbar_panel(void *p)
 
 	for (j=0; j<TASK_STATE_COUNT; ++j) {
 		if (panel->g_task.background[j] == 0)
-			panel->g_task.background[j] = &g_array_index(backgrounds, Background, 0);
+			panel->g_task.background[j] = &g_array_index(backgrounds, background_t, 0);
     if (panel->g_task.background[j]->border.radius >
 	panel->g_task.area.bounds.height / 2) {
 			g_array_append_val(backgrounds, *panel->g_task.background[j]);
-			panel->g_task.background[j] = &g_array_index(backgrounds, Background, backgrounds->len-1);
+			panel->g_task.background[j] = &g_array_index(backgrounds, background_t, backgrounds->len-1);
       panel->g_task.background[j]->border.radius =
 	panel->g_task.area.bounds.height / 2;
     }

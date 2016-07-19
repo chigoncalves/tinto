@@ -184,19 +184,19 @@ void add_entry (char *key, char *value)
 {
 	char *value1=0, *value2=0, *value3=0;
 
-	/* Background and border */
+	/* background_t and border */
 	if (strcmp (key, "radius") == 0) {
 		// 'rounded' is the first parameter => alloc a new background
-		Background bg;
+		background_t bg;
 		memset(&bg, 0, sizeof(bg));
     bg.border.radius = atoi(value);
 		g_array_append_val(backgrounds, bg);
 	}
 	else if (strcmp (key, "border_width") == 0) {
-		g_array_index(backgrounds, Background, backgrounds->len-1).border.width = atoi(value);
+		g_array_index(backgrounds, background_t, backgrounds->len-1).border.width = atoi(value);
 	}
 	else if (strcmp (key, "background_color") == 0) {
-		Background* bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
+		background_t* bg = &g_array_index(backgrounds, background_t, backgrounds->len-1);
 		extract_values(value, &value1, &value2, &value3);
 		/* get_color (value1, bg->back.color); */
 		/* if (value2) bg->back.alpha = (atoi (value2) / 100.0); */
@@ -208,7 +208,7 @@ void add_entry (char *key, char *value)
     }
 	}
 	else if (strcmp (key, "border_color") == 0) {
-		Background* bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
+		background_t* bg = &g_array_index(backgrounds, background_t, backgrounds->len-1);
 		extract_values(value, &value1, &value2, &value3);
 		/* get_color (value1, bg->border.color); */
 		/* if (value2) bg->border.alpha = (atoi (value2) / 100.0); */
@@ -310,7 +310,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "panel_background_id") == 0) {
 	  uint32_t id = (uint32_t) atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.area.bg = &g_array_index(backgrounds, Background, id);
+		panel_config.area.bg = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp (key, "wm_menu") == 0)
 		wm_menu = atoi (value);
@@ -386,7 +386,7 @@ void add_entry (char *key, char *value)
 #ifdef ENABLE_BATTERY
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.battery.area.bg = &g_array_index(backgrounds, Background, id);
+		panel_config.battery.area.bg = &g_array_index(backgrounds, background_t, id);
 #endif
 	}
 	else if (strcmp (key, "battery_hide") == 0) {
@@ -453,7 +453,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "clock_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.clock.area.bg = &g_array_index(backgrounds, Background, id);
+		panel_config.clock.area.bg = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp(key, "clock_tooltip") == 0) {
 		if (strlen(value) > 0)
@@ -489,14 +489,14 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "taskbar_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.g_taskbar.background[TASKBAR_NORMAL] = &g_array_index(backgrounds, Background, id);
+		panel_config.g_taskbar.background[TASKBAR_NORMAL] = &g_array_index(backgrounds, background_t, id);
 		if (panel_config.g_taskbar.background[TASKBAR_ACTIVE] == 0)
 			panel_config.g_taskbar.background[TASKBAR_ACTIVE] = panel_config.g_taskbar.background[TASKBAR_NORMAL];
 	}
 	else if (strcmp (key, "taskbar_active_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.g_taskbar.background[TASKBAR_ACTIVE] = &g_array_index(backgrounds, Background, id);
+		panel_config.g_taskbar.background[TASKBAR_ACTIVE] = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp (key, "taskbar_name") == 0) {
 		taskbarname_enabled = atoi (value);
@@ -508,14 +508,14 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "taskbar_name_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.g_taskbar.background_name[TASKBAR_NORMAL] = &g_array_index(backgrounds, Background, id);
+		panel_config.g_taskbar.background_name[TASKBAR_NORMAL] = &g_array_index(backgrounds, background_t, id);
 		if (panel_config.g_taskbar.background_name[TASKBAR_ACTIVE] == 0)
 			panel_config.g_taskbar.background_name[TASKBAR_ACTIVE] = panel_config.g_taskbar.background_name[TASKBAR_NORMAL];
 	}
 	else if (strcmp (key, "taskbar_name_active_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.g_taskbar.background_name[TASKBAR_ACTIVE] = &g_array_index(backgrounds, Background, id);
+		panel_config.g_taskbar.background_name[TASKBAR_ACTIVE] = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp (key, "taskbar_name_font") == 0) {
 		taskbarname_font_desc = pango_font_description_from_string (value);
@@ -620,7 +620,7 @@ void add_entry (char *key, char *value)
 		g_strfreev(split);
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.g_task.background[status] = &g_array_index(backgrounds, Background, id);
+		panel_config.g_task.background[status] = &g_array_index(backgrounds, background_t, id);
 		panel_config.g_task.config_background_mask |= (1<<status);
 		if (status == TASK_NORMAL) panel_config.g_task.area.bg = panel_config.g_task.background[TASK_NORMAL];
 	}
@@ -649,7 +649,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "systray_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		systray.area.bg = &g_array_index(backgrounds, Background, id);
+		systray.area.bg = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp(key, "systray_sort") == 0) {
 		if (strcmp(value, "descending") == 0)
@@ -684,7 +684,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "launcher_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.launcher.area.bg = &g_array_index(backgrounds, Background, id);
+		panel_config.launcher.area.bg = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp(key, "launcher_icon_size") == 0) {
 		launcher_max_icon_size = atoi(value);
@@ -734,7 +734,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "tooltip_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		g_tooltip.bg = &g_array_index(backgrounds, Background, id);
+		g_tooltip.bg = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp (key, "tooltip_font_color") == 0) {
 		extract_values(value, &value1, &value2, &value3);

@@ -49,8 +49,8 @@ typedef struct {
 	//always start with area
 	Area area;
 	Area area_name;
-	Background* background[TASKBAR_STATE_COUNT];
-	Background* background_name[TASKBAR_STATE_COUNT];
+	background_t* background[TASKBAR_STATE_COUNT];
+	background_t* background_name[TASKBAR_STATE_COUNT];
 } Global_taskbar;
 
 

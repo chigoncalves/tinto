@@ -106,7 +106,7 @@ void init_systray_panel(void *p)
 	systray.area.parent = p;
 	systray.area.panel = p;
 	if (!systray.area.bg)
-		systray.area.bg = &g_array_index(backgrounds, Background, 0);
+		systray.area.bg = &g_array_index(backgrounds, background_t, 0);
 
 	GSList *l;
 	int count = 0;

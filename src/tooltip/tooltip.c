@@ -69,7 +69,7 @@ void init_tooltip()
 	if (!g_tooltip.font_desc)
 		g_tooltip.font_desc = pango_font_description_from_string(DEFAULT_FONT);
 	if (g_tooltip.bg == 0)
-		g_tooltip.bg = &g_array_index(backgrounds, Background, 0);
+		g_tooltip.bg = &g_array_index(backgrounds, background_t, 0);
 
 	XSetWindowAttributes attr;
 	attr.override_redirect = True;
@@ -221,7 +221,7 @@ void tooltip_update()
 	/* Color bc = g_tooltip.bg->back; */
   double bg_color[4];
   color_rgba_to_array (&g_tooltip.bg->color, bg_color);
-	Border b = g_tooltip.bg->border;
+  border_t b = g_tooltip.bg->border;
   if (server.real_transparency) {
     area_clear_pixmap (g_tooltip.window, rect_with_size (width,
 							 height));

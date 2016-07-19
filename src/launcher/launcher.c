@@ -148,7 +148,7 @@ void init_launcher_panel(void *p)
 	launcher->area.resize = 1;
 	launcher->area.redraw = 1;
 	if (!launcher->area.bg)
-		launcher->area.bg = &g_array_index(backgrounds, Background, 0);
+		launcher->area.bg = &g_array_index(backgrounds, background_t, 0);
 
 	// check consistency
 	if (launcher->list_apps == NULL)
@@ -522,7 +522,7 @@ launcher_load_icons(Launcher* launcher) {
 			launcherIcon->area._resize = NULL;
 			launcherIcon->area.resize = 0;
 			launcherIcon->area.redraw = 1;
-			launcherIcon->area.bg = &g_array_index(backgrounds, Background, 0);
+			launcherIcon->area.bg = &g_array_index(backgrounds, background_t, 0);
 			launcherIcon->area.visible = 1;
 			launcherIcon->area._on_change_layout = launcher_icon_on_change_layout;
 			if (launcher_tooltip_enabled) {

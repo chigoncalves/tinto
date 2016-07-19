@@ -172,7 +172,7 @@ void init_clock_panel(void *p)
 	if (!time2_font_desc)
 		time2_font_desc = pango_font_description_from_string(DEFAULT_FONT);
 	if (!clock->area.bg)
-		clock->area.bg = &g_array_index(backgrounds, Background, 0);
+		clock->area.bg = &g_array_index(backgrounds, background_t, 0);
 	clock->area.parent = p;
 	clock->area.panel = p;
 	clock->area._draw_foreground = draw_clock;

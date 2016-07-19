@@ -100,13 +100,13 @@ void panel_default (void) {
 	wm_menu = 0;
 	max_tick_urgent = 14;
 	mouse_left = TOGGLE_ICONIFY;
-	backgrounds = g_array_new(0, 0, sizeof(Background));
+	backgrounds = g_array_new(0, 0, sizeof(background_t));
 
 	memset(&panel_config, 0, sizeof(Panel));
 
 	// append full transparency background
-	Background transparent_bg;
-	memset(&transparent_bg, 0, sizeof(Background));
+	background_t transparent_bg;
+	memset(&transparent_bg, 0, sizeof(background_t));
 	g_array_append_val(backgrounds, transparent_bg);
 }
 
@@ -184,7 +184,7 @@ void panel_init (void) {
 		if (panel_config.monitor < 0)
 			p->monitor = i;
 		if (!p->area.bg)
-			p->area.bg = &g_array_index(backgrounds, Background, 0);
+			p->area.bg = &g_array_index(backgrounds, background_t, 0);
 		p->area.parent = p;
 		p->area.panel = p;
 		p->area.visible = 1;
@@ -257,7 +257,7 @@ panel_init_size_and_position (Panel *panel) {
 			panel->area.bounds.width = server.monitor[panel->monitor].width - panel->marginx;
       if (panel->area.bg->border.radius > panel->area.bounds.height / 2) {
 			g_array_append_val(backgrounds, *panel->area.bg);
-			panel->area.bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
+			panel->area.bg = &g_array_index(backgrounds, background_t, backgrounds->len-1);
         panel->area.bg->border.radius = panel->area.bounds.height / 2;
       }
 	}
@@ -275,7 +275,7 @@ panel_init_size_and_position (Panel *panel) {
 			panel->area.bounds.height = server.monitor[panel->monitor].height - panel->marginy;
       if (panel->area.bg->border.radius > panel->area.bounds.width / 2) {
 			g_array_append_val(backgrounds, *panel->area.bg);
-			panel->area.bg = &g_array_index(backgrounds, Background, backgrounds->len-1);
+			panel->area.bg = &g_array_index(backgrounds, background_t, backgrounds->len-1);
         panel->area.bg->border.radius = panel->area.bounds.width / 2;
 		}
 	}
@@ -845,7 +845,7 @@ void panel_autohide_show(void* p)
 	}
 	if (panel_strut_policy == STRUT_FOLLOW_SIZE)
 		update_strut(p);
-	refresh_systray = 1;   // ugly hack, because we actually only need to call XSetBackgroundPixmap
+	refresh_systray = 1;   // ugly hack, because we actually only need to call XSetbackground_tPixmap
 	panel_refresh = 1;
 }
 

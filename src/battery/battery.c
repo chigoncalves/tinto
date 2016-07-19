@@ -296,7 +296,7 @@ void init_battery_panel(void *p)
 		bat2_font_desc = pango_font_description_from_string(DEFAULT_FONT);
 
 	if (battery->area.bg == 0)
-		battery->area.bg = &g_array_index(backgrounds, Background, 0);
+		battery->area.bg = &g_array_index(backgrounds, background_t, 0);
 
 	battery->area.parent = p;
 	battery->area.panel = p;
