@@ -132,7 +132,7 @@ endif ()
 if (ENABLE_TINT2CONF)
   set (TINT2CONF 1)
   set (TINTO_CONFIG_BIN tint2conf)
-  add_subdirectory (src/tint2conf)
+  add_subdirectory (bin/tint2conf)
 endif ()
 
 set (MANDIR share/man CACHE PATH "Directory for man pages")

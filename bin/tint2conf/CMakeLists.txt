@@ -1,18 +1,17 @@
 set (CMAKE_INCLUDE_CURRENT_DIR 1)
 
 set (TINTO_CONFIG_SOURCES
-  ../util/common.c
-  ../util/string-addins.c
-  ../util/path-utils.c
-  ../config.c
-  ../server.c
-  ../launcher/desktop-entry.c
-  ../launcher/icon-theme-common.c
-  main.c
-  properties.c
-  properties_rw.c
-  theme_view.c
-)
+  "${CMAKE_SOURCE_DIR}/src/util/common.c"
+  "${CMAKE_SOURCE_DIR}/src/util/string-addins.c"
+  "${CMAKE_SOURCE_DIR}/src/util/path-utils.c"
+  "${CMAKE_SOURCE_DIR}/src/config.c"
+  "${CMAKE_SOURCE_DIR}/src/server.c"
+  "${CMAKE_SOURCE_DIR}/src/launcher/desktop-entry.c"
+  "${CMAKE_SOURCE_DIR}/src/launcher/icon-theme-common.c"
+  "${CMAKE_CURRENT_LIST_DIR}/main.c"
+  "${CMAKE_CURRENT_LIST_DIR}/properties.c"
+  "${CMAKE_CURRENT_LIST_DIR}/properties_rw.c"
+  "${CMAKE_CURRENT_LIST_DIR}/theme_view.c")
 
 add_executable (${TINTO_CONFIG_BIN} ${TINTO_CONFIG_SOURCES})
 
