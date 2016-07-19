@@ -87,8 +87,8 @@ void init_tooltip()
 void tooltip_trigger_show(Area* area, Panel* p, XEvent *e)
 {
 	// Position the tooltip in the center of the area
-	x = area->posx + MIN(area->width / 3, 22) + e->xmotion.x_root - e->xmotion.x;
-	y = area->posy + area->height / 2 + e->xmotion.y_root - e->xmotion.y;
+	x = area->bounds.x + MIN(area->bounds.width / 3, 22) + e->xmotion.x_root - e->xmotion.x;
+	y = area->bounds.y + area->bounds.height / 2 + e->xmotion.y_root - e->xmotion.y;
 	just_shown = 1;
 	g_tooltip.panel = p;
 	if (g_tooltip.mapped && g_tooltip.area != area) {
@@ -138,9 +138,9 @@ void tooltip_update_geometry()
 	if (panel_horizontal && panel_position & BOTTOM)
 		y = panel->posy-height;
 	else if (panel_horizontal && panel_position & TOP)
-		y = panel->posy + panel->area.height;
+		y = panel->posy + panel->area.bounds.height;
 	else if (panel_position & LEFT)
-		x = panel->posx + panel->area.width;
+		x = panel->posx + panel->area.bounds.width;
 	else
 		x = panel->posx - width;
 
@@ -165,18 +165,18 @@ void tooltip_adjust_geometry()
 	if (panel_horizontal) {
 		min_x=0;
 		max_width=server.monitor[panel->monitor].width;
-		max_height=server.monitor[panel->monitor].height-panel->area.height;
+		max_height=server.monitor[panel->monitor].height-panel->area.bounds.height;
 		if (panel_position & BOTTOM)
 			min_y=0;
 		else
-			min_y=panel->area.height;
+			min_y=panel->area.bounds.height;
 	}
 	else {
-		max_width=server.monitor[panel->monitor].width-panel->area.width;
+		max_width=server.monitor[panel->monitor].width-panel->area.bounds.width;
 		min_y=0;
 		max_height=server.monitor[panel->monitor].height;
 		if (panel_position & LEFT)
-			min_x=panel->area.width;
+			min_x=panel->area.bounds.width;
 		else
 			min_x=0;
 	}
@@ -222,9 +222,21 @@ void tooltip_update()
   double bg_color[4];
   color_rgba_to_array (&g_tooltip.bg->color, bg_color);
 	Border b = g_tooltip.bg->border;
-	if (server.real_transparency) {
-		clear_pixmap(g_tooltip.window, 0, 0, width, height);
-		draw_rect(c, b.width, b.width, width-2*b.width, height-2*b.width, b.rounded-b.width/1.571);
+  if (server.real_transparency) {
+    area_clear_pixmap (g_tooltip.window, rect_with_size (width,
+							 height));
+
+    progn {
+      rectf_t rect = {
+	.x = b.width,
+	.y = b.width,
+	.width = width - 2 * b.width,
+	.height = height - 2 * b.width,
+      };
+
+      area_draw_rect (c, rect, b.radius - b.width / 1.571);
+    }
+
   cairo_set_source_rgba (c, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
 	}
 	else {
@@ -234,7 +246,15 @@ void tooltip_update()
 	cairo_fill(c);
 	cairo_set_line_width(c, b.width);
 	if (server.real_transparency)
-		draw_rect(c, b.width/2.0, b.width/2.0, width - b.width, height - b.width, b.rounded);
+     progn {
+       rectf_t rect = {
+	 .x = b.width / 2.0,
+	 .y = b.width / 2.0,
+	 .width = width - b.width,
+	 .height = height - b.width,
+       };
+       area_draw_rect (c, rect, b.radius);
+     }
 	else
 		cairo_rectangle(c, b.width/2.0, b.width/2.0, width-b.width, height-b.width);
 

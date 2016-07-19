@@ -95,7 +95,7 @@ void cleanup_taskbarname()
 			tskbar = &panel->taskbar[j];
 			g_free(tskbar->bar_name.name);
 			tskbar->bar_name.name = NULL;
-			free_area(&tskbar->bar_name.area);
+			area_destroy (&tskbar->bar_name.area);
 			for (k = 0; k < TASKBAR_STATE_COUNT; ++k) {
 				if (tskbar->bar_name.state_pix[k])
 					XFreePixmap(server.dsp, tskbar->bar_name.state_pix[k]);
@@ -124,7 +124,7 @@ void draw_taskbarname (void *obj, cairo_t *c) {
 	// draw content
 	layout = pango_cairo_create_layout (c);
 	pango_layout_set_font_description (layout, taskbarname_font_desc);
-	pango_layout_set_width (layout, taskbar_name->area.width * PANGO_SCALE);
+	pango_layout_set_width (layout, taskbar_name->area.bounds.width * PANGO_SCALE);
 	pango_layout_set_alignment (layout, PANGO_ALIGN_CENTER);
 	pango_layout_set_text (layout, taskbar_name->name, strlen(taskbar_name->name));
 
@@ -145,21 +145,21 @@ int resize_taskbarname(void *obj)
 	int ret = 0;
 
 	taskbar_name->area.redraw = 1;
-	get_text_size2(taskbarname_font_desc, &name_height_ink, &name_height, &name_width, panel->area.height, panel->area.width, taskbar_name->name, strlen(taskbar_name->name));
+	get_text_size2(taskbarname_font_desc, &name_height_ink, &name_height, &name_width, panel->area.bounds.height, panel->area.bounds.width, taskbar_name->name, strlen(taskbar_name->name));
 
 	if (panel_horizontal) {
 		int new_size = name_width + (2* (taskbar_name->area.paddingxlr + taskbar_name->area.bg->border.width));
-		if (new_size != taskbar_name->area.width) {
-			taskbar_name->area.width = new_size;
-			taskbar_name->posy = (taskbar_name->area.height - name_height) / 2;
+		if (new_size != taskbar_name->area.bounds.width) {
+			taskbar_name->area.bounds.width = new_size;
+			taskbar_name->posy = (taskbar_name->area.bounds.height - name_height) / 2;
 			ret = 1;
 		}
 	}
 	else {
 		int new_size = name_height + (2 * (taskbar_name->area.paddingxlr + taskbar_name->area.bg->border.width));
-		if (new_size != taskbar_name->area.height) {
-			taskbar_name->area.height =  new_size;
-			taskbar_name->posy = (taskbar_name->area.height - name_height) / 2;
+		if (new_size != taskbar_name->area.bounds.height) {
+			taskbar_name->area.bounds.height =  new_size;
+			taskbar_name->posy = (taskbar_name->area.bounds.height - name_height) / 2;
 			ret = 1;
 		}
 	}

@@ -213,20 +213,20 @@ void
 tinto_take_snapshot(const char *path) {
   Panel* panel = &panel1[0];
 
-  if (panel->area.width > server.monitor[0].width)
-    panel->area.width = server.monitor[0].width;
+  if (panel->area.bounds.width > server.monitor[0].width)
+    panel->area.bounds.width = server.monitor[0].width;
 
   panel->temp_pmap = XCreatePixmap (server.dsp, server.root_win,
-				    panel->area.width,
-				    panel->area.height,
+				    panel->area.bounds.width,
+				    panel->area.bounds.height,
 				    server.depth);
   rendering (panel);
 
   imlib_context_set_drawable (panel->temp_pmap);
   Imlib_Image img =
     imlib_create_image_from_drawable (None, 0, 0,
-				      panel->area.width,
-				      panel->area.height, 0);
+				      panel->area.bounds.width,
+				      panel->area.bounds.height, 0);
 
   imlib_context_set_image (img);
   if (!panel_horizontal) {
@@ -358,8 +358,8 @@ event_button_motion_notify (XEvent *e) {
     drag_taskbar->area.list = g_slist_remove (drag_taskbar->area.list,
 					      task_drag);
 
-    if (event_taskbar->area.posx > drag_taskbar->area.posx
-       || event_taskbar->area.posy > drag_taskbar->area.posy) {
+    if (event_taskbar->area.bounds.x > drag_taskbar->area.bounds.x
+       || event_taskbar->area.bounds.y > drag_taskbar->area.bounds.y) {
       int i = (taskbarname_enabled) ? 1 : 0;
       event_taskbar->area.list = g_slist_insert (event_taskbar->area.list,
 						 task_drag, i);

@@ -137,13 +137,13 @@ main (int argc, char *argv[]) {
 	  if (panel->temp_pmap)
 	    XFreePixmap (server.dsp, panel->temp_pmap);
 	  panel->temp_pmap = XCreatePixmap (server.dsp, server.root_win,
-					    panel->area.width,
-					    panel->area.height,
+					    panel->area.bounds.width,
+					    panel->area.bounds.height,
 					    server.depth);
 	  rendering (panel);
 	  XCopyArea (server.dsp, panel->temp_pmap, panel->main_win,
-		     server.gc, 0, 0, panel->area.width,
-		     panel->area.height, 0, 0);
+		     server.gc, 0, 0, panel->area.bounds.width,
+		     panel->area.bounds.height, 0, 0);
 	}
       }
       XFlush (server.dsp);

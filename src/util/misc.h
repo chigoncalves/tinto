@@ -150,4 +150,7 @@ color_rgba_to_array (const color_rgba_t* color, double colors [static 4]);
 colorf_rgba_t
 color_rgba_to_f (const color_rgba_t* self);
 
+rect_t
+rect_with_size (const int width, const int height);
+
 #endif // TINTO_SRC_UTIL_MISC_H

@@ -26,8 +26,7 @@ set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIE")
 set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG}
      -fno-omit-frame-pointer -pie")
 # NOTE: Move me to Utils.cmake.
-set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG}
-     -fsanitize=address -fsanitize=undefined")
+set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
 
 option (ENABLE_BATTERY "Enable battery status plugin." ON)
 option (ENABLE_TINT2CONF "Enable tint2conf build, a Gtk+2 theme \
@@ -126,6 +125,7 @@ if (ENABLE_SN)
   endif ()
     include_directories ("${SN_INCLUDE_DIRS}")
     link_libraries ("${SN_LIBRARIES}")
+    add_definitions ("${SN_DEFINITIONS}")
     set (HAS_SN 1)
 endif ()
 

@@ -494,7 +494,7 @@ void draw_battery (void *obj, cairo_t *c) {
 
 	// draw layout
 	pango_layout_set_font_description(layout, bat1_font_desc);
-	pango_layout_set_width(layout, battery->area.width * PANGO_SCALE);
+	pango_layout_set_width(layout, battery->area.bounds.width * PANGO_SCALE);
 	pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
 	pango_layout_set_text(layout, buf_bat_percentage, strlen(buf_bat_percentage));
 
@@ -508,7 +508,7 @@ void draw_battery (void *obj, cairo_t *c) {
 	pango_layout_set_font_description(layout, bat2_font_desc);
 	pango_layout_set_indent(layout, 0);
 	pango_layout_set_text(layout, buf_bat_time, strlen(buf_bat_time));
-	pango_layout_set_width(layout, battery->area.width * PANGO_SCALE);
+	pango_layout_set_width(layout, battery->area.bounds.width * PANGO_SCALE);
 
 	pango_cairo_update_layout(c, layout);
 	draw_text(layout, c, 0, battery->bat2_posy, &battery->font_color, ((Panel*)battery->area.panel)->font_shadow);
@@ -535,28 +535,28 @@ int resize_battery(void *obj)
 		snprintf(buf_bat_time, sizeof(buf_bat_time), "%02d:%02d", battery_state.time.hours, battery_state.time.minutes);
 	}
 	get_text_size2(bat1_font_desc, &bat_percentage_height_ink, &bat_percentage_height, &bat_percentage_width,
-				   panel->area.height, panel->area.width, buf_bat_percentage, strlen(buf_bat_percentage));
+				   panel->area.bounds.height, panel->area.bounds.width, buf_bat_percentage, strlen(buf_bat_percentage));
 	get_text_size2(bat2_font_desc, &bat_time_height_ink, &bat_time_height, &bat_time_width,
-				   panel->area.height, panel->area.width, buf_bat_time, strlen(buf_bat_time));
+				   panel->area.bounds.height, panel->area.bounds.width, buf_bat_time, strlen(buf_bat_time));
 
 	if (panel_horizontal) {
 		int new_size = (bat_percentage_width > bat_time_width) ? bat_percentage_width : bat_time_width;
 		new_size += 2 * battery->area.paddingxlr + 2 * battery->area.bg->border.width;
-		if (new_size > battery->area.width ||
-			new_size < battery->area.width - 2) {
+		if (new_size > battery->area.bounds.width ||
+			new_size < battery->area.bounds.width - 2) {
 			// we try to limit the number of resize
-			battery->area.width = new_size;
-			battery->bat1_posy = (battery->area.height - bat_percentage_height - bat_time_height) / 2;
+			battery->area.bounds.width = new_size;
+			battery->bat1_posy = (battery->area.bounds.height - bat_percentage_height - bat_time_height) / 2;
 			battery->bat2_posy = battery->bat1_posy + bat_percentage_height;
 			ret = 1;
 		}
 	} else {
 		int new_size = bat_percentage_height + bat_time_height +
 					   (2 * (battery->area.paddingxlr + battery->area.bg->border.width));
-		if (new_size > battery->area.height ||
-			new_size < battery->area.height - 2) {
-			battery->area.height =  new_size;
-			battery->bat1_posy = (battery->area.height - bat_percentage_height - bat_time_height - 2) / 2;
+		if (new_size > battery->area.bounds.height ||
+			new_size < battery->area.bounds.height - 2) {
+			battery->area.bounds.height =  new_size;
+			battery->bat1_posy = (battery->area.bounds.height - bat_percentage_height - bat_time_height - 2) / 2;
 			battery->bat2_posy = battery->bat1_posy + bat_percentage_height + 2;
 			ret = 1;
 		}

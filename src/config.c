@@ -185,11 +185,11 @@ void add_entry (char *key, char *value)
 	char *value1=0, *value2=0, *value3=0;
 
 	/* Background and border */
-	if (strcmp (key, "rounded") == 0) {
+	if (strcmp (key, "radius") == 0) {
 		// 'rounded' is the first parameter => alloc a new background
 		Background bg;
 		memset(&bg, 0, sizeof(bg));
-		bg.border.rounded = atoi(value);
+    bg.border.radius = atoi(value);
 		g_array_append_val(backgrounds, bg);
 	}
 	else if (strcmp (key, "border_width") == 0) {
@@ -233,10 +233,10 @@ void add_entry (char *key, char *value)
 			b[0] = '\0';
 			panel_config.pourcentx = 1;
 		}
-		panel_config.area.width = atoi(value1);
-		if (panel_config.area.width == 0) {
+		panel_config.area.bounds.width = atoi(value1);
+		if (panel_config.area.bounds.width == 0) {
 			// full width mode
-			panel_config.area.width = 100;
+			panel_config.area.bounds.width = 100;
 			panel_config.pourcentx = 1;
 		}
 		if (value2) {
@@ -244,7 +244,7 @@ void add_entry (char *key, char *value)
 				b[0] = '\0';
 				panel_config.pourcenty = 1;
 			}
-			panel_config.area.height = atoi(value2);
+			panel_config.area.bounds.height = atoi(value2);
 		}
 	}
 	else if (strcmp (key, "panel_items") == 0) {

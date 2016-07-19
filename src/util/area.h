@@ -28,22 +28,12 @@
 
 typedef struct {
   color_rgba_t color;
-  // double color[3]; //Old Member.
-	double alpha;
-	int width;
-	int rounded;
+  int width;
+  int radius;
 } Border;
-
-
-typedef struct
-{
-	double color[3];
-	double alpha;
-} Color;
 
 typedef struct {
   color_rgba_t color;
-  //  Color back; // Old member.
 	Border border;
 } Background;
 
@@ -54,10 +44,7 @@ typedef struct {
 enum { SIZE_BY_LAYOUT, SIZE_BY_CONTENT };
 
 typedef struct {
-	// coordinate relative to panel window
-	int posx, posy;
-	// width and height including border
-	int width, height;
+  rect_t bounds; /*!< Coordinates on screen. */
 	Pixmap pix;
 	Background *bg;
 
@@ -116,15 +103,17 @@ void draw (Area *a);
 void draw_background (Area *a, cairo_t *c);
 
 void remove_area (Area *a);
-void add_area (Area *a);
-void free_area (Area *a);
 
-// draw rounded rectangle
-void draw_rect(cairo_t *c, double x, double y, double w, double h, double r);
+void add_area (Area *a);
+
+void
+area_destroy (Area *self);
+
+void
+area_draw_rect (cairo_t *c, rectf_t rect, double r);
 
 // clear pixmap with transparent color
-void clear_pixmap(Pixmap p, int x, int y, int w, int h);
-
-
+void
+area_clear_pixmap (Pixmap p, rect_t rect);
 
 #endif
