@@ -183,8 +183,8 @@ void panel_init (void) {
 
 		if (panel_config.monitor < 0)
 			p->monitor = i;
-		if (!p->area.bg)
-			p->area.bg = &g_array_index(backgrounds, background_t, 0);
+		if (!p->area.background)
+			p->area.background = &g_array_index(backgrounds, background_t, 0);
 		p->area.parent = p;
 		p->area.panel = p;
 		p->area.visible = 1;
@@ -255,10 +255,10 @@ panel_init_size_and_position (Panel *panel) {
 			panel->area.bounds.height = (float)server.monitor[panel->monitor].height * panel->area.bounds.height / 100;
 		if (panel->area.bounds.width + panel->marginx > server.monitor[panel->monitor].width)
 			panel->area.bounds.width = server.monitor[panel->monitor].width - panel->marginx;
-      if (panel->area.bg->border.radius > panel->area.bounds.height / 2) {
-			g_array_append_val(backgrounds, *panel->area.bg);
-			panel->area.bg = &g_array_index(backgrounds, background_t, backgrounds->len-1);
-        panel->area.bg->border.radius = panel->area.bounds.height / 2;
+      if (panel->area.background->border.radius > panel->area.bounds.height / 2) {
+			g_array_append_val(backgrounds, *panel->area.background);
+			panel->area.background = &g_array_index(backgrounds, background_t, backgrounds->len-1);
+        panel->area.background->border.radius = panel->area.bounds.height / 2;
       }
 	}
 	else {
@@ -273,10 +273,10 @@ panel_init_size_and_position (Panel *panel) {
 			panel->area.bounds.width = old_panel_height;
 		if (panel->area.bounds.height + panel->marginy > server.monitor[panel->monitor].height)
 			panel->area.bounds.height = server.monitor[panel->monitor].height - panel->marginy;
-      if (panel->area.bg->border.radius > panel->area.bounds.width / 2) {
-			g_array_append_val(backgrounds, *panel->area.bg);
-			panel->area.bg = &g_array_index(backgrounds, background_t, backgrounds->len-1);
-        panel->area.bg->border.radius = panel->area.bounds.width / 2;
+      if (panel->area.background->border.radius > panel->area.bounds.width / 2) {
+			g_array_append_val(backgrounds, *panel->area.background);
+			panel->area.background = &g_array_index(backgrounds, background_t, backgrounds->len-1);
+        panel->area.background->border.radius = panel->area.bounds.width / 2;
 		}
 	}
 
@@ -388,7 +388,7 @@ static int panel_resize (void *obj)
 			for (i = 0; i < panel->nb_desktop; i++) {
 				Taskbar *taskbar = &panel->taskbar[i];
 
-				int requested_size = (2 * taskbar->area.bg->border.width) + (2 * taskbar->area.paddingxlr);
+				int requested_size = (2 * taskbar->area.background->border.width) + (2 * taskbar->area.paddingxlr);
 				int items = 0;
 				GSList *l = taskbar->area.children;
 				if (taskbarname_enabled)

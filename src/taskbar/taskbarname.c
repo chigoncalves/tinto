@@ -61,9 +61,9 @@ void init_taskbarname_panel(void *p)
 		memcpy(&tskbar->bar_name.area, &panel->g_taskbar.area_name, sizeof(Area));
 		tskbar->bar_name.area.parent = tskbar;
 		if (j == server.desktop)
-			tskbar->bar_name.area.bg = panel->g_taskbar.background_name[TASKBAR_ACTIVE];
+			tskbar->bar_name.area.background = panel->g_taskbar.background_name[TASKBAR_ACTIVE];
 		else
-			tskbar->bar_name.area.bg = panel->g_taskbar.background_name[TASKBAR_NORMAL];
+			tskbar->bar_name.area.background = panel->g_taskbar.background_name[TASKBAR_NORMAL];
 
 		// use desktop number if name is missing
 		if (l) {
@@ -148,7 +148,7 @@ int resize_taskbarname(void *obj)
 	get_text_size2(taskbarname_font_desc, &name_height_ink, &name_height, &name_width, panel->area.bounds.height, panel->area.bounds.width, taskbar_name->name, strlen(taskbar_name->name));
 
 	if (panel_horizontal) {
-		int new_size = name_width + (2* (taskbar_name->area.paddingxlr + taskbar_name->area.bg->border.width));
+		int new_size = name_width + (2* (taskbar_name->area.paddingxlr + taskbar_name->area.background->border.width));
 		if (new_size != taskbar_name->area.bounds.width) {
 			taskbar_name->area.bounds.width = new_size;
 			taskbar_name->posy = (taskbar_name->area.bounds.height - name_height) / 2;
@@ -156,7 +156,7 @@ int resize_taskbarname(void *obj)
 		}
 	}
 	else {
-		int new_size = name_height + (2 * (taskbar_name->area.paddingxlr + taskbar_name->area.bg->border.width));
+		int new_size = name_height + (2 * (taskbar_name->area.paddingxlr + taskbar_name->area.background->border.width));
 		if (new_size != taskbar_name->area.bounds.height) {
 			taskbar_name->area.bounds.height =  new_size;
 			taskbar_name->posy = (taskbar_name->area.bounds.height - name_height) / 2;

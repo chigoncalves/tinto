@@ -171,8 +171,8 @@ void init_clock_panel(void *p)
 		time1_font_desc = pango_font_description_from_string(DEFAULT_FONT);
 	if (!time2_font_desc)
 		time2_font_desc = pango_font_description_from_string(DEFAULT_FONT);
-	if (!clock->area.bg)
-		clock->area.bg = &g_array_index(backgrounds, background_t, 0);
+	if (!clock->area.background)
+		clock->area.background = &g_array_index(backgrounds, background_t, 0);
 	clock->area.parent = p;
 	clock->area.panel = p;
 	clock->area._draw_foreground = draw_clock;
@@ -244,7 +244,7 @@ int resize_clock (void *obj)
 
 	if (panel_horizontal) {
 		int new_size = (time_width > date_width) ? time_width : date_width;
-		new_size += (2*clock->area.paddingxlr) + (2*clock->area.bg->border.width);
+		new_size += (2*clock->area.paddingxlr) + (2*clock->area.background->border.width);
 		if (new_size > clock->area.bounds.width || new_size < (clock->area.bounds.width-6)) {
 			// we try to limit the number of resize
 			clock->area.bounds.width = new_size + 1;
@@ -257,7 +257,7 @@ int resize_clock (void *obj)
 		}
 	}
 	else {
-		int new_size = time_height + date_height + (2 * (clock->area.paddingxlr + clock->area.bg->border.width));
+		int new_size = time_height + date_height + (2 * (clock->area.paddingxlr + clock->area.background->border.width));
 		if (new_size != clock->area.bounds.height) {
 			// we try to limit the number of resize
 			clock->area.bounds.height =  new_size;

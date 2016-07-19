@@ -87,21 +87,21 @@ void init_rendering(void *obj, int pos)
 	for (l = a->children; l ; l = l->next) {
 		Area *child = ((Area*)l->data);
 		if (panel_horizontal) {
-		  child->bounds.y = pos + a->bg->border.width +
+		  child->bounds.y = pos + a->background->border.width +
 		    a->paddingy;
 		  child->bounds.height = a->bounds.height -
-		    (2 * (a->bg->border.width + a->paddingy));
+		    (2 * (a->background->border.width + a->paddingy));
 			if (child->_on_change_layout)
 				child->_on_change_layout(child);
 			init_rendering(child, child->bounds.y);
 		}
 		else {
-			/* #+nil child->posx = pos + a->bg->border.width + a->paddingy; */
-			/* #+nil child->width = a->width - (2 * (a->bg->border.width + a->paddingy)); */
-		  child->bounds.x = pos + a->bg->border.width
+			/* #+nil child->posx = pos + a->background->border.width + a->paddingy; */
+			/* #+nil child->width = a->width - (2 * (a->background->border.width + a->paddingy)); */
+		  child->bounds.x = pos + a->background->border.width
 		    + a->paddingy;
 		  child->bounds.width = a->bounds.width -
-		    (2 * (a->bg->border.width + a->paddingy));
+		    (2 * (a->background->border.width + a->paddingy));
 
 			if (child->_on_change_layout)
 				child->_on_change_layout(child);
@@ -171,7 +171,7 @@ void size_by_layout (Area *a, int pos, int level)
 	}
 
 	// update position of childs
-	pos += a->paddingxlr + a->bg->border.width;
+	pos += a->paddingxlr + a->background->border.width;
 	int i=0;
 	for (l = a->children; l ; l = l->next) {
 		Area *child = ((Area*)l->data);
@@ -251,7 +251,7 @@ int resize_by_layout(void *obj, int maximum_size)
 
 	if (panel_horizontal) {
 		// detect free size for SIZE_BY_LAYOUT's Area
-		size = a->bounds.width - (2 * (a->paddingxlr + a->bg->border.width));
+		size = a->bounds.width - (2 * (a->paddingxlr + a->background->border.width));
 		GSList *l;
 		for (l = a->children ; l ; l = l->next) {
 			child = (Area*)l->data;
@@ -293,7 +293,7 @@ int resize_by_layout(void *obj, int maximum_size)
 	}
 	else {
 		// detect free size for SIZE_BY_LAYOUT's Area
-		size = a->bounds.height - (2 * (a->paddingxlr + a->bg->border.width));
+		size = a->bounds.height - (2 * (a->paddingxlr + a->background->border.width));
 		GSList *l;
 		for (l = a->children ; l ; l = l->next) {
 			child = (Area*)l->data;
@@ -397,39 +397,39 @@ void draw (Area *a)
 
 
 void draw_background (Area *a, cairo_t *c) {
-  if (a->bg->color.alpha > 0) {
+  if (a->background->color.alpha > 0) {
 
     progn {
       rectf_t rect = {
-	.x = a->bg->border.width,
-	.y = a->bg->border.width,
-	.width = a->bounds.width - (2 * a->bg->border.width),
-	.height = a->bounds.height - (2 * a->bg->border.width),
+	.x = a->background->border.width,
+	.y = a->background->border.width,
+	.width = a->bounds.width - (2 * a->background->border.width),
+	.height = a->bounds.height - (2 * a->background->border.width),
 
       };
-      area_draw_rect (c, rect, a->bg->border.radius -
-		      a->bg->border.width / 1.571);
+      area_draw_rect (c, rect, a->background->border.radius -
+		      a->background->border.width / 1.571);
     }
 
     double bg_color[4];
-    color_rgba_to_array (&a->bg->color, bg_color);
+    color_rgba_to_array (&a->background->color, bg_color);
     cairo_set_source_rgba (c, bg_color[0], bg_color[1], bg_color[2], bg_color[3]);
 		cairo_fill(c);
   }
 
-  if (a->bg->border.width > 0 && a->bg->border.color.alpha > 0) {
-		cairo_set_line_width (c, a->bg->border.width);
+  if (a->background->border.width > 0 && a->background->border.color.alpha > 0) {
+		cairo_set_line_width (c, a->background->border.width);
 
 		// draw border inside (x, y, width, height)
 
     progn {
       rectf_t rect = {
-	.x = a->bg->border.width / 2.0,
-	.y = a->bg->border.width / 2.0,
-	.width = a->bounds.width - a->bg->border.width,
-	.height = a->bounds.height - a->bg->border.width,
+	.x = a->background->border.width / 2.0,
+	.y = a->background->border.width / 2.0,
+	.width = a->bounds.width - a->background->border.width,
+	.height = a->bounds.height - a->background->border.width,
       };
-      area_draw_rect (c, rect, a->bg->border.radius);
+      area_draw_rect (c, rect, a->background->border.radius);
 
     }
 		/*
@@ -469,7 +469,7 @@ void draw_background (Area *a, cairo_t *c) {
 		cairo_set_source (c, linpat);
 		*/
     double color[4];
-    color_rgba_to_array (&a->bg->border.color, color);
+    color_rgba_to_array (&a->background->border.color, color);
     cairo_set_source_rgba (c, color[0], color[1], color[2], color[3]);
 
 

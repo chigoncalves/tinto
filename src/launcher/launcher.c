@@ -147,8 +147,8 @@ void init_launcher_panel(void *p)
 	launcher->area._resize = resize_launcher;
 	launcher->area.resize = 1;
 	launcher->area.redraw = 1;
-	if (!launcher->area.bg)
-		launcher->area.bg = &g_array_index(backgrounds, background_t, 0);
+	if (!launcher->area.background)
+		launcher->area.background = &g_array_index(backgrounds, background_t, 0);
 
 	// check consistency
 	if (launcher->list_apps == NULL)
@@ -239,7 +239,7 @@ int resize_launcher(void *obj)
 	} else {
 		icon_size = launcher->area.bounds.width;
 	}
-	icon_size = icon_size - (2 * launcher->area.bg->border.width) - (2 * launcher->area.paddingy);
+	icon_size = icon_size - (2 * launcher->area.background->border.width) - (2 * launcher->area.paddingy);
 	if (launcher_max_icon_size > 0 && icon_size > launcher_max_icon_size)
 		icon_size = launcher_max_icon_size;
 
@@ -327,12 +327,12 @@ int resize_launcher(void *obj)
 		if (!count) {
 			launcher->area.bounds.width = 0;
 		} else {
-			int height = launcher->area.bounds.height - 2*launcher->area.bg->border.width - 2*launcher->area.paddingy;
+			int height = launcher->area.bounds.height - 2*launcher->area.background->border.width - 2*launcher->area.paddingy;
 			// here icons_per_column always higher than 0
 			icons_per_column = (height+launcher->area.paddingx) / (icon_size+launcher->area.paddingx);
 			marging = height - (icons_per_column-1)*(icon_size+launcher->area.paddingx) - icon_size;
 			icons_per_row = count / icons_per_column + (count%icons_per_column != 0);
-			launcher->area.bounds.width = (2 * launcher->area.bg->border.width) +
+			launcher->area.bounds.width = (2 * launcher->area.background->border.width) +
 								   (2 * launcher->area.paddingxlr) +
 								   (icon_size * icons_per_row) +
 								   ((icons_per_row-1) * launcher->area.paddingx);
@@ -342,12 +342,12 @@ int resize_launcher(void *obj)
 		if (!count) {
 			launcher->area.bounds.height = 0;
 		} else {
-			int width = launcher->area.bounds.width - 2*launcher->area.bg->border.width - 2*launcher->area.paddingy;
+			int width = launcher->area.bounds.width - 2*launcher->area.background->border.width - 2*launcher->area.paddingy;
 			// here icons_per_row always higher than 0
 			icons_per_row = (width+launcher->area.paddingx) / (icon_size+launcher->area.paddingx);
 			marging = width - (icons_per_row-1)*(icon_size+launcher->area.paddingx) - icon_size;
 			icons_per_column = count / icons_per_row+ (count%icons_per_row != 0);
-			launcher->area.bounds.height = (2 * launcher->area.bg->border.width) +
+			launcher->area.bounds.height = (2 * launcher->area.background->border.width) +
 									(2 * launcher->area.paddingxlr) +
 									(icon_size * icons_per_column) +
 									((icons_per_column-1) * launcher->area.paddingx);
@@ -355,13 +355,13 @@ int resize_launcher(void *obj)
 	}
 
 	int i, posx, posy;
-	int start = launcher->area.bg->border.width + launcher->area.paddingy + marging/2;
+	int start = launcher->area.background->border.width + launcher->area.paddingy + marging/2;
 	if (panel_horizontal) {
 		posy = start;
-		posx = launcher->area.bg->border.width + launcher->area.paddingxlr;
+		posx = launcher->area.background->border.width + launcher->area.paddingxlr;
 	} else {
 		posx = start;
-		posy = launcher->area.bg->border.width + launcher->area.paddingxlr;
+		posy = launcher->area.background->border.width + launcher->area.paddingxlr;
 	}
 
 	for (i=1, l = launcher->list_icons; l ; i++, l = l->next) {
@@ -522,7 +522,7 @@ launcher_load_icons(Launcher* launcher) {
 			launcherIcon->area._resize = NULL;
 			launcherIcon->area.resize = 0;
 			launcherIcon->area.redraw = 1;
-			launcherIcon->area.bg = &g_array_index(backgrounds, background_t, 0);
+			launcherIcon->area.background = &g_array_index(backgrounds, background_t, 0);
 			launcherIcon->area.visible = 1;
 			launcherIcon->area._on_change_layout = launcher_icon_on_change_layout;
 			if (launcher_tooltip_enabled) {

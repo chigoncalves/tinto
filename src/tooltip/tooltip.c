@@ -68,8 +68,8 @@ void init_tooltip()
 {
 	if (!g_tooltip.font_desc)
 		g_tooltip.font_desc = pango_font_description_from_string(DEFAULT_FONT);
-	if (g_tooltip.bg == 0)
-		g_tooltip.bg = &g_array_index(backgrounds, background_t, 0);
+	if (g_tooltip.background == 0)
+		g_tooltip.background = &g_array_index(backgrounds, background_t, 0);
 
 	XSetWindowAttributes attr;
 	attr.override_redirect = True;
@@ -131,8 +131,8 @@ void tooltip_update_geometry()
 	pango_layout_set_text(layout, g_tooltip.tooltip_text, -1);
 	PangoRectangle r1, r2;
 	pango_layout_get_pixel_extents(layout, &r1, &r2);
-	width = 2*g_tooltip.bg->border.width + 2*g_tooltip.paddingx + r2.width;
-	height = 2*g_tooltip.bg->border.width + 2*g_tooltip.paddingy + r2.height;
+	width = 2*g_tooltip.background->border.width + 2*g_tooltip.paddingx + r2.width;
+	height = 2*g_tooltip.background->border.width + 2*g_tooltip.paddingy + r2.height;
 
 	Panel* panel = g_tooltip.panel;
 	if (panel_horizontal && panel_position & BOTTOM)
@@ -218,10 +218,10 @@ void tooltip_update()
 	PangoLayout* layout;
 	cs = cairo_xlib_surface_create(server.dsp, g_tooltip.window, server.visual, width, height);
 	c = cairo_create(cs);
-	/* Color bc = g_tooltip.bg->back; */
+	/* Color bc = g_tooltip.background->back; */
   double bg_color[4];
-  color_rgba_to_array (&g_tooltip.bg->color, bg_color);
-  border_t b = g_tooltip.bg->border;
+  color_rgba_to_array (&g_tooltip.background->color, bg_color);
+  border_t b = g_tooltip.background->border;
   if (server.real_transparency) {
     area_clear_pixmap (g_tooltip.window, rect_with_size (width,
 							 height));
@@ -276,8 +276,8 @@ void tooltip_update()
 	pango_layout_set_ellipsize(layout, PANGO_ELLIPSIZE_END);
 	// I do not know why this is the right way, but with the below cairo_move_to it seems to be centered (horiz. and vert.)
 	cairo_move_to(c,
-				  -r1.x/2 + g_tooltip.bg->border.width + g_tooltip.paddingx,
-				  -r1.y/2 + 1 + g_tooltip.bg->border.width + g_tooltip.paddingy);
+				  -r1.x/2 + g_tooltip.background->border.width + g_tooltip.paddingx,
+				  -r1.y/2 + 1 + g_tooltip.background->border.width + g_tooltip.paddingy);
 	pango_cairo_show_layout (c, layout);
 
 	g_object_unref (layout);

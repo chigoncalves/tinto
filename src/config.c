@@ -310,7 +310,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "panel_background_id") == 0) {
 	  uint32_t id = (uint32_t) atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.area.bg = &g_array_index(backgrounds, background_t, id);
+		panel_config.area.background = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp (key, "wm_menu") == 0)
 		wm_menu = atoi (value);
@@ -386,7 +386,7 @@ void add_entry (char *key, char *value)
 #ifdef ENABLE_BATTERY
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.battery.area.bg = &g_array_index(backgrounds, background_t, id);
+		panel_config.battery.area.background = &g_array_index(backgrounds, background_t, id);
 #endif
 	}
 	else if (strcmp (key, "battery_hide") == 0) {
@@ -453,7 +453,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "clock_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.clock.area.bg = &g_array_index(backgrounds, background_t, id);
+		panel_config.clock.area.background = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp(key, "clock_tooltip") == 0) {
 		if (strlen(value) > 0)
@@ -622,7 +622,7 @@ void add_entry (char *key, char *value)
 	  id = id < backgrounds->len ? id : 0;
 		panel_config.g_task.background[status] = &g_array_index(backgrounds, background_t, id);
 		panel_config.g_task.config_background_mask |= (1<<status);
-		if (status == TASK_NORMAL) panel_config.g_task.area.bg = panel_config.g_task.background[TASK_NORMAL];
+		if (status == TASK_NORMAL) panel_config.g_task.area.background = panel_config.g_task.background[TASK_NORMAL];
 	}
 	// "tooltip" is deprecated but here for backwards compatibility
 	else if (strcmp (key, "task_tooltip") == 0 || strcmp(key, "tooltip") == 0)
@@ -649,7 +649,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "systray_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		systray.area.bg = &g_array_index(backgrounds, background_t, id);
+		systray.area.background = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp(key, "systray_sort") == 0) {
 		if (strcmp(value, "descending") == 0)
@@ -684,7 +684,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "launcher_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		panel_config.launcher.area.bg = &g_array_index(backgrounds, background_t, id);
+		panel_config.launcher.area.background = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp(key, "launcher_icon_size") == 0) {
 		launcher_max_icon_size = atoi(value);
@@ -734,7 +734,7 @@ void add_entry (char *key, char *value)
 	else if (strcmp (key, "tooltip_background_id") == 0) {
 	  uint32_t id = (uint32_t)atoi (value);
 	  id = id < backgrounds->len ? id : 0;
-		g_tooltip.bg = &g_array_index(backgrounds, background_t, id);
+		g_tooltip.background = &g_array_index(backgrounds, background_t, id);
 	}
 	else if (strcmp (key, "tooltip_font_color") == 0) {
 		extract_values(value, &value1, &value2, &value3);

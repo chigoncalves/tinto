@@ -349,7 +349,7 @@ void draw_task_icon (Task *tsk, int text_width)
 		else
 			pos_x = (tsk->area.bounds.width - panel->g_task.icon_size1) / 2;
 	}
-	else pos_x = panel->g_task.area.paddingxlr + tsk->area.bg->border.width;
+	else pos_x = panel->g_task.area.paddingxlr + tsk->area.background->border.width;
 
 	// Render
 	imlib_context_set_image (tsk->icon[tsk->current_state]);
@@ -523,7 +523,7 @@ void set_task_state(Task *tsk, int state)
 			for (size_t i=0; i<task_group->len; ++i) {
 				Task* tsk1 = g_ptr_array_index(task_group, i);
 				tsk1->current_state = state;
-				tsk1->area.bg = panel1[0].g_task.background[state];
+				tsk1->area.background = panel1[0].g_task.background[state];
 				tsk1->area.pixmap = tsk1->state_pix[state];
 				if (tsk1->state_pix[state] == 0)
 					tsk1->area.redraw = 1;

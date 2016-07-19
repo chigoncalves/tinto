@@ -295,8 +295,8 @@ void init_battery_panel(void *p)
 	if (!bat2_font_desc)
 		bat2_font_desc = pango_font_description_from_string(DEFAULT_FONT);
 
-	if (battery->area.bg == 0)
-		battery->area.bg = &g_array_index(backgrounds, background_t, 0);
+	if (battery->area.background == 0)
+		battery->area.background = &g_array_index(backgrounds, background_t, 0);
 
 	battery->area.parent = p;
 	battery->area.panel = p;
@@ -541,7 +541,7 @@ int resize_battery(void *obj)
 
 	if (panel_horizontal) {
 		int new_size = (bat_percentage_width > bat_time_width) ? bat_percentage_width : bat_time_width;
-		new_size += 2 * battery->area.paddingxlr + 2 * battery->area.bg->border.width;
+		new_size += 2 * battery->area.paddingxlr + 2 * battery->area.background->border.width;
 		if (new_size > battery->area.bounds.width ||
 			new_size < battery->area.bounds.width - 2) {
 			// we try to limit the number of resize
@@ -552,7 +552,7 @@ int resize_battery(void *obj)
 		}
 	} else {
 		int new_size = bat_percentage_height + bat_time_height +
-					   (2 * (battery->area.paddingxlr + battery->area.bg->border.width));
+					   (2 * (battery->area.paddingxlr + battery->area.background->border.width));
 		if (new_size > battery->area.bounds.height ||
 			new_size < battery->area.bounds.height - 2) {
 			battery->area.bounds.height =  new_size;
