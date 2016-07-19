@@ -101,7 +101,7 @@ Task *add_task (Window win)
 		new_tsk2->current_state = -1;  // to update the current state later in set_task_state...
 		if (new_tsk2->desktop == ALLDESKTOP && server.desktop != (int)j) {
 			// hide ALLDESKTOP task on non-current desktop
-			new_tsk2->area.on_screen = 0;
+			new_tsk2->area.visible = 0;
 		}
 		new_tsk2->title = new_tsk.title;
 		if (panel1[monitor].g_task.tooltip_enabled)
@@ -540,8 +540,8 @@ void set_task_state(Task *tsk, int state)
 					(hide_task_diff_monitor || nb_panel > 1)) {
 					hide = 1;
 				}
-				if (1 - hide != tsk1->area.on_screen) {
-					tsk1->area.on_screen = 1 - hide;
+				if (1 - hide != tsk1->area.visible) {
+					tsk1->area.visible = 1 - hide;
 					set_task_redraw(tsk1);
 					Panel *p = (Panel*)tsk->area.panel;
 					tsk->area.resize = 1;

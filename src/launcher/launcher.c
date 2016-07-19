@@ -154,7 +154,7 @@ void init_launcher_panel(void *p)
 	if (launcher->list_apps == NULL)
 		return;
 
-	launcher->area.on_screen = 1;
+	launcher->area.visible = 1;
 	panel_refresh = 1;
 
 	launcher_load_themes(launcher);
@@ -523,7 +523,7 @@ launcher_load_icons(Launcher* launcher) {
 			launcherIcon->area.resize = 0;
 			launcherIcon->area.redraw = 1;
 			launcherIcon->area.bg = &g_array_index(backgrounds, Background, 0);
-			launcherIcon->area.on_screen = 1;
+			launcherIcon->area.visible = 1;
 			launcherIcon->area._on_change_layout = launcher_icon_on_change_layout;
 			if (launcher_tooltip_enabled) {
 				launcherIcon->area._get_tooltip_text = launcher_icon_get_tooltip_text;

@@ -578,7 +578,7 @@ event_property_notify (XEvent *e) {
 	  while (l) {
 	    tsk = l->data;
 	    if (tsk->desktop == ALLDESKTOP) {
-	      tsk->area.on_screen = 0;
+	      tsk->area.visible = 0;
 	      tskbar->area.resize = 1;
 	      panel_refresh = 1;
 	      if (panel_mode == MULTI_DESKTOP)
@@ -594,7 +594,7 @@ event_property_notify (XEvent *e) {
 	while (l) {
 	  tsk = l->data;
 	  if (tsk->desktop == ALLDESKTOP) {
-	    tsk->area.on_screen = 1;
+	    tsk->area.visible = 1;
 	    tskbar->area.resize = 1;
 	    if (panel_mode == MULTI_DESKTOP)
 	      panel->area.resize = 1;
@@ -745,9 +745,9 @@ event_configure_notify (Window win) {
       Panel *p = tsk->area.panel;
       int monitor = window_get_monitor (win);
       if ((hide_task_diff_monitor && p->monitor != monitor
-	   && tsk->area.on_screen) ||
+	   && tsk->area.visible) ||
 	  (hide_task_diff_monitor && p->monitor == monitor
-	   && !tsk->area.on_screen) ||
+	   && !tsk->area.visible) ||
 	  (p->monitor != monitor && nb_panel > 1)) {
 	remove_task (tsk);
 	tsk = add_task (win);

@@ -155,7 +155,7 @@ void init_taskbar_panel(void *p)
 	panel->g_taskbar.area_name._draw_foreground = draw_taskbarname;
 	panel->g_taskbar.area_name._on_change_layout = 0;
 	panel->g_taskbar.area_name.resize = 1;
-	panel->g_taskbar.area_name.on_screen = 1;
+	panel->g_taskbar.area_name.visible = 1;
 
 	// taskbar
 	panel->g_taskbar.area.parent = panel;
@@ -165,7 +165,7 @@ void init_taskbar_panel(void *p)
 	panel->g_taskbar.area._draw_foreground = draw_taskbar;
 	panel->g_taskbar.area._on_change_layout = on_change_taskbar;
 	panel->g_taskbar.area.resize = 1;
-	panel->g_taskbar.area.on_screen = 1;
+	panel->g_taskbar.area.visible = 1;
 	if (panel_horizontal) {
 		panel->g_taskbar.area.bounds.y = panel->area.bg->border.width + panel->area.paddingy;
 		panel->g_taskbar.area.bounds.height = panel->area.bounds.height - (2 * panel->g_taskbar.area.bounds.y);
@@ -185,7 +185,7 @@ void init_taskbar_panel(void *p)
 	panel->g_task.area._draw_foreground = draw_task;
 	panel->g_task.area._on_change_layout = on_change_task;
 	panel->g_task.area.resize = 1;
-	panel->g_task.area.on_screen = 1;
+	panel->g_task.area.visible = 1;
 	if ((panel->g_task.config_asb_mask & (1<<TASK_NORMAL)) == 0) {
 		panel->g_task.alpha[TASK_NORMAL] = 100;
 		panel->g_task.saturation[TASK_NORMAL] = 0;
@@ -347,7 +347,7 @@ int resize_taskbar(void *obj)
 		GSList *l = taskbar->area.list;
 		if (taskbarname_enabled) l = l->next;
 		for (; l != NULL; l = l->next) {
-			if (((Task *)l->data)->area.on_screen) {
+			if (((Task *)l->data)->area.visible) {
 				text_width = ((Task *)l->data)->area.bounds.width;
 				break;
 			}
@@ -388,11 +388,11 @@ void set_taskbar_state(Taskbar *tskbar, int state)
 	}
 	if (panel_mode != MULTI_DESKTOP) {
 		if (state == TASKBAR_NORMAL)
-			tskbar->area.on_screen = 0;
+			tskbar->area.visible = 0;
 		else
-			tskbar->area.on_screen = 1;
+			tskbar->area.visible = 1;
 	}
-	if (tskbar->area.on_screen == 1) {
+	if (tskbar->area.visible == 1) {
 		if (tskbar->state_pix[state] == 0)
 			tskbar->area.redraw = 1;
 		if (taskbarname_enabled && tskbar->bar_name.state_pix[state] == 0)
@@ -418,10 +418,10 @@ void visible_taskbar(void *p)
 		taskbar = &panel->taskbar[j];
 		if (panel_mode != MULTI_DESKTOP && taskbar->desktop != server.desktop) {
 			// SINGLE_DESKTOP and not current desktop
-			taskbar->area.on_screen = 0;
+			taskbar->area.visible = 0;
 		}
 		else {
-			taskbar->area.on_screen = 1;
+			taskbar->area.visible = 1;
 		}
 	}
 	panel_refresh = 1;

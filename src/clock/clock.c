@@ -183,7 +183,7 @@ void init_clock_panel(void *p)
 		return;
 
 	clock->area.resize = 1;
-	clock->area.on_screen = 1;
+	clock->area.visible = 1;
 
 	if (time_tooltip_format) {
 		clock->area._get_tooltip_text = clock_get_tooltip;

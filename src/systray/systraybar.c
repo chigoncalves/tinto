@@ -78,7 +78,7 @@ void cleanup_systray()
 	systray_enabled = 0;
 	systray_max_icon_size = 0;
 	systray_monitor = 0;
-	systray.area.on_screen = 0;
+	systray.area.visible = 0;
 	area_destroy (&systray.area);
 	if (render_background) {
 		XFreePixmap(server.dsp, render_background);
@@ -448,7 +448,7 @@ gboolean add_icon(Window id)
 	traywin->depth = attr.depth;
 	traywin->damage = 0;
 
-	if (systray.area.on_screen == 0)
+	if (systray.area.visible == 0)
 		show(&systray.area);
 
 	if (systray.sort == 3)

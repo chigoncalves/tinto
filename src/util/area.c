@@ -125,7 +125,7 @@ void rendering(void *obj)
 void size_by_content (Area *a)
 {
 	// don't resize hiden objects
-	if (!a->on_screen) return;
+	if (!a->visible) return;
 
 	// children node are resized before its parent
 	GSList *l;
@@ -151,7 +151,7 @@ void size_by_content (Area *a)
 void size_by_layout (Area *a, int pos, int level)
 {
 	// don't resize hiden objects
-	if (!a->on_screen) return;
+	if (!a->visible) return;
 
 	// parent node is resized before its children
 	// calculate area's size
@@ -175,7 +175,7 @@ void size_by_layout (Area *a, int pos, int level)
 	int i=0;
 	for (l = a->list; l ; l = l->next) {
 		Area *child = ((Area*)l->data);
-		if (!child->on_screen) continue;
+		if (!child->visible) continue;
 		i++;
 
 		if (panel_horizontal) {
@@ -217,7 +217,7 @@ void size_by_layout (Area *a, int pos, int level)
 void refresh (Area *a)
 {
 	// don't draw and resize hide objects
-	if (!a->on_screen) return;
+	if (!a->visible) return;
 
 	// don't draw transparent objects (without foreground and without background)
 	if (a->redraw) {
@@ -255,11 +255,11 @@ int resize_by_layout(void *obj, int maximum_size)
 		GSList *l;
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
-			if (child->on_screen && child->size_mode == SIZE_BY_CONTENT) {
+			if (child->visible && child->size_mode == SIZE_BY_CONTENT) {
 				size -= child->bounds.width;
 				nb_by_content++;
 			}
-			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT)
+			if (child->visible && child->size_mode == SIZE_BY_LAYOUT)
 				nb_by_layout++;
 		}
 		//printf("  resize_by_layout Deb %d, %d\n", nb_by_content, nb_by_layout);
@@ -279,7 +279,7 @@ int resize_by_layout(void *obj, int maximum_size)
 		// resize SIZE_BY_LAYOUT objects
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
-			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT) {
+			if (child->visible && child->size_mode == SIZE_BY_LAYOUT) {
 				old_width = child->bounds.width;
 				child->bounds.width = width;
 				if (modulo) {
@@ -297,11 +297,11 @@ int resize_by_layout(void *obj, int maximum_size)
 		GSList *l;
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
-			if (child->on_screen && child->size_mode == SIZE_BY_CONTENT) {
+			if (child->visible && child->size_mode == SIZE_BY_CONTENT) {
 				size -= child->bounds.height;
 				nb_by_content++;
 			}
-			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT)
+			if (child->visible && child->size_mode == SIZE_BY_LAYOUT)
 				nb_by_layout++;
 		}
 		if (nb_by_content+nb_by_layout)
@@ -320,7 +320,7 @@ int resize_by_layout(void *obj, int maximum_size)
 		// resize SIZE_BY_LAYOUT objects
 		for (l = a->list ; l ; l = l->next) {
 			child = (Area*)l->data;
-			if (child->on_screen && child->size_mode == SIZE_BY_LAYOUT) {
+			if (child->visible && child->size_mode == SIZE_BY_LAYOUT) {
 				old_height = child->bounds.height;
 				child->bounds.height = height;
 				if (modulo) {
@@ -349,7 +349,7 @@ void hide(Area *a)
 {
 	Area *parent = (Area*)a->parent;
 
-	a->on_screen = 0;
+	a->visible = 0;
 	parent->resize = 1;
 	if (panel_horizontal)
 		a->bounds.width = 0;
@@ -361,7 +361,7 @@ void show(Area *a)
 {
 	Area *parent = (Area*)a->parent;
 
-	a->on_screen = 1;
+	a->visible = 1;
 	parent->resize = 1;
 	a->resize = 1;
 }

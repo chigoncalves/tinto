@@ -19,6 +19,8 @@
 #ifndef AREA_H
 #define AREA_H
 
+#include <stdbool.h>
+
 #include <glib.h>
 #include <X11/Xlib.h>
 #include <cairo.h>
@@ -53,7 +55,7 @@ typedef struct {
 
 	// object visible on screen.
 	// An object (like systray) could be enabled but hidden (because no tray icon).
-	int on_screen;
+  bool visible;
 	// way to calculate the size (SIZE_BY_CONTENT or SIZE_BY_LAYOUT)
 	int size_mode;
 	// need to calculate position and width

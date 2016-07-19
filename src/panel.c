@@ -187,7 +187,7 @@ void panel_init (void) {
 			p->area.bg = &g_array_index(backgrounds, Background, 0);
 		p->area.parent = p;
 		p->area.panel = p;
-		p->area.on_screen = 1;
+		p->area.visible = 1;
 		p->area.resize = 1;
 		p->area.size_mode = SIZE_BY_LAYOUT;
 		p->area._resize = panel_resize;
@@ -358,7 +358,7 @@ static int panel_resize (void *obj)
 			GSList *l;
 			for (l = taskbar->area.list; l; l = l->next) {
 				Area *child = l->data;
-				if (!child->on_screen)
+				if (!child->visible)
 					continue;
 				total_items++;
 			}
@@ -395,7 +395,7 @@ static int panel_resize (void *obj)
 					l = l->next;
 				for (; l; l = l->next) {
 					Area *child = l->data;
-					if (!child->on_screen)
+					if (!child->visible)
 						continue;
 					items++;
 					if (panel_horizontal) {
@@ -677,14 +677,14 @@ Taskbar *panel_click_taskbar (Panel *panel, point_t point) {
 	if (panel_horizontal) {
 		for (int i=0; i < panel->nb_desktop ; ++i) {
 		  tskbar = panel->taskbar + i;
-			if (tskbar->area.on_screen && point.x >= tskbar->area.bounds.x && point.x <= (tskbar->area.bounds.x + tskbar->area.bounds.width))
+			if (tskbar->area.visible && point.x >= tskbar->area.bounds.x && point.x <= (tskbar->area.bounds.x + tskbar->area.bounds.width))
 				return tskbar;
 		}
 	}
 	else {
 		for (int i = 0; i < panel->nb_desktop ; ++i) {
 		  tskbar = panel->taskbar + i;
-			if (tskbar->area.on_screen && point.y >= tskbar->area.bounds.y && point.y <= (tskbar->area.bounds.y + tskbar->area.bounds.height))
+			if (tskbar->area.visible && point.y >= tskbar->area.bounds.y && point.y <= (tskbar->area.bounds.y + tskbar->area.bounds.height))
 				return tskbar;
 		}
 	}
@@ -704,7 +704,7 @@ Task* panel_click_task (Panel *panel, point_t point)
 			if (taskbarname_enabled) l0 = l0->next;
 			for (; l0 ; l0 = l0->next) {
 				tsk = l0->data;
-				if (tsk->area.on_screen && point.x >= tsk->area.bounds.x && point.x <= (tsk->area.bounds.x + tsk->area.bounds.width)) {
+				if (tsk->area.visible && point.x >= tsk->area.bounds.x && point.x <= (tsk->area.bounds.x + tsk->area.bounds.width)) {
 					return tsk;
 				}
 			}
@@ -715,7 +715,7 @@ Task* panel_click_task (Panel *panel, point_t point)
 			if (taskbarname_enabled) l0 = l0->next;
 			for (; l0 ; l0 = l0->next) {
 				tsk = l0->data;
-				if (tsk->area.on_screen && point.y >= tsk->area.bounds.y && point.y <= (tsk->area.bounds.y + tsk->area.bounds.height)) {
+				if (tsk->area.visible && point.y >= tsk->area.bounds.y && point.y <= (tsk->area.bounds.y + tsk->area.bounds.height)) {
 					return tsk;
 				}
 			}
@@ -730,13 +730,13 @@ Launcher *panel_click_launcher (Panel *panel, point_t point)
 	Launcher *launcher = &panel->launcher;
 
 	if (panel_horizontal) {
-		if (launcher->area.on_screen && point.x >= launcher->area.bounds.x
+		if (launcher->area.visible && point.x >= launcher->area.bounds.x
 		    && point.x <= (launcher->area.bounds.x + launcher->area.bounds.width)) {
 		  return launcher;
 		}
 	}
 	else {
-		if (launcher->area.on_screen && point.y >= launcher->area.bounds.y
+		if (launcher->area.visible && point.y >= launcher->area.bounds.y
 		    && point.y <= (launcher->area.bounds.y + launcher->area.bounds.height)) {
 		  return launcher;
 		}
@@ -784,12 +784,12 @@ int panel_click_padding (Panel *panel, point_t point)
 int panel_click_clock (Panel *panel, point_t point) {
 	Clock clk = panel->clock;
 	if (panel_horizontal) {
-		if (clk.area.on_screen && point.x >= clk.area.bounds.x &&
+		if (clk.area.visible && point.x >= clk.area.bounds.x &&
 		    point.x <= (clk.area.bounds.x + clk.area.bounds.width)) {
 		  return TRUE;
 		}
 	} else {
-		if (clk.area.on_screen && point.y >= clk.area.bounds.y
+		if (clk.area.visible && point.y >= clk.area.bounds.y
 		    && point.y <= (clk.area.bounds.y + clk.area.bounds.height)) {
 		  return TRUE;
 		}
@@ -806,7 +806,7 @@ Area* panel_click_area (Panel *panel, point_t point) {
 		GSList* it = result->list;
 		while (it) {
 			Area* a = it->data;
-			if (a->on_screen && point.x >= a->bounds.x && point.x <= (a->bounds.x + a->bounds.width)
+			if (a->visible && point.x >= a->bounds.x && point.x <= (a->bounds.x + a->bounds.width)
 					&& point.y >= a->bounds.y && point.y <= (a->bounds.y + a->bounds.height)) {
 				new_result = a;
 				break;

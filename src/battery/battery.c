@@ -106,17 +106,17 @@ void update_battery_tick(void* arg) {
 
 	int i;
 	for (i = 0; i < nb_panel; i++) {
-		if (!battery_found && panel1[i].battery.area.on_screen == 1) {
+		if (!battery_found && panel1[i].battery.area.visible == 1) {
 			hide(&panel1[i].battery.area);
 			panel_refresh = 1;
-		} else if (battery_state.percentage >= percentage_hide && panel1[i].battery.area.on_screen == 1) {
+		} else if (battery_state.percentage >= percentage_hide && panel1[i].battery.area.visible == 1) {
 			hide(&panel1[i].battery.area);
 			panel_refresh = 1;
-		} else if (battery_state.percentage < percentage_hide && panel1[i].battery.area.on_screen == 0) {
+		} else if (battery_state.percentage < percentage_hide && panel1[i].battery.area.visible == 0) {
 			show(&panel1[i].battery.area);
 			panel_refresh = 1;
 		}
-		if (panel1[i].battery.area.on_screen == 1) {
+		if (panel1[i].battery.area.visible == 1) {
 			panel1[i].battery.area.resize = 1;
 			panel_refresh = 1;
 		}
@@ -303,7 +303,7 @@ void init_battery_panel(void *p)
 	battery->area._draw_foreground = draw_battery;
 	battery->area.size_mode = SIZE_BY_CONTENT;
 	battery->area._resize = resize_battery;
-	battery->area.on_screen = 1;
+	battery->area.visible = 1;
 	battery->area.resize = 1;
 }
 
