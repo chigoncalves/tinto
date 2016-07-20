@@ -1,23 +1,12 @@
-/**************************************************************************
-* Copyright (C) 2008 thierry lorthiois (lorthiois@bbsoft.fr)
-*
-* base class for all graphical objects (panel, taskbar, task, systray, clock, ...).
-* Area is at the begining of each object (&object == &area).
-*
-* Area manage the background and border drawing, size and padding.
-* Each Area has one Pixmap (pix).
-*
-* Area manage the tree of all objects. Parent object drawn before child object.
-*   panel -> taskbars -> tasks
-*         -> systray -> icons
-*         -> clock
-*
-* draw_foreground(obj) and resize(obj) are virtual function.
-*
-**************************************************************************/
+/*! \file area.c */
 
-#ifndef AREA_H
-#define AREA_H
+/**********************************************************************
+* Copyright (C) 2008 Thierry Lorthiois (lorthiois@bbsoft.fr)
+*
+**********************************************************************/
+
+#ifndef TINTO_PANEL_SRC_UTIL_AREA_H
+#define TINTO_PANEL_SRC_UTIL_AREA_H 1
 
 #include <stdbool.h>
 
@@ -57,18 +46,22 @@ typedef struct {
   int left;
 } padding_t;
 
+typedef padding_t margin_t;
+
 typedef struct {
-  rect_t bounds; /*!< Coordinates on screen. */
+  rect_t bounds;      /*!< Coordinates on screen. */
   Pixmap pixmap;
   background_t* background;
-  GSList* children; /* !< A list of children of given Area object. */
-  bool visible; /*!< Whether the Area is visible or not. */
+  GSList* children;   /* !< A list of children of given Area object. */
+  bool visible;       /*!< Whether the Area is visible or not. */
 	// way to calculate the size (SIZE_BY_CONTENT or SIZE_BY_LAYOUT)
   size_mode_t size_mode;
   // need to calculate position and width
   bool resize;
   // need redraw Pixmap
   bool redraw;
+  margin_t margin;
+  padding_t padding;
 	// paddingxlr = horizontal padding left/right
 	// paddingx = horizontal padding between childs
 	int paddingxlr, paddingx, paddingy;
@@ -123,4 +116,10 @@ area_draw_rect (cairo_t *c, rectf_t rect, double r);
 void
 area_clear_pixmap (Pixmap p, rect_t rect);
 
-#endif
+void
+area_set_padding (Area* self, const int vert, const int horiz, int a);
+
+void
+area_set_margin (Area* self, const int vert, const int horiz);
+
+#endif // TINTO_PANEL_SRC_UTIL_AREA_H

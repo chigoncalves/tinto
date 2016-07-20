@@ -551,3 +551,20 @@ area_clear_pixmap (Pixmap p, rect_t rect) {
 			rect.x, rect.y, rect.width, rect.height);
   XRenderFreePicture (server.dsp, pict);
 }
+
+inline void
+area_set_padding (Area* self, const int vert, const int horiz,
+		  int paddx) {
+  self->padding.left = self->padding.right = horiz / 2;
+  self->padding.bottom = self->padding.top = vert / 2;
+  self->paddingxlr = horiz;
+
+  self->paddingy = vert;;
+  self->paddingx = paddx;
+}
+
+inline void
+area_set_margin (Area* self, const int vert, const int horiz) {
+  self->margin.bottom = self->margin.top = vert / 2;
+  self->margin.left = self->margin.right = horiz / 2;
+}

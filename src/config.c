@@ -47,6 +47,7 @@
 #ifndef TINT2CONF
 
 #include "common.h"
+#include "debug.h"
 #include "server.h"
 #include "panel.h"
 #include "task.h"
@@ -278,10 +279,17 @@ void add_entry (char *key, char *value)
 		if (value2) panel_config.marginy = atoi (value2);
 	}
 	else if (strcmp (key, "panel_padding") == 0) {
+	  /* Area* area = &panel_config.area; */
 		extract_values(value, &value1, &value2, &value3);
-		panel_config.area.paddingxlr = panel_config.area.paddingx = atoi (value1);
-		if (value2) panel_config.area.paddingy = atoi (value2);
-		if (value3) panel_config.area.paddingx = atoi (value3);
+		int padd_horiz = atoi (value1);
+
+		int paddx = 0;
+		int padd_vert = 0;
+		if (value2) padd_vert = atoi (value2);
+		if (value3) paddx = atoi (value3);
+
+		area_set_padding (&panel_config.area, padd_vert,
+				  padd_horiz, paddx);
 	}
 	else if (strcmp (key, "panel_position") == 0) {
 		extract_values(value, &value1, &value2, &value3);
