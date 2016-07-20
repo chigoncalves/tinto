@@ -81,6 +81,11 @@ typedef struct {
   value_t height;
 } dimension_t;
 
+typedef struct  {
+  int width;
+  int height;
+} dimen_t;
+
 /*!
  * \struct color_rgba_t.
  *

@@ -122,4 +122,7 @@ area_set_padding (Area* self, const int vert, const int horiz, int a);
 void
 area_set_margin (Area* self, const int vert, const int horiz);
 
+dimen_t
+area_get_dimen (const Area* self);
+
 #endif // TINTO_PANEL_SRC_UTIL_AREA_H

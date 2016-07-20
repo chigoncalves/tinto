@@ -451,6 +451,30 @@ void server_init_visual (void) {
   XSetErrorHandler ((XErrorHandler) server_catch_error);
 }
 
+Pixmap
+server_create_pixmap (Server_global* self, const dimen_t dimen) {
+  return XCreatePixmap (self->dsp, self->root_win, dimen.width,
+			dimen.height, self->depth);
+}
+
+inline void
+server_copy_area (Server_global* self, Drawable src, Drawable dest,
+		  rect_t bounds, point_t origin) {
+  XCopyArea (self->dsp, src,  dest, self->gc, bounds.x, bounds.y,
+	     bounds.width, bounds.height, origin.x, origin.y);
+}
+
+inline
+cairo_surface_t*
+server_create_cairo_xlib_surface (Server_global* self,
+				  Drawable drawable,
+				  dimen_t dimen) {
+  return cairo_xlib_surface_create (self->dsp, drawable,
+				    self->visual, dimen.width,
+				    dimen.height);
+}
+
+
 static void
 server_catch_error (Display *d, XErrorEvent *ev) {
   UNUSED (d, ev);

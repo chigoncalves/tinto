@@ -14,6 +14,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/Xinerama.h>
+#include <pango/pangocairo.h>
+
+#include "misc.h"
 
 #ifdef HAS_SN
 #include <libsn/sn.h>
@@ -155,5 +158,18 @@ void get_root_pixmap();
 void get_monitors();
 void get_desktops();
 int server_get_number_of_desktops();
+
+Pixmap
+server_create_pixmap (Server_global* self, const dimen_t dimen);
+
+void
+server_copy_area (Server_global* self, Drawable src, Drawable dest,
+		  rect_t bounds, point_t origin);
+
+
+cairo_surface_t*
+server_create_cairo_xlib_surface (Server_global* self,
+				  Drawable drawable,
+				  dimen_t dimen);
 
 #endif

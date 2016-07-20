@@ -1,8 +1,11 @@
-/**************************************************************************
+
+/*! \file area.c */
+/**********************************************************************
 *
 * Tint2 : area
 *
-* Copyright (C) 2008 thierry lorthiois (lorthiois@bbsoft.fr) from Omega distribution
+* Copyright (C) 2008 thierry lorthiois (lorthiois@bbsoft.fr) from
+* Omega distribution
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License version 2
@@ -14,8 +17,9 @@
 * GNU General Public License for more details.
 * You should have received a copy of the GNU General Public License
 * along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-**************************************************************************/
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+* 02110-1301, USA.
+**********************************************************************/
 
 #include "conf.h" // For system checks.
 
@@ -34,47 +38,6 @@
 #include "debug.h"
 #include "panel.h"
 #include "server.h"
-
-
-/************************************************************
- * !!! This design is experimental and not yet fully implemented !!!!!!!!!!!!!
- *
- * DATA ORGANISATION :
- * Areas in tint2 are similar to widgets in a GUI.
- * All graphical objects (panel, taskbar, task, systray, clock, ...) 'inherit' an abstract class 'Area'.
- * This class 'Area' manage the background, border, size, position and padding.
- * Area is at the begining of each object (&object == &area).
- *
- * tint2 define one panel per monitor. And each panel have a tree of Area.
- * The root of the tree is Panel.Area. And task, clock, systray, taskbar,... are nodes.
- *
- * The tree give the localisation of each object :
- * - tree's root is in the background while tree's leafe are foreground objects
- * - position of a node/Area depend on the layout : parent's position (posx, posy), size of previous brothers and parent's padding
- * - size of a node/Area depend on the content (SIZE_BY_CONTENT objects) or on the layout (SIZE_BY_LAYOUT objects)
- *
- * DRAWING AND LAYERING ENGINE :
- * Redrawing an object (like the clock) could come from an 'external event' (date change)
- * or from a 'layering event' (position change).
- * The following 'drawing engine' take care of :
- * - posx/posy of all Area
- * - 'layering event' propagation between object
- * 1) browse tree SIZE_BY_CONTENT
- *  - resize SIZE_BY_CONTENT node : children are resized before parent
- * 	- if 'size' changed then 'resize = 1' on the parent
- * 2) browse tree SIZE_BY_LAYOUT and POSITION
- *  - resize SIZE_BY_LAYOUT node : parent is resized before children
- *  - calculate position (posx,posy) : parent is calculated before children
- * 	- if 'position' changed then 'redraw = 1'
- * 3) browse tree REDRAW
- *  - redraw needed objects : parent is drawn before children
- *
- * CONFIGURE PANEL'S LAYOUT :
- * 'panel_items' parameter (in config) define the list and the order of nodes in tree's panel.
- * 'panel_items = SC' define a panel with just Systray and Clock.
- * So the tree 'Panel.Area' will have 2 childs (Systray and Clock).
- *
- ************************************************************/
 
 extern int errno;
 
@@ -96,8 +59,6 @@ void init_rendering(void *obj, int pos)
 			init_rendering(child, child->bounds.y);
 		}
 		else {
-			/* #+nil child->posx = pos + a->background->border.width + a->paddingy; */
-			/* #+nil child->width = a->width - (2 * (a->background->border.width + a->paddingy)); */
 		  child->bounds.x = pos + a->background->border.width
 		    + a->paddingy;
 		  child->bounds.width = a->bounds.width -
@@ -193,10 +154,6 @@ void size_by_layout (Area *a, int pos, int level)
 			}
 		}
 
-		/*// position of each visible object
-		int k;
-		for (k=0 ; k < level ; k++) printf("  ");
-		printf("tree level %d, object %d, pos %d, %s\n", level, i, pos, (child->size_mode == SIZE_BY_LAYOUT) ? "SIZE_BY_LAYOUT" : "SIZE_BY_CONTENT");*/
 		size_by_layout(child, pos, level+1);
 
 		if (panel_horizontal)
@@ -232,10 +189,15 @@ void refresh (Area *a)
 	}
 
 	// draw current Area
-	/* #+nil if (a->pixmap == 0) printf("empty area posx %d, width %d\n", a->posx, a->width); */
-	XCopyArea (server.dsp, a->pixmap, ((Panel *)a->panel)->temp_pmap,
-		   server.gc, 0, 0, a->bounds.width, a->bounds.height,
-		   a->bounds.x, a->bounds.y);
+	rect_t rect = {
+	  .x = 0,
+	  .y = 0,
+	  .width = a->bounds.width,
+	  .height = a->bounds.height
+	};
+	server_copy_area (&server, a->pixmap,
+			  ((Panel*)a->panel)->temp_pmap,
+			  rect, (point_t){ a->bounds.x, a->bounds.y});
 
 	// and then refresh child object
 	GSList *l;
@@ -369,7 +331,8 @@ void show(Area *a)
 void draw (Area *a)
 {
 	if (a->pixmap) XFreePixmap (server.dsp, a->pixmap);
-	a->pixmap = XCreatePixmap (server.dsp, server.root_win, a->bounds.width, a->bounds.height, server.depth);
+	a->pixmap = server_create_pixmap (&server,
+					  area_get_dimen (a));
 
 	// add layer of root pixmap (or clear pixmap if real_transparency==true)
 	if (server.real_transparency) {
@@ -378,13 +341,13 @@ void draw (Area *a)
 					     a->bounds.height));
 	}
 
-	XCopyArea (server.dsp, ((Panel *)a->panel)->temp_pmap, a->pixmap, server.gc, a->bounds.x, a->bounds.y, a->bounds.width, a->bounds.height, 0, 0);
+	server_copy_area (&server, ((Panel *)a->panel)->temp_pmap,
+			  a->pixmap, a->bounds, (point_t){0, 0});
 
-	cairo_surface_t *cs;
-	cairo_t *c;
-
-	cs = cairo_xlib_surface_create (server.dsp, a->pixmap, server.visual, a->bounds.width, a->bounds.height);
-	c = cairo_create (cs);
+	cairo_surface_t* cs =
+	  server_create_cairo_xlib_surface (&server, a->pixmap,
+					    area_get_dimen (a));
+	cairo_t* c = cairo_create (cs);
 
 	draw_background (a, c);
 
@@ -567,4 +530,9 @@ inline void
 area_set_margin (Area* self, const int vert, const int horiz) {
   self->margin.bottom = self->margin.top = vert / 2;
   self->margin.left = self->margin.right = horiz / 2;
+}
+
+inline dimen_t
+area_get_dimen (const Area* self) {
+  return (dimen_t){self->bounds.width, self->bounds.height};
 }
