@@ -4,29 +4,17 @@ if (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
 cmake_minimum_required (VERSION 3.0)
-project (tinto VERSION 0.0.2.2 LANGUAGES C )
+project (tinto VERSION 0.0.2.3 LANGUAGES C )
+cmake_policy (SET CMP0058 NEW)
 
 list (APPEND CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/cmake"
   "${CMAKE_BINARY_DIR}/cmake"
-  "${CMAKE_SOURCE_DIR}/cmake/modules"
-)
+  "${CMAKE_SOURCE_DIR}/cmake/modules")
 
-include_directories (
-  "${CMAKE_BINARY_DIR}/src"
-  # ${CMAKE_SOURCE_DIR}/include
-)
+include_directories ("${CMAKE_BINARY_DIR}/src")
 
 include (Utils)
-
-# NOTE: Move me to Utils.cmake.
-set (CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fPIE")
-     #-Wall -Wextra -Werror -std=c99 -pedantic -fPIE")
-# NOTE: Move me to Utils.cmake.
-set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG}
-     -fno-omit-frame-pointer -pie")
-# NOTE: Move me to Utils.cmake.
-set (CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fsanitize=address -fsanitize=undefined")
 
 option (ENABLE_BATTERY "Enable battery status plugin." ON)
 option (ENABLE_TINT2CONF "Enable tint2conf build, a Gtk+2 theme \
@@ -42,24 +30,16 @@ set (tinto_IN_SOURCE_DOC_DIR "${CMAKE_HOME_DIRECTORY}/doc")
 mark_as_advanced (
   tinto_IN_SOURCE_RES_DIR
   tinto_IN_SOURCE_BIN_DIR
-  tinto_IN_SOURCE_DOC_DIR
-)
+  tinto_IN_SOURCE_DOC_DIR)
 
-find_package (X11)
-if (NOT X11_Xdamage_FOUND OR NOT X11_Xrandr_FOUND
-    OR NOT X11_Xrender_FOUND OR NOT X11_Xinerama_FOUND
-    OR NOT X11_Xcomposite_FOUND)
-  message (FATAL_ERROR "Could not find all X11 libraries!")
+find_package (X11 COMPONENTS Xdamage Xrandr Xrender Xcomposite
+                             Xinerama
+	          RQUIRED)
+if (NOT X11_FOUND)
+  message (FATAL_ERROR "Could not find X11 libraries!")
 endif ()
 
-include_directories (
-  "${X11_Xrender_INCLUDE_PATH}"
-  "${X11_Xrandr_INCLUDE_PATH}"
-  "${X11_Xinerama_INCLUDE_PATH}"
-  "${X11_Xdamage_INCLUDE_PATH}"
-  "${X11_Xcomposite_INCLUDE_PATH}"
-  "${X11_X11_INCLUDE_PATH}"
-)
+include_directories ("${X11_X11_INCLUDE_PATH}")
 
 find_package (GTK2 2.8 REQUIRED COMPONENTS gtk)
 if (NOT GTK2_FOUND)
@@ -90,12 +70,7 @@ include_directories (
   src/launcher/t
   src/util/t
   src/tooltip
-  src/util
-)
-
-if (DEBUG)
-  set (tinto_tests_SOURCES)
-endif ()
+  src/util)
 
 add_subdirectory (src)
 
@@ -113,15 +88,14 @@ if (ENABLE_RSVG)
     set (HAS_RSVG 1)
     set (HAVE_RSVG 1) # NOTE: Update-me in `tint2conf'
   else ()
-    message (FATAL_ERROR "SVG support enabled yet dependency not"
-             " fulfilled: librsvg-2.0" )
+    message (FATAL_ERROR "Could not find RSVG.")
   endif ()
 endif ()
 
 if (ENABLE_SN)
   find_package (SN)
   if (NOT SN_FOUND)
-    message (FATAL_ERROR "Startup Notification is required.")
+    message (FATAL_ERROR "Could not find Startup Notification.")
   endif ()
     include_directories ("${SN_INCLUDE_DIRS}")
     link_libraries ("${SN_LIBRARIES}")
@@ -154,21 +128,13 @@ target_link_libraries (${PROJECT_NAME}
   "${X11_Xrender_LIB}"
   "${GTK2_LIBRARIES}"
   "${IMLIB2_LIBRARIES}"
-  m
-)
+  m)
 
 set (USER_HOME_DIR "$ENV{HOME}")
 configure_file ("${CMAKE_SOURCE_DIR}/src/conf.h.in"
                 "${CMAKE_BINARY_DIR}/src/conf.h")
 configure_file ("${CMAKE_SOURCE_DIR}/cmake/deinstall.cmake.in"
                 "${CMAKE_BINARY_DIR}/cmake/deinstall.cmake")
-
-# NOTE: Move me to Utils.cmake.
-set_target_properties (${PROJECT_NAME} PROPERTIES COMPILE_FLAGS
-                       "-Wall -fno-strict-aliasing -pthread ${ASAN_C_FLAGS}")
-# NOTE: Move me to Utils.cmake.
-set_target_properties (${PROJECT_NAME} PROPERTIES LINK_FLAGS
-                       "-pthread -fno-strict-aliasing ${ASAN_L_FLAGS}")
 
 install (TARGETS ${PROJECT_NAME} DESTINATION bin)
 # Fix me: incorrect dest path.
@@ -182,24 +148,10 @@ install (FILES "${tinto_IN_SOURCE_DOC_DIR}/man/tinto.1" DESTINATION
 
 add_custom_target (deinstall
   COMMAND ${CMAKE_COMMAND} -P
-          "${CMAKE_BINARY_DIR}/cmake/deinstall.cmake"
-)
-
-# NOTE: Move me to Utils.cmake.
-if (DEBUG)
-  add_custom_target (lint COMMAND oclint-json-compilation-database
-                     $ENV{OCLINT_EXTRA_OPTIONS})
-endif ()
+          "${CMAKE_BINARY_DIR}/cmake/deinstall.cmake")
 
 if (ENABLE_EXAMPLES)
   file (GLOB SAMPLEFILES
         "${tinto_IN_SOURCE_RES_DIR}/config-sample/*.conf")
   install (FILES ${SAMPLEFILES} DESTINATION "${DOCDIR}/examples")
 endif ()
-
-set (CPACK_GENERATOR "TXZ")
-set (CPACK_STRIP_FILES 1)
-set (CPACK_PACKAGE_CONTACT "chigoncalves <eatg75@gmail.com")
-set (CPACK_PACKAGE_DESCRIPTION "A tiny panel forx X11. (tint2 fork.)")
-set (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/readme.rst")
-include (CPack)
