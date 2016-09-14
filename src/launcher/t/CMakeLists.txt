@@ -1,6 +1,7 @@
-set (CMAKE_INCLUDE_CURRENT_DIR 1)
+target_include_directories (${tinto_panel_test_EXECUTABLE}
+			    PUBLIC
+			      "${CMAKE_CURRENT_LIST_DIR}")
 
-list (APPEND tinto_tests_SOURCES
-  "${CMAKE_CURRENT_SOURCE_DIR}/desktop-entry-test.c")
-
-set (tinto_tests_SOURCES "${tinto_tests_SOURCES}" PARENT_SCOPE)
+target_sources (${tinto_panel_test_EXECUTABLE}
+		PUBLIC
+		  "${CMAKE_CURRENT_SOURCE_DIR}/desktop-entry-test.c")

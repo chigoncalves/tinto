@@ -1,4 +1,4 @@
-set (CMAKE_INCLUDE_CURRENT_DIR 1)
+include (CMakePrintHelpers)
 
 find_package (CUNIT QUIET)
 
@@ -8,26 +8,20 @@ if (NOT CUNIT_FOUND)
   message (FATAL_ERROR "CUnit is required, but it's missing.")
 endif ()
 
-list (APPEND tinto_tests_SOURCES main.c)
-set (tinto_tests_SOURCES "${tinto_tests_SOURCES}" PARENT_SCOPE)
+target_include_directories (${tinto_panel_test_EXECUTABLE}
+			    PUBLIC
+			      "${CUNIT_INCLUDE_DIRS}"
+			      "${GTK2_INCLUDE_DIRS}")
 
-include_directories (
-  "${CUNIT_INCLUDE_DIRS}"
-  "${GTK2_INCLUDE_DIRS}"
-  )
-link_libraries (
-  "${CUNIT_LIBRARIES}"
-  "${GTK2_LIBRARIES}"
-)
+cmake_print_variables (CUNIT_LIBRARIES GTK2_LIBRARIES)
 
-# include (CMakePrintHelpers)
-# cmake_print_variables (tinto_tests_SOURCES)
-
-add_executable (tinto-tests "${tinto_tests_SOURCES}")
+target_link_libraries (${tinto_panel_test_EXECUTABLE}
+		       PUBLIC
+			 "${CUNIT_LIBRARIES}"
+			 "${GTK2_LIBRARIES}")
 
 add_custom_target (
   run-tests
-  COMMAND ${CMAKE_BINARY_DIR}/src/t/tinto-tests
-  DEPENDS ${CMAKE_BINARY_DIR}/src/t/tinto-tests
-  USES_TERMINAL
-)
+  COMMAND "${CMAKE_CURRENT_BINARY_DIR}/${tinto_panel_test_EXECUTABLE}"
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${tinto_panel_test_EXECUTABLE}"
+  USES_TERMINAL)
