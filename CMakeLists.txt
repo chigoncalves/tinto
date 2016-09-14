@@ -4,13 +4,13 @@ Run cmake this way: `cmake <source-dir> -B<build-dir>.']])
 endif ()
 
 cmake_minimum_required (VERSION 3.0)
-project (tinto-panel VERSION 0.0.2.4 LANGUAGES C)
+project (tinto-panel VERSION 0.0.2.5 LANGUAGES C)
 cmake_policy (SET CMP0058 NEW)
 
 list (APPEND CMAKE_MODULE_PATH
 	     "${CMAKE_SOURCE_DIR}/cmake"
 	     "${CMAKE_BINARY_DIR}/cmake"
-	     "${CMAKE_SOURCE_DIR}/cmake/modules")
+	     "${CMAKE_SOURCE_DIR}/vendor/cmake/cmake/modules")
 
 include (Utils)
 
@@ -34,52 +34,59 @@ option (ENABLE_EXAMPLES "Install additional tin2rc examples" OFF)
 option (ENABLE_RSVG "Enable `rsvg` support for launcher icons." ON)
 option (ENABLE_SN "Enable `startup notification` support." ON)
 
-find_package (X11 COMPONENTS Xdamage Xrandr Xrender Xcomposite
-                             Xinerama
+add_executable (${tinto_panel_EXECUTABLE}
+                "${CMAKE_CURRENT_LIST_DIR}/src/main.c")
+
+find_package (X11 COMPONENTS
+		    Xdamage
+		    Xrandr
+		    Xrender
+		    Xcomposite
+		    Xinerama
 	          RQUIRED)
 if (NOT X11_FOUND)
-  message (FATAL_ERROR "Could not find X11 libraries!")
+  message (FATAL_ERROR "tinto-panel: X11 library not found!")
 endif ()
 
 find_package (GTK2 2.8 REQUIRED COMPONENTS gtk)
 if (NOT GTK2_FOUND)
-  message (FATAL_ERROR "Gtk+2 is required to build tinto.")
+  message (FATAL_ERROR "tinto-panel: Gtk+2 library not found!")
 endif ()
 
 include (FindPkgConfig)
-include (CheckLibraryExists)
-pkg_check_modules (IMLIB2 REQUIRED imlib2>=1.4.2)
 
-string (REPLACE ";" " " FLAGS_REPLACED "${IMLIB2_LDFLAGS}")
-set (CMAKE_REQUIRED_FLAGS "${FLAGS_REPLACED}")
-check_library_exists ("${IMLIB2_LIBRARIES}"
-                      "imlib_context_set_display"
-                      "${IMLIB2_LIBRARY_DIRS}" IMLIB_BUILD_WITH_X)
-if (NOT IMLIB_BUILD_WITH_X)
-  message (FATAL_ERROR "Imlib is not built with X support")
+find_package (Imlib2 REQUIRED)
+if (NOT Imlib2_FOUND)
+  message (FATAL_ERROR "tinto-panel: Imlib2 library not found!")
 endif ()
 
 if (ENABLE_RSVG)
   pkg_check_modules (RSVG librsvg-2.0>=2.14.0)
   if (RSVG_FOUND)
     include_directories ("${RSVG_INCLUDE_DIRS}")
-    link_libraries ("${RSVG_LIBRARIES}")
-    link_directories ("${RSVG_LIBRARY_DIRS}")
+    target_link_libraries (${tinto_panel_EXECUTABLE}
+                       PUBLIC
+"${RSVG_LIBRARIES}")
+
     set (HAS_RSVG 1)
     set (HAVE_RSVG 1) # NOTE: Update-me in `tint2conf'
   else ()
-    message (FATAL_ERROR "Could not find RSVG.")
+    message (FATAL_ERROR "tinto-panel: RSVG library not found!")
   endif ()
 endif ()
 
 if (ENABLE_SN)
   find_package (SN)
   if (NOT SN_FOUND)
-    message (FATAL_ERROR "Could not find Startup Notification.")
+    message (FATAL_ERROR "tinto-panel: Sartup Notification library not found!")
   endif ()
-    include_directories ("${SN_INCLUDE_DIRS}")
-    link_libraries ("${SN_LIBRARIES}")
-    add_definitions ("${SN_DEFINITIONS}")
+    target_include_directories (${tinto_panel_EXECUTABLE}
+                                PUBLIC
+				  "${SN_INCLUDE_DIRS}")
+    target_link_libraries (${tinto_panel_EXECUTABLE}
+			   PUBLIC
+			     ${SN_LIBRARIES})
+    add_definitions (${SN_DEFINITIONS})
     set (HAS_SN 1)
 endif ()
 
@@ -89,30 +96,25 @@ if (ENABLE_TINT2CONF)
   add_subdirectory (bin/tint2conf)
 endif ()
 
-add_executable (${tinto_panel_EXECUTABLE}
-                "${CMAKE_CURRENT_LIST_DIR}/src/main.c")
-
-link_directories ("${IMLIB2_LIBRARY_DIRS}"
-
-)
-
 target_include_directories (${tinto_panel_EXECUTABLE}
                             PUBLIC
 			      "${GTK2_INCLUDE_DIRS}"
 			      "${X11_X11_INCLUDE_PATH}"
-
+			      ${Imlib2_INCLUDE_DIRECTORIES}
 )
 
 target_link_libraries (${tinto_panel_EXECUTABLE}
-		      "${X11_X11_LIB}"
-		      "${X11_Xcomposite_LIB}"
-		      "${X11_Xdamage_LIB}"
-		      "${X11_Xinerama_LIB}"
-		      "${X11_Xrandr_LIB}"
-		      "${X11_Xrender_LIB}"
-		      "${GTK2_LIBRARIES}"
-		      "${IMLIB2_LIBRARIES}"
-		      m)
+		       PUBLIC
+			 "${X11_X11_LIB}"
+			 "${X11_Xcomposite_LIB}"
+			 "${X11_Xdamage_LIB}"
+			 "${X11_Xinerama_LIB}"
+			 "${X11_Xrandr_LIB}"
+			 "${X11_Xrender_LIB}"
+			 "${GTK2_LIBRARIES}"
+			 "${Imlib2_LIBRARIES}"
+			 m
+)
 
 # if (DEBUG)
 #   set (tinto_panel_test_EXECUTABLE "tinto-panel-tests"

@@ -1,0 +1,3 @@
+[submodule "vendor/cmake"]
+	path = vendor/cmake
+	url = https://github.com/chigoncalves/cmake-modules.git
